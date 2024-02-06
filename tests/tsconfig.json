@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["../*"],
+    },
+  },
+  "extends": "../tsconfig.json",
+  "exclude": [],
+}

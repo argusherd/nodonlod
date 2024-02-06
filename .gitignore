@@ -1,0 +1,12 @@
+node_modules/
+
+dist/
+main/
+public/css/
+public/js/
+
+database.sqlite
+
+.env
+.env.test
+.env*.local
