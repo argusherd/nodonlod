@@ -1,0 +1,12 @@
+form(action="/playlists", method="post")
+  textarea(name="description") #{ rawPlaylist.description }
+  input(type="hidden", name="resource_id", value=rawPlaylist.id)
+  - var thumbnail = rawPlaylist.thumbnails ? rawPlaylist.thumbnails[0]?.url : "";
+  input(type="url", name="thumbnail", value=thumbnail)
+  - var thumbnails = rawPlaylist.thumbnails ? rawPlaylist.thumbnails : [];
+  each thumbnail in thumbnails
+    span #{ thumbnail.url }
+  input(type="text", name="title", value=rawPlaylist.title)
+  input(type="text", name="url", value=rawPlaylist.webpage_url)
+  input(type="text", name="domain", value=rawPlaylist.webpage_url_domain)
+  button(type="submit") Save

@@ -6,8 +6,9 @@
   "scripts": {
     "build": "webpack && npm run tailwind",
     "clear": "rimraf dist main database.sqlite",
-    "dev": "tsc && electron .",
-    "dist": "npm run build && tsc && electron-builder --config electron-builder.config.js --dir",
+    "copy": "copyfiles -u 1 views/**/* main/views",
+    "dev": "tsc && npm run copy && electron --trace-warnings .",
+    "dist": "npm run build && tsc && npm run copy && electron-builder --config electron-builder.config.js --dir",
     "migrator": "ts-node database/migrator.ts",
     "migrator:create": "ts-node database/migrator.ts create --skip-verify --folder database/migrations --name",
     "postinstall": "electron-builder install-app-deps",
@@ -25,8 +26,10 @@
   },
   "homepage": "https://github.com/argusherd/nodonlod#readme",
   "dependencies": {
+    "dayjs": "^1.11.10",
     "dotenv": "^16.4.1",
     "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "pug": "^3.0.2",
     "reflect-metadata": "^0.2.1",
     "sequelize": "^6.35.2",
@@ -35,11 +38,13 @@
     "umzug": "^3.6.1"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
     "@prettier/plugin-pug": "^3.0.0",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.11",
     "@types/node": "^20.11.16",
     "@types/supertest": "^6.0.2",
+    "copyfiles": "^2.4.1",
     "electron": "^28.1.4",
     "electron-builder": "^24.9.1",
     "htmx.org": "^1.9.10",

@@ -26,7 +26,7 @@ const config = {
       ...general,
       displayName: "feature",
       roots: ["<rootDir>/tests/feature"],
-      setupFilesAfterEnv: ["<rootDir>/tests/feature/setup.ts"],
+      setupFilesAfterEnv: ["<rootDir>/tests/feature/setup/index.ts"],
     },
     {
       ...general,

@@ -1,0 +1,21 @@
+extends ../_layout.pug
+
+mixin raw-info(rawInfo)
+  if rawInfo._type === 'playlist'
+    - var rawPlaylist = rawInfo;
+    include _raw-playlist.pug
+    if rawPlaylist.entries
+      each entry in rawPlaylist.entries
+        +raw-info(entry)
+  else
+    - var rawPlayable = rawInfo;
+    include _raw-playable.pug
+
+block body
+  h3 #{ extraction.url }
+
+  if extraction.error
+    | error: #{ extraction.error }
+
+  if extraction.content
+    +raw-info(extraction.content)

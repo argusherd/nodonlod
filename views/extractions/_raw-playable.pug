@@ -1,0 +1,20 @@
+form(action="/playables", method="post")
+  input(type="number", name="age_limit", value=rawPlayable.age_limit)
+  textarea(name="description") #{ rawPlayable.description }
+  input(type="hidden", name="duration", value=rawPlayable.duration)
+  span #{ dayjs.duration(rawPlayable.duration, "seconds").format("HH:mm:ss") }
+  input(type="hidden", name="resource_id", value=rawPlayable.id)
+  input(type="url", name="thumbnail", value=rawPlayable.thumbnail)
+  each thumbnail in rawPlayable.thumbnails
+    span #{ thumbnail.url }
+  input(type="text", name="title", value=rawPlayable.title)
+  input(type="hidden", name="upload_date", value=rawPlayable.upload_date)
+  input(type="text", name="url", value=rawPlayable.webpage_url)
+  input(type="text", name="domain", value=rawPlayable.webpage_url_domain)
+  - var uploader = rawPlayable.channel ?? rawPlayable.uploader;
+  input(type="text", name="uploader", value=uploader)
+  - var uploader_id = rawPlayable.channel_id ?? rawPlayable.uploader_id;
+  input(type="text", name="uploader_id", value=uploader_id)
+  - var uploader_url = rawPlayable.channel_url ?? rawPlayable.uploader_url;
+  input(type="text", name="uploader_url", value=uploader_url)
+  button(type="submit") Save

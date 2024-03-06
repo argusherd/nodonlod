@@ -1,0 +1,9 @@
+extends ../_layout.pug
+
+block body
+  form(action="/extractions", method="post")
+    input(type="url", name="url", required)
+    button(type="submit") Extract
+
+  each extraction in extractions
+    a(href="/extractions/" + extraction.id) #{ extraction.url }
