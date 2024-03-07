@@ -1,6 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
-import { RawPlaylist, thumbnails } from "@/src/raw-info-extractor";
+import { RawPlayable, RawPlaylist, thumbnails } from "@/src/raw-info-extractor";
 import supertest from "supertest";
 import {
   createRawPlayable,
@@ -33,8 +33,12 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawPlayable.duration.toString());
         expect(res.text).toContain(rawPlayable.id);
         expect(res.text).toContain(rawPlayable.thumbnail);
-        expect(res.text).toContain(rawPlayable.thumbnails[0]?.url);
-        expect(res.text).toContain(rawPlayable.thumbnails[1]?.url);
+        expect(res.text).toContain(
+          (rawPlayable.thumbnails as thumbnails)[0]?.url,
+        );
+        expect(res.text).toContain(
+          (rawPlayable.thumbnails as thumbnails)[1]?.url,
+        );
         expect(res.text).toContain(rawPlayable.title);
         expect(res.text).toContain(rawPlayable.upload_date);
         expect(res.text).toContain(rawPlayable.webpage_url);
@@ -258,5 +262,45 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawPlayable.id);
         expect(res.text).toContain(rawPlayable.description);
       });
+  });
+
+  it("can display raw-playable without optional properties", async () => {
+    const onlyRequired: RawPlayable = {
+      _type: "video",
+      duration: 123,
+      id: "ID",
+      title: "TITLE",
+      webpage_url: videoURL,
+      webpage_url_domain: "youtube.com",
+    };
+
+    const extraction = await Extraction.create({
+      url: videoURL,
+      content: JSON.stringify(onlyRequired),
+    });
+
+    await supertest(express)
+      .get(`/extractions/${extraction.id}`)
+      .expect((res) => {
+        console.log(res.text);
+      })
+      .expect(200);
+  });
+
+  it("can display raw-playlist without optional properties", async () => {
+    const onlyRequired: RawPlaylist = {
+      _type: "playlist",
+      entries: [],
+      id: "ID",
+      webpage_url: videoURL,
+      webpage_url_domain: "youtube.com",
+    };
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      content: JSON.stringify(onlyRequired),
+    });
+
+    await supertest(express).get(`/extractions/${extraction.id}`).expect(200);
   });
 });

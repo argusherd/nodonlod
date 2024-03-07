@@ -5,7 +5,8 @@ form(action="/playables", method="post")
   span #{ dayjs.duration(rawPlayable.duration, "seconds").format("HH:mm:ss") }
   input(type="hidden", name="resource_id", value=rawPlayable.id)
   input(type="url", name="thumbnail", value=rawPlayable.thumbnail)
-  each thumbnail in rawPlayable.thumbnails
+  - var thumbnails = rawPlayable.thumbnails ? rawPlayable.thumbnails : [];
+  each thumbnail in thumbnails
     span #{ thumbnail.url }
   input(type="text", name="title", value=rawPlayable.title)
   input(type="hidden", name="upload_date", value=rawPlayable.upload_date)

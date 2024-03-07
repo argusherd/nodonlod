@@ -29,8 +29,8 @@ export interface RawPlayable {
   duration: number;
   id: string;
   tags?: string[];
-  thumbnail: string | null;
-  thumbnails: thumbnails;
+  thumbnail?: string | null;
+  thumbnails?: thumbnails;
   title: string;
   upload_date?: string;
   uploader?: string | null;
