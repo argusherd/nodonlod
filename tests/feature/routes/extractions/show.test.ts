@@ -12,6 +12,10 @@ describe("The extraction show page", () => {
   const playlistURL =
     "https://www.youtube.com/playlist?list=OLAK5uy_l4pFyLY9N1YSGpxT0EEq8Whc8OyhpWsm8";
 
+  it("can only be accessed with an existing extraction", async () => {
+    await supertest(express).get("/extractions/NOT_EXIST").expect(404);
+  });
+
   it("displays the content of an extraction with raw-playable", async () => {
     const rawPlayable = createRawPlayable();
 
