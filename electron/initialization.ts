@@ -5,18 +5,23 @@ import { copyFileSync } from "fs";
 import { constants } from "fs/promises";
 import { join } from "path";
 import sequelize from "../database/connection";
+import umzug from "../database/migrator";
 import express from "../routes";
 
 export function preConfigDotenv() {
+  configDotenv();
+
   if (!electron.isPackaged) return;
 
   createEnvFile();
 }
 
 export function postConfigDotenv() {
+  setDatabaseLocation();
+  setDatabaseLogging();
+
   if (!electron.isPackaged) return;
 
-  setDatabaseLocation();
   express.use(coreExpress.static(join(electron.getAppPath(), "public")));
   express.set("views", join(electron.getAppPath(), "views"));
 }
@@ -39,7 +44,17 @@ function setDatabaseLocation() {
   if (!process.env.SEQUELIZE_STORAGE) return;
 
   sequelize.options.storage = join(
-    electron.getPath("userData"),
+    electron.isPackaged ? electron.getPath("userData") : process.cwd(),
     process.env.SEQUELIZE_STORAGE as string,
   );
+}
+
+function setDatabaseLogging() {
+  if (process.env.SEQUELIZE_LOGGING)
+    sequelize.options.logging =
+      process.env.SEQUELIZE_LOGGING === "1" ? console.log : false;
+
+  if (process.env.UMZUG_MIGRATOR_LOGGING)
+    umzug.options.logger =
+      process.env.UMZUG_MIGRATOR_LOGGING === "1" ? console : undefined;
 }

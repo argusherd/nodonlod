@@ -1,5 +1,5 @@
 import { configDotenv } from "dotenv";
-import { app as electron, BrowserWindow } from "electron";
+import { BrowserWindow, app as electron } from "electron";
 import umzug from "./database/migrator";
 import { postConfigDotenv, preConfigDotenv } from "./electron/initialization";
 import express from "./routes";
