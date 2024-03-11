@@ -1,5 +1,6 @@
 import { spawnSync } from "child_process";
 import { join } from "path";
+import { isMainThread, parentPort, workerData } from "worker_threads";
 
 const ytdlpPath = join(process.cwd(), "/bin/yt-dlp");
 
@@ -17,6 +18,10 @@ export default async function extractRawInfoFrom(
   }
 
   return JSON.parse(String(response.stdout));
+}
+
+if (!isMainThread) {
+  (async () => parentPort?.postMessage(await extractRawInfoFrom(workerData)))();
 }
 
 export interface RawPlayable {

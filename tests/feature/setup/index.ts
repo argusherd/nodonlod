@@ -10,5 +10,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
+  jest.clearAllMocks();
+
   await sequelize.truncate();
 });

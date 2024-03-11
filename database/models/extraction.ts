@@ -4,6 +4,7 @@ import {
   AutoIncrement,
   Column,
   CreatedAt,
+  Default,
   Model,
   PrimaryKey,
   Table,
@@ -15,7 +16,8 @@ interface OptionalExtractionCreationAttributes {
   id: number;
   resourceId: string;
   content: string | null;
-  error: string;
+  error: string | null;
+  isProcessing: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -60,6 +62,10 @@ export default class Extraction extends Model<
 
   @Column
   error: string;
+
+  @Default(false)
+  @Column
+  isProcessing: boolean;
 
   @CreatedAt
   createdAt: Date;

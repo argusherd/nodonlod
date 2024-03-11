@@ -21,6 +21,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
     error: {
       type: DataType.TEXT,
     },
+    is_processing: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
     created_at: {
       type: DataType.DATE,
     },
