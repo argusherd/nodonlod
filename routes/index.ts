@@ -10,7 +10,7 @@ const express = coreExpress();
 
 express.set("view engine", "pug");
 express.use(coreExpress.static("public"));
-express.use(coreExpress.urlencoded());
+express.use(coreExpress.urlencoded({ extended: true }));
 
 express.locals.basedir = join(__dirname, "../views");
 express.locals.dayjs = dayjs;

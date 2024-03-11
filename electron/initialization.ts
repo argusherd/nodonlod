@@ -41,7 +41,11 @@ function createEnvFile() {
 }
 
 function setDatabaseLocation() {
-  if (!process.env.SEQUELIZE_STORAGE) return;
+  if (
+    !process.env.SEQUELIZE_STORAGE ||
+    process.env.SEQUELIZE_STORAGE === ":memory:"
+  )
+    return;
 
   sequelize.options.storage = join(
     electron.isPackaged ? electron.getPath("userData") : process.cwd(),
@@ -49,7 +53,7 @@ function setDatabaseLocation() {
   );
 }
 
-function setDatabaseLogging() {
+export function setDatabaseLogging() {
   if (process.env.SEQUELIZE_LOGGING)
     sequelize.options.logging =
       process.env.SEQUELIZE_LOGGING === "1" ? console.log : false;
