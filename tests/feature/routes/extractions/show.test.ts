@@ -72,16 +72,21 @@ describe("The extraction show page", () => {
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
-        expect(res.text).not.toContain(`action="/playables"`);
+        expect(res.text).not.toContain(
+          `action="/extractions/${extraction.id}/to-playable"`,
+        );
         expect(res.text).not.toContain(`method="post"`);
       });
 
-    await extraction.update({ content: JSON.stringify(createRawPlayable()) });
+    const rawPlayable = createRawPlayable();
+    await extraction.update({ content: JSON.stringify(rawPlayable) });
 
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
-        expect(res.text).toContain(`action="/playables"`);
+        expect(res.text).toContain(
+          `action="/extractions/${extraction.id}/to-playable/${rawPlayable.id}"`,
+        );
         expect(res.text).toContain(`method="post"`);
       });
   });
@@ -264,7 +269,7 @@ describe("The extraction show page", () => {
       });
   });
 
-  it("can display raw-playable without optional properties", async () => {
+  it("can display raw-playable successfully without optional properties", async () => {
     const onlyRequired: RawPlayable = {
       _type: "video",
       duration: 123,
@@ -279,12 +284,7 @@ describe("The extraction show page", () => {
       content: JSON.stringify(onlyRequired),
     });
 
-    await supertest(express)
-      .get(`/extractions/${extraction.id}`)
-      .expect((res) => {
-        console.log(res.text);
-      })
-      .expect(200);
+    await supertest(express).get(`/extractions/${extraction.id}`).expect(200);
   });
 
   it("can display raw-playlist without optional properties", async () => {

@@ -7,3 +7,11 @@ declare global {
     htmx: typeof htmx;
   }
 }
+
+export interface HTMXEvent extends Event {
+  detail: {
+    isError: Boolean;
+    shouldSwap: Boolean;
+    xhr: XMLHttpRequest;
+  };
+}
