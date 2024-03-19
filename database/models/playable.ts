@@ -32,7 +32,7 @@ interface PlayableAttributes extends OptionalPlayableCreationAttributes {
   duration: number;
 }
 
-interface PlayableCreationAttributes
+export interface PlayableCreationAttributes
   extends Optional<
     PlayableAttributes,
     keyof OptionalPlayableCreationAttributes
