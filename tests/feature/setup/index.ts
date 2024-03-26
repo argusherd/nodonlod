@@ -14,6 +14,7 @@ beforeAll(async () => {
 
 afterEach(async () => {
   jest.clearAllMocks();
+  jest.resetAllMocks();
 
   await sequelize.truncate();
 });
