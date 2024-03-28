@@ -1,2 +1,4 @@
 each playable in playables
-  a(href=`/playables/${playable.id}`) #{ playable.title }
+  div
+    a(href=`/playables/${playable.id}`) #{ playable.title }
+    button(hx-get=`/playables/${playable.id}/play`, hx-swap="none") Play
