@@ -3,10 +3,11 @@ import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import Extraction from "../database/models/extraction";
 import Playable from "../database/models/playable";
+import Playlist from "../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../src/raw-info-extractor";
 
 interface ExtractionRequest extends Request {
-  extraction?: Extraction;
+  extraction: Extraction;
 }
 
 const router = Router();
@@ -86,6 +87,26 @@ router.post(
     res.sendStatus(201);
   },
 );
+
+router.post("/:extraction/to-playlist", async (req: ExtractionRequest, res) => {
+  const rawPlaylist = req.extraction.content;
+
+  if (!rawPlaylist || rawPlaylist._type !== "playlist") {
+    res.sendStatus(404);
+    return;
+  }
+
+  const { title, thumbnail, description } = req.body;
+
+  await Playlist.create({
+    title: title || rawPlaylist.title || rawPlaylist.id,
+    url: rawPlaylist.webpage_url,
+    thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
+    description: description ?? rawPlaylist.description,
+  });
+
+  res.sendStatus(201);
+});
 
 function getRawPlayable(
   rawPlaylist: RawPlaylist,
