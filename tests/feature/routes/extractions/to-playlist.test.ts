@@ -102,4 +102,23 @@ describe("The extraction to a playlist route", () => {
 
     expect(playlist?.title).toEqual(rawPlaylist.id);
   });
+
+  it("only persists the topmost level of the playlist", async () => {
+    const nestedRawPlaylist = createRawPlaylist();
+    const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
+
+    const extraction = await Extraction.create({
+      url: rawPlaylist.webpage_url,
+      content: JSON.stringify(rawPlaylist),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/to-playlist`)
+      .expect(201);
+
+    const playlist = await Playlist.findOne();
+
+    expect(await Playlist.count()).toEqual(1);
+    expect(playlist?.title).toEqual(rawPlaylist.title);
+  });
 });

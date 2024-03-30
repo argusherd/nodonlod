@@ -2,7 +2,9 @@ import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import Extraction from "../database/models/extraction";
-import Playable from "../database/models/playable";
+import Playable, {
+  PlayableCreationAttributes,
+} from "../database/models/playable";
 import Playlist from "../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../src/raw-info-extractor";
 
@@ -51,38 +53,19 @@ router.get("/:extraction", async (req: ExtractionRequest, res) => {
 router.post(
   "/:extraction/to-playable/:rawPlayableID?",
   async (req: ExtractionRequest, res) => {
-    const rawInfo = req.extraction?.content;
-
-    if (!rawInfo) {
-      res.sendStatus(404);
-      return;
-    }
+    const rawInfo = req.extraction.content;
 
     const rawPlayable =
-      rawInfo._type === "playlist"
+      rawInfo?._type === "playlist"
         ? getRawPlayable(rawInfo, String(req.params.rawPlayableID))
         : rawInfo;
 
-    if (!rawPlayable) {
+    if (!rawInfo || !rawPlayable) {
       res.sendStatus(404);
       return;
     }
 
-    const { title, description, thumbnail, ageLimit } = req.body;
-
-    await Playable.create({
-      url: rawPlayable.webpage_url,
-      resourceId: rawPlayable.id,
-      domain: rawPlayable.webpage_url_domain,
-      title: title ?? rawPlayable.title,
-      duration: rawPlayable.duration,
-      description: description ?? rawPlayable.description,
-      thumbnail: thumbnail ?? rawPlayable.thumbnail,
-      ageLimit: ageLimit ?? rawPlayable.age_limit,
-      uploadDate: rawPlayable.upload_date
-        ? dayjs(rawPlayable.upload_date).toDate()
-        : undefined,
-    });
+    await createPlayable(rawPlayable, req.body);
 
     res.sendStatus(201);
   },
@@ -125,6 +108,30 @@ function getRawPlayable(
   }
 
   return undefined;
+}
+
+async function createPlayable(
+  rawPlayable: RawPlayable,
+  {
+    title,
+    description,
+    thumbnail,
+    ageLimit,
+  }: Partial<PlayableCreationAttributes>,
+) {
+  await Playable.create({
+    url: rawPlayable.webpage_url,
+    resourceId: rawPlayable.id,
+    domain: rawPlayable.webpage_url_domain,
+    title: title ?? rawPlayable.title,
+    duration: rawPlayable.duration,
+    description: description ?? rawPlayable.description,
+    thumbnail: thumbnail ?? rawPlayable.thumbnail,
+    ageLimit: ageLimit ?? rawPlayable.age_limit,
+    uploadDate: rawPlayable.upload_date
+      ? dayjs(rawPlayable.upload_date).toDate()
+      : undefined,
+  });
 }
 
 export default router;
