@@ -244,7 +244,7 @@ describe("The extraction show page", () => {
       });
   });
 
-  it("can display nested playlist information from the extracted content, such as a YouTube channel", async () => {
+  it("only displays the topmost playlist even if there are nested playlists inside the extracted content, such as a YouTube channel", async () => {
     const channelURL =
       "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw";
     const rawPlayable = createRawPlayable();
@@ -262,10 +262,11 @@ describe("The extraction show page", () => {
       .expect((res) => {
         expect(res.text).toContain(rawPlaylist.id);
         expect(res.text).toContain(rawPlaylist.description);
-        expect(res.text).toContain(nestedRawPlaylist.id);
-        expect(res.text).toContain(nestedRawPlaylist.description);
         expect(res.text).toContain(rawPlayable.id);
         expect(res.text).toContain(rawPlayable.description);
+
+        expect(res.text).not.toContain(nestedRawPlaylist.id);
+        expect(res.text).not.toContain(nestedRawPlaylist.description);
       });
   });
 

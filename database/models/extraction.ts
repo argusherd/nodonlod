@@ -53,7 +53,17 @@ export default class Extraction extends Model<
   get content(): RawPlayable | RawPlaylist | null {
     if (!this.getDataValue("content")) return null;
 
-    return JSON.parse(this.getDataValue("content") as string);
+    const rawInfo: RawPlayable | RawPlaylist = JSON.parse(
+      this.getDataValue("content") as string,
+    );
+
+    if (rawInfo._type === "video") return rawInfo;
+
+    if (rawInfo.entries[0]?._type === "video") return rawInfo;
+
+    rawInfo.entries = mergeRawPlayables(rawInfo);
+
+    return rawInfo;
   }
 
   set content(value: string) {
@@ -72,4 +82,21 @@ export default class Extraction extends Model<
 
   @UpdatedAt
   updatedAt: Date;
+}
+
+function mergeRawPlayables(
+  rawPlaylist: RawPlaylist,
+  mergedRawPlayables: RawPlayable[] = [],
+): RawPlayable[] {
+  if (rawPlaylist.entries[0]?._type === "video") {
+    (rawPlaylist.entries as RawPlayable[]).forEach((rawPlayable) =>
+      mergedRawPlayables.push(rawPlayable),
+    );
+  } else if (rawPlaylist.entries[0]?._type === "playlist") {
+    (rawPlaylist.entries as RawPlaylist[]).forEach((rawPlaylist) =>
+      mergeRawPlayables(rawPlaylist, mergedRawPlayables),
+    );
+  }
+
+  return mergedRawPlayables;
 }
