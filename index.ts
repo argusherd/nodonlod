@@ -1,6 +1,8 @@
 import { configDotenv } from "dotenv";
 import { BrowserWindow, app as electron } from "electron";
+import { createServer } from "http";
 import { gracefulShutdown } from "node-schedule";
+import { Server } from "socket.io";
 import umzug from "./database/migrator";
 import Extraction from "./database/models/extraction";
 import { postConfigDotenv, preConfigDotenv } from "./electron/initialization";
@@ -12,8 +14,14 @@ configDotenv();
 postConfigDotenv();
 
 const port = process.env.SERVER_PORT || "6869";
+const httpServer = createServer(express);
+const socketServer = new Server(httpServer);
 
-express.listen(port);
+httpServer.listen(port);
+
+socketServer.on("connect", (_socket) => {
+  console.log("Client connected");
+});
 
 electron.on("ready", async () => {
   await umzug.up();

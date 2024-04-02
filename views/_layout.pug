@@ -6,6 +6,10 @@ html(lang="en")
     title nodonlod
     link(rel="stylesheet", href="/css/app.css")
     script(src="/js/app.js")
+    script(src="/socket.io/socket.io.js")
+
+    script.
+      const socket = io();
 
   body(hx-boost="true")
     a(href="/extractions") + Create
