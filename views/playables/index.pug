@@ -1,4 +1,7 @@
-each playable in playables
-  div
-    a(href=`/playables/${playable.id}`) #{ playable.title }
-    button(hx-get=`/playables/${playable.id}/play`, hx-swap="none") Play
+extends ../_layout.pug
+
+block body
+  each playable in playables
+    div
+      a(href=`/playables/${playable.id}`) #{ playable.title }
+      button(hx-get=`/playables/${playable.id}/play`, hx-swap="none") Play
