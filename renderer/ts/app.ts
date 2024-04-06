@@ -1,7 +1,8 @@
 import htmx from "htmx.org";
-import { HTMXEvent } from "./renderer";
-
 window.htmx = htmx;
+
+import "htmx.org/dist/ext/ws";
+import { HTMXEvent } from "./renderer";
 
 document.addEventListener("htmx:beforeSwap", (event: HTMXEvent) => {
   if (event.detail.xhr.status === 422) {

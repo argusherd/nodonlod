@@ -1,26 +1,23 @@
 import { configDotenv } from "dotenv";
 import { BrowserWindow, app as electron } from "electron";
-import { createServer } from "http";
 import { gracefulShutdown } from "node-schedule";
-import { Server } from "socket.io";
 import umzug from "./database/migrator";
 import Extraction from "./database/models/extraction";
 import { postConfigDotenv, preConfigDotenv } from "./electron/initialization";
 import "./electron/schedule";
 import express from "./routes";
+import wss from "./routes/websocket";
 
 preConfigDotenv();
 configDotenv();
 postConfigDotenv();
 
 const port = process.env.SERVER_PORT || "6869";
-const httpServer = createServer(express);
-const socketServer = new Server(httpServer);
 
-httpServer.listen(port);
-
-socketServer.on("connect", (_socket) => {
-  console.log("Client connected");
+express.listen(port).on("upgrade", (request, socket, head) => {
+  wss.handleUpgrade(request, socket, head, (ws) =>
+    wss.emit("connection", ws, request),
+  );
 });
 
 electron.on("ready", async () => {
