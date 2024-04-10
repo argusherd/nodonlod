@@ -1,6 +1,7 @@
 import { Request, Router } from "express";
 import Playable from "../database/models/playable";
 import mediaPlayer from "../src/media-player";
+import wss from "./websocket";
 
 interface PlayableRequest extends Request {
   playable: Playable;
@@ -27,6 +28,8 @@ router.get("/", async (_req, res) => {
 
 router.get("/:playable/play", (req: PlayableRequest, res) => {
   mediaPlayer.play(req.playable.url as string);
+
+  wss.nowPlaying({ title: req.playable.title });
 
   res.sendStatus(202);
 });

@@ -1,9 +1,32 @@
+import { IncomingMessage } from "http";
+import { join } from "path";
+import { renderFile } from "pug";
+import internal from "stream";
 import { WebSocketServer } from "ws";
 
-const wss = new WebSocketServer({ noServer: true });
+interface PlayInfo {
+  title: string;
+}
 
-wss.on("connection", (ws) => {
-  setInterval(() => ws.send(`<p id="time">${Date.now()}</p>`), 1000);
+const wsServer = new WebSocketServer({ noServer: true });
+const pug = (filename: string) => join(__dirname, "../../views", filename);
+
+wsServer.on("now-playing", (playInfo: PlayInfo) => {
+  wsServer.clients.forEach((ws) =>
+    ws.send(renderFile(pug("_player.pug"), { playInfo })),
+  );
 });
+
+const wss = {
+  handleUpgrade: (
+    request: IncomingMessage,
+    socket: internal.Duplex,
+    head: Buffer,
+  ) =>
+    wsServer.handleUpgrade(request, socket, head, (ws) =>
+      ws.emit("connection", ws, request),
+    ),
+  nowPlaying: (playInfo: PlayInfo) => wsServer.emit("now-playing", playInfo),
+};
 
 export default wss;

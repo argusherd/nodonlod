@@ -14,11 +14,7 @@ postConfigDotenv();
 
 const port = process.env.SERVER_PORT || "6869";
 
-express.listen(port).on("upgrade", (request, socket, head) => {
-  wss.handleUpgrade(request, socket, head, (ws) =>
-    wss.emit("connection", ws, request),
-  );
-});
+express.listen(port).on("upgrade", wss.handleUpgrade);
 
 electron.on("ready", async () => {
   await umzug.up();

@@ -13,5 +13,5 @@ html(lang="en")
     a(href="/playables") Playables
     block body
 
-    #player(hx-ext="ws", ws-connect="/", hx-preserve)
-      p#time
+    #player-container(hx-ext="ws", ws-connect="/", hx-preserve)
+      #player
