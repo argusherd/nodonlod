@@ -6,9 +6,8 @@
   "scripts": {
     "build": "webpack && npm run tailwind",
     "clear": "rimraf dist main database.sqlite",
-    "copy": "copyfiles -u 1 views/**/* main/views",
     "dev": "tsc && electron --trace-warnings .",
-    "dist": "npm run build && tsc && npm run copy && electron-builder --config electron-builder.config.js --dir",
+    "dist": "npm run build && tsc && electron-builder --config electron-builder.config.js --dir",
     "migrator": "ts-node database/migrator.ts",
     "migrator:create": "ts-node database/migrator.ts create --skip-verify --folder database/migrations --name",
     "postinstall": "electron-builder install-app-deps",
@@ -49,7 +48,6 @@
     "@types/pug": "^2.0.10",
     "@types/supertest": "^6.0.2",
     "@types/ws": "^8.5.10",
-    "copyfiles": "^2.4.1",
     "electron": "^28.1.4",
     "electron-builder": "^24.9.1",
     "htmx.org": "^1.9.10",
