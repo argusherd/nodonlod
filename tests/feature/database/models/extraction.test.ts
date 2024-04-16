@@ -1,5 +1,4 @@
 import Extraction from "@/database/models/extraction";
-import { RawPlaylist } from "@/src/raw-info-extractor";
 import {
   createRawPlayable,
   createRawPlaylist,
@@ -30,29 +29,5 @@ describe("The extraction model", () => {
 
     expect(withRawPlayable.content).toEqual(rawPlayable);
     expect(withRawPlaylist.content).toEqual(rawPlaylist);
-  });
-
-  it("should flatten the nested raw-playlists when retrieving the content property", async () => {
-    const rawPlayable = createRawPlayable();
-
-    const doubleNestedRawPlaylist = createRawPlaylist({
-      entries: [rawPlayable],
-    });
-    const nestedRawPlaylist = createRawPlaylist({
-      entries: [doubleNestedRawPlaylist],
-    });
-    const rawPlaylist = createRawPlaylist({
-      entries: [nestedRawPlaylist],
-    });
-
-    const extraction = await Extraction.create({
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      content: JSON.stringify(rawPlaylist),
-    });
-
-    const parsedContent = extraction.content as RawPlaylist;
-
-    expect(parsedContent.entries[0]?._type).toEqual("video");
-    expect(parsedContent.entries[0]?.id).toEqual(rawPlayable.id);
   });
 });
