@@ -10,10 +10,12 @@ export const up: Migration = async ({ context: queryInterface }) => {
     url: {
       type: DataType.TEXT,
       allowNull: false,
+      unique: true,
     },
     resource_id: {
       type: DataType.TEXT,
       allowNull: false,
+      unique: true,
     },
     domain: {
       type: DataType.STRING,

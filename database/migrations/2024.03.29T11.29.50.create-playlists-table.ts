@@ -13,6 +13,14 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     url: {
       type: DataType.TEXT,
+      unique: true,
+    },
+    resource_id: {
+      type: DataType.TEXT,
+      unique: true,
+    },
+    domain: {
+      type: DataType.STRING,
     },
     thumbnail: {
       type: DataType.TEXT,

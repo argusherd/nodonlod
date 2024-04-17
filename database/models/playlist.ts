@@ -9,12 +9,15 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
   UpdatedAt,
 } from "sequelize-typescript";
 
 interface OptionalPlaylistCreationAttributes {
   id: string;
   url: string;
+  resourceId: string;
+  domain: string;
   thumbnail: string;
   description: string;
   createdAt: Date;
@@ -46,8 +49,16 @@ export default class Playlist extends Model<
   @Column
   title: string;
 
+  @Unique
   @Column
   url: string;
+
+  @Unique
+  @Column
+  resourceId: string;
+
+  @Column
+  domain: string;
 
   @Column
   thumbnail: string;

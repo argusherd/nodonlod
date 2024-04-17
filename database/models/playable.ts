@@ -11,6 +11,7 @@ import {
   Model,
   PrimaryKey,
   Table,
+  Unique,
   UpdatedAt,
 } from "sequelize-typescript";
 
@@ -50,10 +51,12 @@ export default class Playable extends Model<
   id: string;
 
   @AllowNull(false)
+  @Unique
   @Column
   url: string;
 
   @AllowNull(false)
+  @Unique
   @Column
   resourceId: string;
 

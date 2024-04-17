@@ -1,7 +1,10 @@
+import dayjs from "dayjs";
 import { join } from "path";
 import { Op } from "sequelize";
 import { Worker } from "worker_threads";
 import Extraction from "../../database/models/extraction";
+import Playable from "../../database/models/playable";
+import Playlist from "../../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
 
 export default async function processOnePendingExtraction() {
@@ -22,6 +25,8 @@ export default async function processOnePendingExtraction() {
       isProcessing: false,
       content: JSON.stringify(rawInfo),
     });
+
+    await convertRawInfo(rawInfo);
   });
 
   worker.on("error", async (error) => {
@@ -48,4 +53,37 @@ async function findUnprocessed() {
 
 async function markAsProcessing(extraction: Extraction) {
   await extraction.update({ isProcessing: true });
+}
+
+async function convertRawInfo(rawInfo: RawPlayable | RawPlaylist) {
+  if (rawInfo._type === "video") {
+    await Playable.upsert({
+      url: rawInfo.webpage_url,
+      resourceId: rawInfo.id,
+      domain: rawInfo.webpage_url_domain,
+      title: rawInfo.title,
+      duration: rawInfo.duration,
+      description: rawInfo.description,
+      thumbnail: rawInfo.thumbnail,
+      ageLimit: rawInfo.age_limit,
+      uploadDate: rawInfo.upload_date
+        ? dayjs(rawInfo.upload_date).toDate()
+        : undefined,
+    });
+  }
+
+  if (rawInfo._type === "playlist") {
+    await Playlist.upsert({
+      title: rawInfo.title || rawInfo.id,
+      url: rawInfo.webpage_url,
+      resourceId: rawInfo.id,
+      domain: rawInfo.webpage_url_domain,
+      thumbnail: rawInfo.thumbnails && rawInfo.thumbnails[0]?.url,
+      description: rawInfo.description,
+    });
+
+    for (const nestedInfo of rawInfo.entries) {
+      await convertRawInfo(nestedInfo);
+    }
+  }
 }
