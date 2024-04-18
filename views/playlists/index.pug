@@ -1,0 +1,6 @@
+extends ../_layout.pug
+
+block body
+  each playlist in playlists
+    div
+      a(href=`/playlists/${playlist.id}`) #{ playlist.title }

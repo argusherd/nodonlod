@@ -3,6 +3,7 @@ import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import extractionRouter from "./extractions";
 import playableRouter from "./playables";
+import playlistRouter from "./playlists";
 
 dayjs.extend(duration);
 
@@ -20,5 +21,6 @@ express.get("/", async (_req, res) => {
 
 express.use("/extractions", extractionRouter);
 express.use("/playables", playableRouter);
+express.use("/playlists", playlistRouter);
 
 export default express;

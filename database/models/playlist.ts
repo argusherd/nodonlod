@@ -28,7 +28,7 @@ interface PlaylistAttributes extends OptionalPlaylistCreationAttributes {
   title: string;
 }
 
-interface PlaylistCreationAttributes
+export interface PlaylistCreationAttributes
   extends Optional<
     PlaylistAttributes,
     keyof OptionalPlaylistCreationAttributes
