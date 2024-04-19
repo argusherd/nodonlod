@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { Optional } from "sequelize";
 import {
   AllowNull,
+  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
@@ -14,6 +15,8 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import PlayablePlaylist from "./playable-playlist";
+import Playlist from "./playlist";
 
 interface OptionalPlayableCreationAttributes {
   id: string;
@@ -93,4 +96,7 @@ export default class Playable extends Model<
 
   @UpdatedAt
   updatedAt: Date;
+
+  @BelongsToMany(() => Playlist, () => PlayablePlaylist)
+  playlists: Playlist[];
 }

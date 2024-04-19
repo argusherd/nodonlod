@@ -1,4 +1,5 @@
 import Playlist from "@/database/models/playlist";
+import { createPlayable, createPlaylist } from "../../setup/create-playable";
 
 describe("The playlist model", () => {
   it("can persist one record to the database", async () => {
@@ -16,5 +17,16 @@ describe("The playlist model", () => {
     );
     expect(playlist.thumbnail).toEqual("https://foo.bar/baz.jpg");
     expect(playlist.description).toEqual("The playlist description");
+  });
+
+  it("can belongs to many playables", async () => {
+    const playlist = await createPlaylist();
+    const playable = await createPlayable();
+
+    await playlist.$add("playable", playable);
+    const belongsToMany = await playlist.$get("playables");
+
+    expect(belongsToMany).toHaveLength(1);
+    expect(belongsToMany.at(0)?.id).toEqual(playable.id);
   });
 });

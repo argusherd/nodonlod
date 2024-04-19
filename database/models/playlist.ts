@@ -1,6 +1,7 @@
 import { Optional } from "sequelize";
 import {
   AllowNull,
+  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
@@ -12,6 +13,8 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import Playable from "./playable";
+import PlayablePlaylist from "./playable-playlist";
 
 interface OptionalPlaylistCreationAttributes {
   id: string;
@@ -71,4 +74,7 @@ export default class Playlist extends Model<
 
   @UpdatedAt
   updatedAt: Date;
+
+  @BelongsToMany(() => Playable, () => PlayablePlaylist)
+  playables: Playable[];
 }
