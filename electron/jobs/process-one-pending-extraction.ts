@@ -3,8 +3,12 @@ import { join } from "path";
 import { Op } from "sequelize";
 import { Worker } from "worker_threads";
 import Extraction from "../../database/models/extraction";
-import Playable from "../../database/models/playable";
-import Playlist from "../../database/models/playlist";
+import Playable, {
+  PlayableCreationAttributes,
+} from "../../database/models/playable";
+import Playlist, {
+  PlaylistCreationAttributes,
+} from "../../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
 
 export default async function processOnePendingExtraction() {
@@ -57,30 +61,46 @@ async function markAsProcessing(extraction: Extraction) {
 
 async function convertRawInfo(rawInfo: RawPlayable | RawPlaylist) {
   if (rawInfo._type === "video") {
-    await Playable.upsert({
-      url: rawInfo.webpage_url,
-      resourceId: rawInfo.id,
-      domain: rawInfo.webpage_url_domain,
-      title: rawInfo.title,
-      duration: rawInfo.duration,
-      description: rawInfo.description,
-      thumbnail: rawInfo.thumbnail,
-      ageLimit: rawInfo.age_limit,
-      uploadDate: rawInfo.upload_date
-        ? dayjs(rawInfo.upload_date).toDate()
-        : undefined,
-    });
+    await Playable.upsert(
+      {
+        url: rawInfo.webpage_url,
+        resourceId: rawInfo.id,
+        domain: rawInfo.webpage_url_domain,
+        title: rawInfo.title,
+        duration: rawInfo.duration,
+        description: rawInfo.description,
+        thumbnail: rawInfo.thumbnail,
+        ageLimit: rawInfo.age_limit,
+        uploadDate: rawInfo.upload_date
+          ? dayjs(rawInfo.upload_date).toDate()
+          : undefined,
+      },
+      {
+        fields: ["duration"],
+        conflictFields: [
+          "resource_id",
+        ] as unknown as (keyof PlayableCreationAttributes)[],
+      },
+    );
   }
 
   if (rawInfo._type === "playlist") {
-    await Playlist.upsert({
-      title: rawInfo.title || rawInfo.id,
-      url: rawInfo.webpage_url,
-      resourceId: rawInfo.id,
-      domain: rawInfo.webpage_url_domain,
-      thumbnail: rawInfo.thumbnails && rawInfo.thumbnails[0]?.url,
-      description: rawInfo.description,
-    });
+    await Playlist.upsert(
+      {
+        title: rawInfo.title || rawInfo.id,
+        url: rawInfo.webpage_url,
+        resourceId: rawInfo.id,
+        domain: rawInfo.webpage_url_domain,
+        thumbnail: rawInfo.thumbnails && rawInfo.thumbnails[0]?.url,
+        description: rawInfo.description,
+      },
+      {
+        fields: [],
+        conflictFields: [
+          "resource_id",
+        ] as unknown as (keyof PlaylistCreationAttributes)[],
+      },
+    );
 
     for (const nestedInfo of rawInfo.entries) {
       await convertRawInfo(nestedInfo);

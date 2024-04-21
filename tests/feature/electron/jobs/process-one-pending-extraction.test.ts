@@ -5,6 +5,7 @@ import processOnePendingExtraction from "@/electron/jobs/process-one-pending-ext
 import dayjs from "dayjs";
 import { resolve } from "path";
 import { Worker } from "worker_threads";
+import { createPlayable, createPlaylist } from "../../setup/create-playable";
 import {
   createRawPlayable,
   createRawPlaylist,
@@ -217,5 +218,64 @@ describe("The job involves processing a pending extraction", () => {
 
     expect(await Playlist.count()).toEqual(1);
     expect(await Playable.count()).toEqual(1);
+  });
+
+  it("does not overwrite the existing playable's title, description, thumbnail, or age limit but duration", async () => {
+    const rawPlayable = createRawPlayable();
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlayable);
+      }),
+    );
+
+    const playable = await createPlayable({
+      resourceId: rawPlayable.id,
+      title: "My title",
+      description: "My description",
+      thumbnail: "https://my-thumbnail.com/foo.jpg",
+      ageLimit: 50,
+      duration: 666,
+    });
+
+    await Extraction.create({ url: videoURL });
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    await playable.reload();
+
+    expect(playable.title).toEqual("My title");
+    expect(playable.description).toEqual("My description");
+    expect(playable.thumbnail).toEqual("https://my-thumbnail.com/foo.jpg");
+    expect(playable.ageLimit).toEqual(50);
+    expect(playable.duration).toEqual(rawPlayable.duration);
+  });
+
+  it("does not overwrite the existing playlist's title, description, or thumbnail", async () => {
+    const rawPlayable = createRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    const playlist = await createPlaylist({
+      resourceId: rawPlaylist.id,
+      title: "My title",
+      description: "My description",
+      thumbnail: "https://my-thumbnail.com/foo.jpg",
+    });
+
+    await Extraction.create({ url: playlistURL });
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    await playlist.reload();
+
+    expect(playlist.title).toEqual("My title");
+    expect(playlist.description).toEqual("My description");
+    expect(playlist.thumbnail).toEqual("https://my-thumbnail.com/foo.jpg");
   });
 });
