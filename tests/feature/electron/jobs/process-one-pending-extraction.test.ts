@@ -153,12 +153,15 @@ describe("The job involves processing a pending extraction", () => {
 
   it("creates multiple playlists based on the nested raw-playlist content", async () => {
     const rawPlayable = createRawPlayable();
-    const nestedRawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
-    const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
+    const childRawPlaylist1 = createRawPlaylist({ entries: [rawPlayable] });
+    const childRawPlaylist2 = createRawPlaylist({ entries: [rawPlayable] });
+    const parentRawPlaylist = createRawPlaylist({
+      entries: [childRawPlaylist1, childRawPlaylist2],
+    });
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
-        if (event === "message") listener(rawPlaylist);
+        if (event === "message") listener(parentRawPlaylist);
       }),
     );
 
@@ -178,8 +181,46 @@ describe("The job involves processing a pending extraction", () => {
     const playlist2 = await Playlist.findOne({ offset: 1 });
 
     expect(playable?.resourceId).toEqual(rawPlayable.id);
-    expect(playlist1?.resourceId).toEqual(rawPlaylist.id);
-    expect(playlist2?.resourceId).toEqual(nestedRawPlaylist.id);
+    expect(playlist1?.resourceId).toEqual(childRawPlaylist1.id);
+    expect(playlist2?.resourceId).toEqual(childRawPlaylist2.id);
+  });
+
+  it("does not create a playlist from the top level of a nested raw-playlist", async () => {
+    const rawPlayable = createRawPlayable();
+    const childRawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const parentPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(parentPlaylist);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL });
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    const playlist = await Playlist.findOne();
+
+    expect(await Playlist.count()).toEqual(1);
+    expect(playlist?.resourceId).toEqual(childRawPlaylist.id);
+  });
+
+  it("does not create a playlist from a raw-playlist with an empty entries property", async () => {
+    const nestedRawPlaylist = createRawPlaylist({ entries: [] });
+    const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL });
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(await Playlist.count()).toEqual(0);
   });
 
   it("does not create a same playable twice", async () => {
