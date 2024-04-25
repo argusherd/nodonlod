@@ -1,4 +1,5 @@
 import Playable from "@/database/models/playable";
+import { faker } from "@faker-js/faker";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
 
 describe("The playable model", () => {
@@ -29,5 +30,23 @@ describe("The playable model", () => {
 
     expect(belongsToMany).toHaveLength(1);
     expect(belongsToMany.at(0)?.id).toEqual(playlist.id);
+  });
+
+  it("treats the url and the resource id columns as a unique pair", async () => {
+    const youtube = faker.internet.url();
+    const spotify = faker.internet.url();
+    const idFoo = faker.string.uuid();
+    const idBar = faker.string.uuid();
+
+    await createPlayable({ url: youtube, resourceId: idFoo });
+    await createPlayable({ url: youtube, resourceId: idBar });
+    await createPlayable({ url: spotify, resourceId: idFoo });
+    await createPlayable({ url: spotify, resourceId: idBar });
+
+    await expect(
+      createPlayable({ url: spotify, resourceId: idFoo }),
+    ).rejects.toThrow();
+
+    expect(await Playable.count()).toEqual(4);
   });
 });
