@@ -123,6 +123,7 @@ describe("The job can convert raw info to playable/playlist", () => {
     const rawPlayable = createRawPlayable();
 
     const playable = await createPlayable({
+      url: rawPlayable.webpage_url,
       resourceId: rawPlayable.id,
       title: "My title",
       description: "My description",
@@ -147,6 +148,7 @@ describe("The job can convert raw info to playable/playlist", () => {
     const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
 
     const playlist = await createPlaylist({
+      url: rawPlaylist.webpage_url,
       resourceId: rawPlaylist.id,
       title: "My title",
       description: "My description",

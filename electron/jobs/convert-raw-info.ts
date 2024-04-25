@@ -1,10 +1,6 @@
 import dayjs from "dayjs";
-import Playable, {
-  PlayableCreationAttributes,
-} from "../../database/models/playable";
-import Playlist, {
-  PlaylistCreationAttributes,
-} from "../../database/models/playlist";
+import Playable from "../../database/models/playable";
+import Playlist from "../../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
 
 export default async function convertRawInfo(
@@ -26,8 +22,19 @@ export default async function convertRawInfo(
 }
 
 async function createPlayable(rawInfo: RawPlayable) {
-  await Playable.upsert(
-    {
+  const playable = await Playable.findOne({
+    where: {
+      url: rawInfo.webpage_url,
+      resourceId: rawInfo.id,
+    },
+  });
+
+  if (playable) {
+    await playable.update({
+      duration: rawInfo.duration,
+    });
+  } else {
+    await Playable.create({
       url: rawInfo.webpage_url,
       resourceId: rawInfo.id,
       domain: rawInfo.webpage_url_domain,
@@ -39,31 +46,26 @@ async function createPlayable(rawInfo: RawPlayable) {
       uploadDate: rawInfo.upload_date
         ? dayjs(rawInfo.upload_date).toDate()
         : undefined,
-    },
-    {
-      fields: ["duration"],
-      conflictFields: [
-        "resource_id",
-      ] as unknown as (keyof PlayableCreationAttributes)[],
-    },
-  );
+    });
+  }
 }
 
 async function createPlaylist(rawInfo: RawPlaylist) {
-  await Playlist.upsert(
-    {
+  const playlist = await Playlist.findOne({
+    where: {
+      url: rawInfo.webpage_url,
+      resourceId: rawInfo.id,
+    },
+  });
+
+  if (!playlist) {
+    await Playlist.create({
       title: rawInfo.title || rawInfo.id,
       url: rawInfo.webpage_url,
       resourceId: rawInfo.id,
       domain: rawInfo.webpage_url_domain,
       thumbnail: rawInfo.thumbnails && rawInfo.thumbnails[0]?.url,
       description: rawInfo.description,
-    },
-    {
-      fields: [],
-      conflictFields: [
-        "resource_id",
-      ] as unknown as (keyof PlaylistCreationAttributes)[],
-    },
-  );
+    });
+  }
 }
