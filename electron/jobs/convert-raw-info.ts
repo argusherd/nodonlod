@@ -8,20 +8,25 @@ export default async function convertRawInfo(
 ) {
   if (rawInfo._type === "video") {
     await createPlayable(rawInfo);
+    return;
   }
 
-  if (rawInfo._type === "playlist") {
-    if (rawInfo.entries.at(0)?._type === "video") {
-      await createPlaylist(rawInfo);
-    }
+  if (rawInfo.entries.at(0)?._type === "video") {
+    const playlist = await createPlaylist(rawInfo);
 
-    for (const nestedInfo of rawInfo.entries) {
-      await convertRawInfo(nestedInfo);
+    const playables = rawInfo.entries.map((rawPlayable) =>
+      createPlayable(rawPlayable as RawPlayable),
+    );
+
+    await playlist.$add("playable", await Promise.all(playables));
+  } else {
+    for (const childRawPlaylist of rawInfo.entries) {
+      await convertRawInfo(childRawPlaylist);
     }
   }
 }
 
-async function createPlayable(rawInfo: RawPlayable) {
+async function createPlayable(rawInfo: RawPlayable): Promise<Playable> {
   const playable = await Playable.findOne({
     where: {
       url: rawInfo.webpage_url,
@@ -30,11 +35,11 @@ async function createPlayable(rawInfo: RawPlayable) {
   });
 
   if (playable) {
-    await playable.update({
+    return await playable.update({
       duration: rawInfo.duration,
     });
   } else {
-    await Playable.create({
+    return await Playable.create({
       url: rawInfo.webpage_url,
       resourceId: rawInfo.id,
       domain: rawInfo.webpage_url_domain,
@@ -50,8 +55,8 @@ async function createPlayable(rawInfo: RawPlayable) {
   }
 }
 
-async function createPlaylist(rawInfo: RawPlaylist) {
-  const playlist = await Playlist.findOne({
+async function createPlaylist(rawInfo: RawPlaylist): Promise<Playlist> {
+  let playlist = await Playlist.findOne({
     where: {
       url: rawInfo.webpage_url,
       resourceId: rawInfo.id,
@@ -59,7 +64,7 @@ async function createPlaylist(rawInfo: RawPlaylist) {
   });
 
   if (!playlist) {
-    await Playlist.create({
+    playlist = await Playlist.create({
       title: rawInfo.title || rawInfo.id,
       url: rawInfo.webpage_url,
       resourceId: rawInfo.id,
@@ -68,4 +73,6 @@ async function createPlaylist(rawInfo: RawPlaylist) {
       description: rawInfo.description,
     });
   }
+
+  return playlist;
 }

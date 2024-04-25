@@ -163,4 +163,18 @@ describe("The job can convert raw info to playable/playlist", () => {
     expect(playlist.description).toEqual("My description");
     expect(playlist.thumbnail).toEqual("https://my-thumbnail.com/foo.jpg");
   });
+
+  it("should establish a relationship between the playlist and playables", async () => {
+    const rawPlayable = createRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+
+    await convertRawInfo(rawPlaylist);
+
+    const playlist = await Playlist.findOne();
+    const playable = await Playable.findOne();
+    const playables = await playlist?.$get("playables");
+
+    expect(playables).toHaveLength(1);
+    expect(playables?.at(0)?.id).toEqual(playable?.id);
+  });
 });
