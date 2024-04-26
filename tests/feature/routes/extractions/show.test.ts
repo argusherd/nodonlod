@@ -78,14 +78,13 @@ describe("The extraction show page", () => {
         expect(res.text).not.toContain(`method="post"`);
       });
 
-    const rawPlayable = createRawPlayable();
-    await extraction.update({ content: JSON.stringify(rawPlayable) });
+    await extraction.update({ content: JSON.stringify(createRawPlayable()) });
 
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
         expect(res.text).toContain(
-          `action="/extractions/${extraction.id}/playables/${rawPlayable.id}"`,
+          `action="/extractions/${extraction.id}/playables"`,
         );
         expect(res.text).toContain(`method="post"`);
       });
