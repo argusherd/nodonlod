@@ -103,9 +103,9 @@ describe("The store a playlist from the extraction route", () => {
     expect(playlist?.title).toEqual(rawPlaylist.id);
   });
 
-  it("only persists the topmost level of the playlist", async () => {
-    const nestedRawPlaylist = createRawPlaylist();
-    const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
+  it("converts the topmost raw-playlist by default", async () => {
+    const childRawPlaylist = createRawPlaylist();
+    const rawPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
 
     const extraction = await Extraction.create({
       url: rawPlaylist.webpage_url,
@@ -120,5 +120,26 @@ describe("The store a playlist from the extraction route", () => {
 
     expect(await Playlist.count()).toEqual(1);
     expect(playlist?.title).toEqual(rawPlaylist.title);
+  });
+
+  it("can convert the child raw-playlist by provided the resource id", async () => {
+    const childRawPlaylist = createRawPlaylist();
+    const rawPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
+
+    const extraction = await Extraction.create({
+      url: rawPlaylist.webpage_url,
+      content: JSON.stringify(rawPlaylist),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/playlists`)
+      .type("form")
+      .send({ resourceId: childRawPlaylist.id })
+      .expect(201);
+
+    const playlist = await Playlist.findOne();
+
+    expect(await Playlist.count()).toEqual(1);
+    expect(playlist?.title).toEqual(childRawPlaylist.title);
   });
 });

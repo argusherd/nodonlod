@@ -69,9 +69,14 @@ router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
 });
 
 router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
-  const rawPlaylist = req.extraction.content;
+  const rawInfo = req.extraction.content;
+  const resourceId = req.body.resourceId;
+  const rawPlaylist =
+    resourceId && rawInfo?._type === "playlist"
+      ? getRawPlaylist(rawInfo, resourceId)
+      : rawInfo;
 
-  if (!rawPlaylist || rawPlaylist._type !== "playlist") {
+  if (!rawInfo || rawInfo._type === "video" || !rawPlaylist) {
     res.sendStatus(404);
     return;
   }
@@ -102,6 +107,22 @@ function getRawPlayable(
     const rawPlayable = getRawPlayable(nestedRawPlaylist, id);
 
     if (rawPlayable) return rawPlayable;
+  }
+
+  return undefined;
+}
+
+function getRawPlaylist(
+  rawPlaylist: RawPlaylist,
+  id: string,
+): RawPlaylist | undefined {
+  if (rawPlaylist.id === id) {
+    return rawPlaylist;
+  }
+  for (const childRawPlaylist of rawPlaylist.entries as RawPlaylist[]) {
+    const rawPlaylist = getRawPlaylist(childRawPlaylist, id);
+
+    if (rawPlaylist) return rawPlaylist;
   }
 
   return undefined;
