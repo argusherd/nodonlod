@@ -51,14 +51,12 @@ router.get("/:extraction", async (req: ExtractionRequest, res) => {
 });
 
 router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
-  const rawInfo = req.extraction.content;
+  const rawPlayable = findRawInfoById(
+    req.extraction.content,
+    req.body.resourceId,
+  );
 
-  const rawPlayable =
-    rawInfo?._type === "playlist"
-      ? getRawPlayable(rawInfo, req.body.resourceId)
-      : rawInfo;
-
-  if (!rawInfo || !rawPlayable) {
+  if (!rawPlayable || rawPlayable._type !== "video") {
     res.sendStatus(404);
     return;
   }
@@ -69,14 +67,12 @@ router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
 });
 
 router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
-  const rawInfo = req.extraction.content;
-  const resourceId = req.body.resourceId;
-  const rawPlaylist =
-    resourceId && rawInfo?._type === "playlist"
-      ? getRawPlaylist(rawInfo, resourceId)
-      : rawInfo;
+  const rawPlaylist = findRawInfoById(
+    req.extraction.content,
+    req.body.resourceId,
+  );
 
-  if (!rawInfo || rawInfo._type === "video" || !rawPlaylist) {
+  if (!rawPlaylist || rawPlaylist._type !== "playlist") {
     res.sendStatus(404);
     return;
   }
@@ -93,39 +89,19 @@ router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
   res.sendStatus(201);
 });
 
-function getRawPlayable(
-  rawPlaylist: RawPlaylist,
-  id: string,
-): RawPlayable | undefined {
-  if (rawPlaylist.entries[0]?._type === "video") {
-    return (rawPlaylist.entries as RawPlayable[]).find(
-      (rawPlayable) => rawPlayable.id === id,
-    );
+function findRawInfoById(
+  rawInfo: RawPlayable | RawPlaylist | null,
+  id?: string,
+): RawPlayable | RawPlaylist | null {
+  if (!rawInfo || !id || rawInfo.id === id) return rawInfo;
+
+  for (const childRawInfo of "entries" in rawInfo ? rawInfo.entries : []) {
+    const targetRawInfo = findRawInfoById(childRawInfo, id);
+
+    if (targetRawInfo) return targetRawInfo;
   }
 
-  for (const nestedRawPlaylist of rawPlaylist.entries as RawPlaylist[]) {
-    const rawPlayable = getRawPlayable(nestedRawPlaylist, id);
-
-    if (rawPlayable) return rawPlayable;
-  }
-
-  return undefined;
-}
-
-function getRawPlaylist(
-  rawPlaylist: RawPlaylist,
-  id: string,
-): RawPlaylist | undefined {
-  if (rawPlaylist.id === id) {
-    return rawPlaylist;
-  }
-  for (const childRawPlaylist of rawPlaylist.entries as RawPlaylist[]) {
-    const rawPlaylist = getRawPlaylist(childRawPlaylist, id);
-
-    if (rawPlaylist) return rawPlaylist;
-  }
-
-  return undefined;
+  return null;
 }
 
 async function createPlayable(
