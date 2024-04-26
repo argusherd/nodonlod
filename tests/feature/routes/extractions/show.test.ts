@@ -73,7 +73,7 @@ describe("The extraction show page", () => {
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
         expect(res.text).not.toContain(
-          `action="/extractions/${extraction.id}/to-playable"`,
+          `action="/extractions/${extraction.id}/playables"`,
         );
         expect(res.text).not.toContain(`method="post"`);
       });
@@ -85,7 +85,7 @@ describe("The extraction show page", () => {
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
         expect(res.text).toContain(
-          `action="/extractions/${extraction.id}/to-playable/${rawPlayable.id}"`,
+          `action="/extractions/${extraction.id}/playables/${rawPlayable.id}"`,
         );
         expect(res.text).toContain(`method="post"`);
       });

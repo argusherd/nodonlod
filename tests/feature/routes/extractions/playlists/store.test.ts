@@ -5,9 +5,9 @@ import supertest from "supertest";
 import {
   createRawPlayable,
   createRawPlaylist,
-} from "../../setup/create-raw-info";
+} from "../../../setup/create-raw-info";
 
-describe("The extraction to a playlist route", () => {
+describe("The store a playlist from the extraction route", () => {
   it("can convert its raw-playlist content to a playlist record in the database", async () => {
     const rawPlaylist = createRawPlaylist();
 
@@ -17,7 +17,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .expect(201);
 
     const playlist = await Playlist.findOne();
@@ -36,7 +36,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .expect(404);
 
     expect(await Playlist.count()).toEqual(0);
@@ -51,7 +51,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .expect(404);
 
     expect(await Playlist.count()).toEqual(0);
@@ -66,7 +66,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .type("form")
       .send({
         title: "New title",
@@ -91,7 +91,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .type("form")
       .send({
         title: "",
@@ -113,7 +113,7 @@ describe("The extraction to a playlist route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playlist`)
+      .post(`/extractions/${extraction.id}/playlists`)
       .expect(201);
 
     const playlist = await Playlist.findOne();

@@ -51,7 +51,7 @@ router.get("/:extraction", async (req: ExtractionRequest, res) => {
 });
 
 router.post(
-  "/:extraction/to-playable/:rawPlayableID?",
+  "/:extraction/playables/:rawPlayableID?",
   async (req: ExtractionRequest, res) => {
     const rawInfo = req.extraction.content;
 
@@ -71,7 +71,7 @@ router.post(
   },
 );
 
-router.post("/:extraction/to-playlist", async (req: ExtractionRequest, res) => {
+router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
   const rawPlaylist = req.extraction.content;
 
   if (!rawPlaylist || rawPlaylist._type !== "playlist") {

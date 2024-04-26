@@ -7,9 +7,9 @@ import supertest from "supertest";
 import {
   createRawPlayable,
   createRawPlaylist,
-} from "../../setup/create-raw-info";
+} from "../../../setup/create-raw-info";
 
-describe("The extraction to a playable route", () => {
+describe("The store a playable from the extraction route", () => {
   it("can convert its raw-playable content to a playable record in the database", async () => {
     const rawPlayable = createRawPlayable();
 
@@ -19,7 +19,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extractoin.id}/to-playable`)
+      .post(`/extractions/${extractoin.id}/playables`)
       .expect(201);
 
     const playable = await Playable.findOne();
@@ -45,7 +45,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extractoin.id}/to-playable`)
+      .post(`/extractions/${extractoin.id}/playables`)
       .expect(404);
 
     expect(await Playable.count()).toEqual(0);
@@ -60,13 +60,13 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playable`)
+      .post(`/extractions/${extraction.id}/playables`)
       .expect(404);
 
     expect(await Playable.count()).toEqual(0);
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playable/${rawPlayable.id}`)
+      .post(`/extractions/${extraction.id}/playables/${rawPlayable.id}`)
       .expect(201);
 
     const playable = await Playable.findOne();
@@ -88,7 +88,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playable/${rawPlayable.id}`)
+      .post(`/extractions/${extraction.id}/playables/${rawPlayable.id}`)
       .expect(201);
 
     const playable = await Playable.findOne();
@@ -106,7 +106,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/to-playable/NOT_EXISTS`)
+      .post(`/extractions/${extraction.id}/playables/NOT_EXISTS`)
       .expect(404);
 
     expect(await Playable.count()).toEqual(0);
@@ -120,7 +120,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extractoin.id}/to-playable`)
+      .post(`/extractions/${extractoin.id}/playables`)
       .type("form")
       .send({
         title: "The new title",
@@ -146,7 +146,7 @@ describe("The extraction to a playable route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extractoin.id}/to-playable`)
+      .post(`/extractions/${extractoin.id}/playables`)
       .type("form")
       .send({
         title: "",
