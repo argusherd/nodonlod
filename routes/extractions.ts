@@ -50,26 +50,23 @@ router.get("/:extraction", async (req: ExtractionRequest, res) => {
   res.render("extractions/show", { extraction });
 });
 
-router.post(
-  "/:extraction/playables/:rawPlayableID?",
-  async (req: ExtractionRequest, res) => {
-    const rawInfo = req.extraction.content;
+router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
+  const rawInfo = req.extraction.content;
 
-    const rawPlayable =
-      rawInfo?._type === "playlist"
-        ? getRawPlayable(rawInfo, String(req.params.rawPlayableID))
-        : rawInfo;
+  const rawPlayable =
+    rawInfo?._type === "playlist"
+      ? getRawPlayable(rawInfo, req.body.resourceId)
+      : rawInfo;
 
-    if (!rawInfo || !rawPlayable) {
-      res.sendStatus(404);
-      return;
-    }
+  if (!rawInfo || !rawPlayable) {
+    res.sendStatus(404);
+    return;
+  }
 
-    await createPlayable(rawPlayable, req.body);
+  await createPlayable(rawPlayable, req.body);
 
-    res.sendStatus(201);
-  },
-);
+  res.sendStatus(201);
+});
 
 router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
   const rawPlaylist = req.extraction.content;

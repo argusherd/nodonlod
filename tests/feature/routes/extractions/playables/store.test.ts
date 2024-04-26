@@ -66,7 +66,11 @@ describe("The store a playable from the extraction route", () => {
     expect(await Playable.count()).toEqual(0);
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/playables/${rawPlayable.id}`)
+      .post(`/extractions/${extraction.id}/playables`)
+      .type("form")
+      .send({
+        resourceId: rawPlayable.id,
+      })
       .expect(201);
 
     const playable = await Playable.findOne();
@@ -88,7 +92,11 @@ describe("The store a playable from the extraction route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/playables/${rawPlayable.id}`)
+      .post(`/extractions/${extraction.id}/playables`)
+      .type("form")
+      .send({
+        resourceId: rawPlayable.id,
+      })
       .expect(201);
 
     const playable = await Playable.findOne();
@@ -106,7 +114,11 @@ describe("The store a playable from the extraction route", () => {
     });
 
     await supertest(express)
-      .post(`/extractions/${extraction.id}/playables/NOT_EXISTS`)
+      .post(`/extractions/${extraction.id}/playables`)
+      .type("form")
+      .send({
+        resourceId: "NOT_EXISTS",
+      })
       .expect(404);
 
     expect(await Playable.count()).toEqual(0);
