@@ -113,18 +113,31 @@ async function createPlayable(
     ageLimit,
   }: Partial<PlayableCreationAttributes>,
 ) {
-  await Playable.create({
-    url: rawPlayable.webpage_url,
-    resourceId: rawPlayable.id,
-    domain: rawPlayable.webpage_url_domain,
+  const playable = await Playable.findOne({
+    where: { url: rawPlayable.webpage_url, resourceId: rawPlayable.id },
+  });
+
+  const overwrite = {
     title: title ?? rawPlayable.title,
     duration: rawPlayable.duration,
     description: description ?? rawPlayable.description,
     thumbnail: thumbnail ?? rawPlayable.thumbnail,
     ageLimit: ageLimit ?? rawPlayable.age_limit,
+  };
+
+  if (playable) {
+    await playable.update(overwrite);
+    return;
+  }
+
+  await Playable.create({
+    url: rawPlayable.webpage_url,
+    resourceId: rawPlayable.id,
+    domain: rawPlayable.webpage_url_domain,
     uploadDate: rawPlayable.upload_date
       ? dayjs(rawPlayable.upload_date).toDate()
       : undefined,
+    ...overwrite,
   });
 }
 

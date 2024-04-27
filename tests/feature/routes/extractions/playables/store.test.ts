@@ -173,4 +173,27 @@ describe("The store a playable from the extraction route", () => {
     expect(playable?.description).toEqual("");
     expect(playable?.thumbnail).toEqual("");
   });
+
+  it("does not create a same playable twince", async () => {
+    const rawPlayable = createRawPlayable();
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .type("form")
+      .send({ title: "New title" })
+      .expect(201);
+
+    const playable = await Playable.findOne();
+
+    expect(await Playable.count()).toEqual(1);
+    expect(playable?.title).toEqual("New title");
+  });
 });
