@@ -21,6 +21,15 @@ export const up: Migration = async ({ context: queryInterface }) => {
       },
       onDelete: "CASCADE",
     },
+    order: {
+      type: DataType.INTEGER,
+    },
+    created_at: {
+      type: DataType.DATE,
+    },
+    updated_at: {
+      type: DataType.DATE,
+    },
   });
 };
 
