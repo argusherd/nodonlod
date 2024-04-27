@@ -5,7 +5,9 @@ import Extraction from "../database/models/extraction";
 import Playable, {
   PlayableCreationAttributes,
 } from "../database/models/playable";
-import Playlist from "../database/models/playlist";
+import Playlist, {
+  PlaylistCreationAttributes,
+} from "../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../src/raw-info-extractor";
 
 interface ExtractionRequest extends Request {
@@ -77,14 +79,7 @@ router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
     return;
   }
 
-  const { title, thumbnail, description } = req.body;
-
-  await Playlist.create({
-    title: title || rawPlaylist.title || rawPlaylist.id,
-    url: rawPlaylist.webpage_url,
-    thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
-    description: description ?? rawPlaylist.description,
-  });
+  await createPlaylist(rawPlaylist, req.body);
 
   res.sendStatus(201);
 });
@@ -137,6 +132,33 @@ async function createPlayable(
     uploadDate: rawPlayable.upload_date
       ? dayjs(rawPlayable.upload_date).toDate()
       : undefined,
+    ...overwrite,
+  });
+}
+
+async function createPlaylist(
+  rawPlaylist: RawPlaylist,
+  { title, thumbnail, description }: Partial<PlaylistCreationAttributes>,
+) {
+  const playlist = await Playlist.findOne({
+    where: { url: rawPlaylist.webpage_url, resourceId: rawPlaylist.id },
+  });
+
+  const overwrite = {
+    title: title || rawPlaylist.title || rawPlaylist.id,
+    thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
+    description: description ?? rawPlaylist.description,
+  };
+
+  if (playlist) {
+    await playlist.update(overwrite);
+    return;
+  }
+
+  await Playlist.create({
+    url: rawPlaylist.webpage_url,
+    resourceId: rawPlaylist.id,
+    domain: rawPlaylist.webpage_url_domain,
     ...overwrite,
   });
 }

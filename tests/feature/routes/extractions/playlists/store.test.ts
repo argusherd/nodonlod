@@ -25,6 +25,8 @@ describe("The store a playlist from the extraction route", () => {
     expect(await Playlist.count()).toEqual(1);
     expect(playlist?.title).toEqual(rawPlaylist.title);
     expect(playlist?.url).toEqual(rawPlaylist.webpage_url);
+    expect(playlist?.resourceId).toEqual(rawPlaylist.id);
+    expect(playlist?.domain).toEqual(rawPlaylist.webpage_url_domain);
     expect(playlist?.thumbnail).toEqual(rawPlaylist.thumbnails?.at(0)?.url);
     expect(playlist?.description).toEqual(rawPlaylist.description);
   });
@@ -141,5 +143,28 @@ describe("The store a playlist from the extraction route", () => {
 
     expect(await Playlist.count()).toEqual(1);
     expect(playlist?.title).toEqual(childRawPlaylist.title);
+  });
+
+  it("does not create a same playlist twice", async () => {
+    const rawPlaylist = createRawPlaylist();
+    const extraction = await Extraction.create({
+      url: rawPlaylist.webpage_url,
+      content: JSON.stringify(rawPlaylist),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/playlists`)
+      .expect(201);
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/playlists`)
+      .type("form")
+      .send({ title: "New title" })
+      .expect(201);
+
+    const playlist = await Playlist.findOne();
+
+    expect(await Playlist.count()).toEqual(1);
+    expect(playlist?.title).toEqual("New title");
   });
 });
