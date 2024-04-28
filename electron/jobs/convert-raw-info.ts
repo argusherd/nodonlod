@@ -1,5 +1,6 @@
 import dayjs from "dayjs";
 import Playable from "../../database/models/playable";
+import PlayablePlaylist from "../../database/models/playable-playlist";
 import Playlist from "../../database/models/playlist";
 import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
 
@@ -14,11 +15,13 @@ export default async function convertRawInfo(
   if (rawInfo.entries.at(0)?._type === "video") {
     const playlist = await createPlaylist(rawInfo);
 
-    const playables = rawInfo.entries.map((rawPlayable) =>
-      createPlayable(rawPlayable as RawPlayable),
+    const playables = await Promise.all(
+      rawInfo.entries.map((rawPlayable) =>
+        createPlayable(rawPlayable as RawPlayable),
+      ),
     );
 
-    await playlist.$add("playable", await Promise.all(playables));
+    await createAssociation(playlist, playables, rawInfo.requested_entries);
   } else {
     for (const childRawPlaylist of rawInfo.entries) {
       await convertRawInfo(childRawPlaylist);
@@ -75,4 +78,22 @@ async function createPlaylist(rawInfo: RawPlaylist): Promise<Playlist> {
   }
 
   return playlist;
+}
+
+async function createAssociation(
+  playlist: Playlist,
+  playables: Playable[],
+  orders: number[] = [],
+) {
+  await PlayablePlaylist.bulkCreate(
+    playables.map((playable, idx) => ({
+      playableId: playable.id,
+      playlistId: playlist.id,
+      order: orders.at(idx),
+    })),
+    {
+      conflictAttributes: ["playableId", "playlistId"],
+      updateOnDuplicate: ["order", "updatedAt"],
+    },
+  );
 }

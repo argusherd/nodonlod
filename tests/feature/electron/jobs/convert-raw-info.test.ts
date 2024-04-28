@@ -177,4 +177,27 @@ describe("The job can convert raw info to playable/playlist", () => {
     expect(playables).toHaveLength(1);
     expect(playables?.at(0)?.id).toEqual(playable?.id);
   });
+
+  it("preserves the order of the playables when extracting from the raw-playlist", async () => {
+    const rawPlayable1 = createRawPlayable();
+    const rawPlayable2 = createRawPlayable();
+    const rawPlaylist = createRawPlaylist({
+      entries: [rawPlayable1, rawPlayable2],
+      requested_entries: [20, 21],
+    });
+
+    await convertRawInfo(rawPlaylist);
+
+    const playable1 = await Playable.findOne({
+      include: [{ model: Playlist }],
+    });
+
+    const playable2 = await Playable.findOne({
+      offset: 1,
+      include: [{ model: Playlist }],
+    });
+
+    expect(playable1?.playlists.at(0)?.PlayablePlaylist.order).toEqual(20);
+    expect(playable2?.playlists.at(0)?.PlayablePlaylist.order).toEqual(21);
+  });
 });

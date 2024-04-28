@@ -50,6 +50,7 @@ export interface RawPlaylist {
   description?: string;
   entries: RawPlayable[] | RawPlaylist[];
   id: string;
+  requested_entries?: number[];
   thumbnails?: thumbnails;
   title?: string;
   webpage_url: string;

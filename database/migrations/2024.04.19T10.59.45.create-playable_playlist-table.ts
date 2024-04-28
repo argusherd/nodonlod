@@ -2,35 +2,47 @@ import { DataType } from "sequelize-typescript";
 import { Migration } from "../migrator";
 
 export const up: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.createTable("playable_playlist", {
-    playable_id: {
-      type: DataType.UUID,
-      allowNull: false,
-      references: {
-        key: "id",
-        model: "playables",
+  await queryInterface.createTable(
+    "playable_playlist",
+    {
+      playable_id: {
+        type: DataType.UUID,
+        unique: "unique_playable_id_playlist_id",
+        allowNull: false,
+        references: {
+          key: "id",
+          model: "playables",
+        },
+        onDelete: "CASCADE",
       },
-      onDelete: "CASCADE",
-    },
-    playlist_id: {
-      type: DataType.UUID,
-      allowNull: false,
-      references: {
-        key: "id",
-        model: "playlists",
+      playlist_id: {
+        type: DataType.UUID,
+        unique: "unique_playable_id_playlist_id",
+        allowNull: false,
+        references: {
+          key: "id",
+          model: "playlists",
+        },
+        onDelete: "CASCADE",
       },
-      onDelete: "CASCADE",
+      order: {
+        type: DataType.INTEGER,
+      },
+      created_at: {
+        type: DataType.DATE,
+      },
+      updated_at: {
+        type: DataType.DATE,
+      },
     },
-    order: {
-      type: DataType.INTEGER,
+    {
+      uniqueKeys: {
+        unique_playable_id_playlist_id: {
+          fields: ["playable_id", "playlist_id"],
+        },
+      },
     },
-    created_at: {
-      type: DataType.DATE,
-    },
-    updated_at: {
-      type: DataType.DATE,
-    },
-  });
+  );
 };
 
 export const down: Migration = async ({ context: queryInterface }) => {

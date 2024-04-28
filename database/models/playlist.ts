@@ -76,5 +76,5 @@ export default class Playlist extends Model<
   updatedAt: Date;
 
   @BelongsToMany(() => Playable, () => PlayablePlaylist)
-  playables: Playable[];
+  playables: Array<Playable & { PlayablePlaylist: PlayablePlaylist }>;
 }
