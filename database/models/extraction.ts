@@ -18,6 +18,8 @@ interface OptionalExtractionCreationAttributes {
   content: string | null;
   error: string | null;
   isProcessing: boolean;
+  isContinuous: boolean;
+  page: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -66,6 +68,14 @@ export default class Extraction extends Model<
   @Default(false)
   @Column
   isProcessing: boolean;
+
+  @Default(false)
+  @Column
+  isContinuous: boolean;
+
+  @Default(1)
+  @Column
+  page: number;
 
   @CreatedAt
   createdAt: Date;

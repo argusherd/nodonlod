@@ -25,6 +25,14 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataType.BOOLEAN,
       defaultValue: false,
     },
+    is_continuous: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
+    page: {
+      type: DataType.INTEGER,
+      defaultValue: 1,
+    },
     created_at: {
       type: DataType.DATE,
     },

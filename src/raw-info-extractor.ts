@@ -4,12 +4,18 @@ import { isMainThread, parentPort, workerData } from "worker_threads";
 
 const ytdlpPath = join(process.cwd(), "/bin/yt-dlp");
 
-export default async function extractRawInfoFrom(
-  url: string,
-): Promise<RawPlayable | RawPlaylist> {
+export default async function extractRawInfoFrom({
+  url,
+  startAt = 1,
+  stopAt = 10,
+}: {
+  url: string;
+  startAt: number;
+  stopAt: number;
+}): Promise<RawPlayable | RawPlaylist> {
   const response = spawnSync(
     ytdlpPath,
-    [url, "-J", "-I", ":10", "--no-warnings"],
+    [url, "-J", "-I", `${startAt}:${stopAt}`, "--no-warnings"],
     { maxBuffer: 1024 * 1024 * 10 },
   );
 

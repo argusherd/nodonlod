@@ -3,13 +3,18 @@ import convertRawInfo from "@/electron/jobs/convert-raw-info";
 import processOnePendingExtraction from "@/electron/jobs/process-one-pending-extraction";
 import { resolve } from "path";
 import { Worker } from "worker_threads";
-import { createRawPlayable } from "../../setup/create-raw-info";
+import {
+  createRawPlayable,
+  createRawPlaylist,
+} from "../../setup/create-raw-info";
 
 jest.mock("worker_threads");
 jest.mock("@/electron/jobs/convert-raw-info", () => jest.fn());
 
 describe("The job involves processing a pending extraction", () => {
   const videoURL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  const playlistURL =
+    "https://www.youtube.com/playlist?list=OLAK5uy_l4pFyLY9N1YSGpxT0EEq8Whc8OyhpWsm8";
 
   it("skips the current job if there is still an extraction process in progress", async () => {
     await Extraction.create({ url: videoURL, isProcessing: true });
@@ -19,13 +24,17 @@ describe("The job involves processing a pending extraction", () => {
     expect(Worker).not.toHaveBeenCalled();
   });
 
-  it("passes a script path and an URL to the worker", async () => {
+  it("passes a script path and workerData to the worker", async () => {
     await Extraction.create({ url: videoURL });
 
     await processOnePendingExtraction();
 
     expect(Worker).toHaveBeenCalledWith(resolve("src/raw-info-extractor"), {
-      workerData: videoURL,
+      workerData: {
+        url: videoURL,
+        startAt: 1,
+        stopAt: 10,
+      },
     });
   });
 
@@ -96,5 +105,116 @@ describe("The job involves processing a pending extraction", () => {
     await processOnePendingExtraction();
 
     expect(convertRawInfo).toHaveBeenCalledWith(rawInfo);
+  });
+
+  it("dispatches another job if it's a continuous extraction", async () => {
+    const rawPlayable = createRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      isContinuous: true,
+    });
+
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(await Extraction.count()).toEqual(2);
+
+    const newExtraction = await Extraction.findOne({ offset: 1 });
+
+    expect(newExtraction?.url).toEqual(extraction.url);
+    expect(newExtraction?.isContinuous).toBeTruthy();
+    expect(newExtraction?.id).not.toEqual(extraction.id);
+  });
+
+  it("increases the page number by 1 based on the extraction when dispatching a new job", async () => {
+    const rawPlayable = createRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    await Extraction.create({
+      url: playlistURL,
+      isContinuous: true,
+      page: 5,
+    });
+
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(Worker).toHaveBeenCalledWith(resolve("src/raw-info-extractor"), {
+      workerData: {
+        url: playlistURL,
+        startAt: 41,
+        stopAt: 50,
+      },
+    });
+
+    const newExtraction = await Extraction.findOne({ offset: 1 });
+
+    expect(newExtraction?.page).toEqual(6);
+  });
+
+  it("only dispatches a new extraction when the raw-playlist entries property is not empty", async () => {
+    const rawPlaylist = createRawPlaylist();
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL, isContinuous: true });
+
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(await Extraction.count()).toEqual(1);
+  });
+
+  it("only dispatches a new extraction when the child raw-playlist entries are not empty", async () => {
+    const childRawPlaylist = createRawPlaylist();
+    const rawPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlaylist);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL, isContinuous: true });
+
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(await Extraction.count()).toEqual(1);
+  });
+
+  it("does not dispatch a new extraction based on a raw-playable content", async () => {
+    const rawPlayable = createRawPlayable();
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlayable);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL, isContinuous: true });
+
+    await processOnePendingExtraction();
+    await new Promise(process.nextTick);
+
+    expect(await Extraction.count()).toEqual(1);
   });
 });

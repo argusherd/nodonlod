@@ -14,8 +14,12 @@ export default async function processOnePendingExtraction() {
 
   await markAsProcessing(extraction);
 
+  const perPage = 10;
+  const startAt = (extraction.page - 1) * perPage + 1;
+  const stopAt = extraction.page * perPage;
+
   const worker = new Worker(join(__dirname, "../../src/raw-info-extractor"), {
-    workerData: extraction.url,
+    workerData: { url: extraction.url, startAt, stopAt },
   });
 
   worker.on("message", async (rawInfo: RawPlayable | RawPlaylist) => {
@@ -25,6 +29,10 @@ export default async function processOnePendingExtraction() {
       isProcessing: false,
       content: JSON.stringify(rawInfo),
     });
+
+    if (extraction.isContinuous && stillHasVideos(rawInfo)) {
+      await dispatchAnotherOne(extraction);
+    }
   });
 
   worker.on("error", async (error) => {
@@ -51,4 +59,24 @@ async function findUnprocessed() {
 
 async function markAsProcessing(extraction: Extraction) {
   await extraction.update({ isProcessing: true });
+}
+
+async function dispatchAnotherOne(extraction: Extraction) {
+  await Extraction.create({
+    url: extraction.url,
+    isContinuous: true,
+    page: extraction.page + 1,
+  });
+}
+
+function stillHasVideos(rawInfo: RawPlayable | RawPlaylist): boolean {
+  if (rawInfo._type === "video") return false;
+
+  if (rawInfo.entries.at(0)?._type === "video") return true;
+
+  for (const childRawPlaylist of rawInfo.entries) {
+    if (stillHasVideos(childRawPlaylist)) return true;
+  }
+
+  return false;
 }
