@@ -12,9 +12,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataType.STRING,
       allowNull: false,
     },
-    resource_id: {
-      type: DataType.STRING,
-    },
     content: {
       type: DataType.TEXT,
     },

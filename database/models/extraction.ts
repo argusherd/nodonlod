@@ -14,7 +14,6 @@ import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
 
 interface OptionalExtractionCreationAttributes {
   id: number;
-  resourceId: string;
   content: string | null;
   error: string | null;
   isProcessing: boolean;
@@ -47,9 +46,6 @@ export default class Extraction extends Model<
   @AllowNull(false)
   @Column
   url: string;
-
-  @Column
-  resourceId: string;
 
   @Column
   get content(): RawPlayable | RawPlaylist | null {
