@@ -3,6 +3,8 @@ extends ../_layout.pug
 block body
   form(action="/extractions", method="post")
     input(type="url", name="url", required)
+    input(type="checkbox", name="isContinuous")
+    input(type="number", name="page")
     button(type="submit") Extract
 
   each extraction in extractions

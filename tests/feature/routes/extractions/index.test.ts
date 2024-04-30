@@ -9,6 +9,8 @@ describe("The extraction index page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(`action="/extractions"`);
+        expect(res.text).toContain(`name="isContinuous"`);
+        expect(res.text).toContain(`name="page"`);
       });
   });
 

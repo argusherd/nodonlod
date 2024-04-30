@@ -33,18 +33,27 @@ router.get("/", async (_req, res) => {
   });
 });
 
-router.post("/", body("url").notEmpty(), async (req, res) => {
-  const errors = validationResult(req);
+router.post(
+  "/",
+  body("url").notEmpty(),
+  body("page").isNumeric().optional({ values: "falsy" }),
+  async (req, res) => {
+    const errors = validationResult(req);
 
-  if (!errors.isEmpty()) {
-    res.sendStatus(422);
-    return;
-  }
+    if (!errors.isEmpty()) {
+      res.sendStatus(422);
+      return;
+    }
 
-  await Extraction.create({ url: req.body.url });
+    await Extraction.create({
+      url: req.body.url,
+      isContinuous: Boolean(req.body.isContinuous),
+      page: req.body.page || undefined,
+    });
 
-  res.set("HX-Location", "/extractions").sendStatus(201);
-});
+    res.set("HX-Location", "/extractions").sendStatus(201);
+  },
+);
 
 router.get("/:extraction", async (req: ExtractionRequest, res) => {
   const extraction = req.extraction;
