@@ -1,4 +1,8 @@
-import { RawPlayable, RawPlaylist } from "@/src/raw-info-extractor";
+import {
+  RawPlayable,
+  RawPlaylist,
+  SubRawPlayable,
+} from "@/src/raw-info-extractor";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
@@ -28,6 +32,14 @@ export const createRawPlayable = (
 
   ...overwrite,
 });
+
+export const createSubRawPlayable = (
+  overwrite: Partial<SubRawPlayable> = {},
+): SubRawPlayable => {
+  const { _type: _, ...rest } = createRawPlayable(overwrite);
+
+  return rest;
+};
 
 export const createRawPlaylist = (
   overwrite: Partial<RawPlaylist> = {},

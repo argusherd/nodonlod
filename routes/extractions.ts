@@ -8,7 +8,11 @@ import Playable, {
 import Playlist, {
   PlaylistCreationAttributes,
 } from "../database/models/playlist";
-import { RawPlayable, RawPlaylist } from "../src/raw-info-extractor";
+import {
+  RawPlayable,
+  RawPlaylist,
+  SubRawPlayable,
+} from "../src/raw-info-extractor";
 
 interface ExtractionRequest extends Request {
   extraction: Extraction;
@@ -67,7 +71,10 @@ router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
     req.body.resourceId,
   );
 
-  if (!rawPlayable || rawPlayable._type !== "video") {
+  if (
+    !rawPlayable ||
+    ("_type" in rawPlayable && rawPlayable._type === "playlist")
+  ) {
     res.sendStatus(404);
     return;
   }
@@ -83,7 +90,11 @@ router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
     req.body.resourceId,
   );
 
-  if (!rawPlaylist || rawPlaylist._type !== "playlist") {
+  if (
+    !rawPlaylist ||
+    "_type" in rawPlaylist === false ||
+    rawPlaylist._type === "video"
+  ) {
     res.sendStatus(404);
     return;
   }
@@ -94,9 +105,9 @@ router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
 });
 
 function findRawInfoById(
-  rawInfo: RawPlayable | RawPlaylist | null,
+  rawInfo: RawPlayable | RawPlaylist | SubRawPlayable | null,
   id?: string,
-): RawPlayable | RawPlaylist | null {
+): RawPlayable | RawPlaylist | SubRawPlayable | null {
   if (!rawInfo || !id || rawInfo.id === id) return rawInfo;
 
   for (const childRawInfo of "entries" in rawInfo ? rawInfo.entries : []) {
@@ -109,7 +120,7 @@ function findRawInfoById(
 }
 
 async function createPlayable(
-  rawPlayable: RawPlayable,
+  rawPlayable: RawPlayable | SubRawPlayable,
   {
     title,
     description,

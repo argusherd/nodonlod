@@ -2,7 +2,11 @@ import dayjs from "dayjs";
 import Playable from "../../database/models/playable";
 import PlayablePlaylist from "../../database/models/playable-playlist";
 import Playlist from "../../database/models/playlist";
-import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
+import {
+  RawPlayable,
+  RawPlaylist,
+  SubRawPlayable,
+} from "../../src/raw-info-extractor";
 
 export default async function convertRawInfo(
   rawInfo: RawPlayable | RawPlaylist,
@@ -12,24 +16,32 @@ export default async function convertRawInfo(
     return;
   }
 
-  if (rawInfo.entries.at(0)?._type === "video") {
-    const playlist = await createPlaylist(rawInfo);
+  const firstItem = rawInfo.entries.at(0);
 
-    const playables = await Promise.all(
-      rawInfo.entries.map((rawPlayable) =>
-        createPlayable(rawPlayable as RawPlayable),
-      ),
-    );
+  if (!firstItem) return;
 
-    await createAssociation(playlist, playables, rawInfo.requested_entries);
-  } else {
+  if ("_type" in firstItem) {
     for (const childRawPlaylist of rawInfo.entries) {
-      await convertRawInfo(childRawPlaylist);
+      await convertRawInfo(childRawPlaylist as RawPlaylist);
     }
+
+    return;
   }
+
+  const playlist = await createPlaylist(rawInfo);
+
+  const playables = await Promise.all(
+    rawInfo.entries.map((subRawPlayable) =>
+      createPlayable(subRawPlayable as SubRawPlayable),
+    ),
+  );
+
+  await createAssociation(playlist, playables, rawInfo.requested_entries);
 }
 
-async function createPlayable(rawInfo: RawPlayable): Promise<Playable> {
+async function createPlayable(
+  rawInfo: RawPlayable | SubRawPlayable,
+): Promise<Playable> {
   const playable = await Playable.findOne({
     where: {
       url: rawInfo.webpage_url,

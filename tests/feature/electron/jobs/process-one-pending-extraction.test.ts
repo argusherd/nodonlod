@@ -6,6 +6,7 @@ import { Worker } from "worker_threads";
 import {
   createRawPlayable,
   createRawPlaylist,
+  createSubRawPlayable,
 } from "../../setup/create-raw-info";
 
 jest.mock("worker_threads");
@@ -108,8 +109,8 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("dispatches another job if it's a continuous extraction", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
@@ -135,8 +136,8 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("increases the page number by 1 based on the extraction when dispatching a new job", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {

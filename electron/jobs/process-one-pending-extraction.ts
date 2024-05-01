@@ -30,7 +30,7 @@ export default async function processOnePendingExtraction() {
       content: JSON.stringify(rawInfo),
     });
 
-    if (extraction.isContinuous && stillHasVideos(rawInfo)) {
+    if (extraction.isContinuous && stillHasItems(rawInfo)) {
       await dispatchAnotherOne(extraction);
     }
   });
@@ -69,13 +69,17 @@ async function dispatchAnotherOne(extraction: Extraction) {
   });
 }
 
-function stillHasVideos(rawInfo: RawPlayable | RawPlaylist): boolean {
+function stillHasItems(rawInfo: RawPlayable | RawPlaylist): boolean {
   if (rawInfo._type === "video") return false;
 
-  if (rawInfo.entries.at(0)?._type === "video") return true;
+  const firstItem = rawInfo.entries.at(0);
+
+  if (!firstItem) return false;
+
+  if ("_type" in firstItem === false) return true;
 
   for (const childRawPlaylist of rawInfo.entries) {
-    if (stillHasVideos(childRawPlaylist)) return true;
+    if (stillHasItems(childRawPlaylist as RawPlaylist)) return true;
   }
 
   return false;

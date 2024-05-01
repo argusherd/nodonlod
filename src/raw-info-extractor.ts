@@ -51,10 +51,12 @@ export interface RawPlayable {
   webpage_url_domain: string;
 }
 
+export interface SubRawPlayable extends Omit<RawPlayable, "_type"> {}
+
 export interface RawPlaylist {
   _type: "playlist";
   description?: string;
-  entries: RawPlayable[] | RawPlaylist[];
+  entries: SubRawPlayable[] | RawPlaylist[];
   id: string;
   requested_entries?: number[];
   thumbnails?: thumbnails;

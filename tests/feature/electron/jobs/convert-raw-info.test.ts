@@ -6,6 +6,7 @@ import { createPlayable, createPlaylist } from "../../setup/create-playable";
 import {
   createRawPlayable,
   createRawPlaylist,
+  createSubRawPlayable,
 } from "../../setup/create-raw-info";
 
 describe("The job can convert raw info to playable/playlist", () => {
@@ -32,8 +33,8 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("creates a playlist and relatived playables based on the raw-playlist content", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     await convertRawInfo(rawPlaylist);
 
@@ -43,7 +44,7 @@ describe("The job can convert raw info to playable/playlist", () => {
     const playable = await Playable.findOne();
     const playlist = await Playlist.findOne();
 
-    expect(playable?.resourceId).toEqual(rawPlayable.id);
+    expect(playable?.resourceId).toEqual(subRawPlayable.id);
 
     expect(playlist?.title).toEqual(rawPlaylist.title);
     expect(playlist?.url).toEqual(rawPlaylist.webpage_url);
@@ -56,9 +57,9 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("creates multiple playlists based on the nested raw-playlist content", async () => {
-    const rawPlayable = createRawPlayable();
-    const childRawPlaylist1 = createRawPlaylist({ entries: [rawPlayable] });
-    const childRawPlaylist2 = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const childRawPlaylist1 = createRawPlaylist({ entries: [subRawPlayable] });
+    const childRawPlaylist2 = createRawPlaylist({ entries: [subRawPlayable] });
     const parentRawPlaylist = createRawPlaylist({
       entries: [childRawPlaylist1, childRawPlaylist2],
     });
@@ -72,14 +73,14 @@ describe("The job can convert raw info to playable/playlist", () => {
     const playlist1 = await Playlist.findOne();
     const playlist2 = await Playlist.findOne({ offset: 1 });
 
-    expect(playable?.resourceId).toEqual(rawPlayable.id);
+    expect(playable?.resourceId).toEqual(subRawPlayable.id);
     expect(playlist1?.resourceId).toEqual(childRawPlaylist1.id);
     expect(playlist2?.resourceId).toEqual(childRawPlaylist2.id);
   });
 
   it("does not create a playlist from the top level of a nested raw-playlist", async () => {
-    const rawPlayable = createRawPlayable();
-    const childRawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const childRawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
     const parentPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
 
     await convertRawInfo(parentPlaylist);
@@ -109,8 +110,8 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("does not create a same playlist twice", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     await convertRawInfo(rawPlaylist);
     await convertRawInfo(rawPlaylist);
@@ -144,8 +145,8 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("does not overwrite the existing playlist's title, description, or thumbnail", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     const playlist = await createPlaylist({
       url: rawPlaylist.webpage_url,
@@ -165,8 +166,8 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("should establish a relationship between the playlist and playables", async () => {
-    const rawPlayable = createRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const subRawPlayable = createSubRawPlayable();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
 
     await convertRawInfo(rawPlaylist);
 
@@ -179,10 +180,10 @@ describe("The job can convert raw info to playable/playlist", () => {
   });
 
   it("preserves the order of the playables when extracting from the raw-playlist", async () => {
-    const rawPlayable1 = createRawPlayable();
-    const rawPlayable2 = createRawPlayable();
+    const subRawPlayable1 = createSubRawPlayable();
+    const subRawPlayable2 = createSubRawPlayable();
     const rawPlaylist = createRawPlaylist({
-      entries: [rawPlayable1, rawPlayable2],
+      entries: [subRawPlayable1, subRawPlayable2],
       requested_entries: [20, 21],
     });
 
