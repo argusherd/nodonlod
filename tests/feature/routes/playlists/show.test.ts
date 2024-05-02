@@ -35,4 +35,24 @@ describe("The playlist show page", () => {
         expect(res.text).toContain(`/playables/${playable2.id}`);
       });
   });
+
+  it("lists all related playables based on their ordering value", async () => {
+    const playlist = await createPlaylist();
+    const playable1 = await createPlayable();
+    const playable2 = await createPlayable();
+
+    await playlist.$add("playable", playable1, { through: { order: 50 } });
+    await playlist.$add("playable", playable2, { through: { order: 49 } });
+
+    const secondGoFirst = new RegExp(
+      `.*${playable2.title}.*${playable1.title}.*`,
+    );
+
+    await supertest(express)
+      .get(`/playlists/${playlist.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text.match(secondGoFirst)).not.toBeNull();
+      });
+  });
 });

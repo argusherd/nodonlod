@@ -1,4 +1,5 @@
 import { Request, Router } from "express";
+import { Sequelize } from "sequelize";
 import Playlist from "../database/models/playlist";
 
 interface PlaylistRequest extends Request {
@@ -27,7 +28,9 @@ router.get("/", async (_req, res) => {
 router.get("/:playlist", async (req: PlaylistRequest, res) => {
   res.render("playlists/show.pug", {
     playlist: req.playlist,
-    playables: await req.playlist.$get("playables"),
+    playables: await req.playlist.$get("playables", {
+      order: [[Sequelize.literal("`PlayablePlaylist.order`"), "ASC"]],
+    }),
   });
 });
 
