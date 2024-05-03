@@ -18,6 +18,7 @@ interface OptionalExtractionCreationAttributes {
   error: string | null;
   isProcessing: boolean;
   isContinuous: boolean;
+  isConvertible: boolean;
   page: number;
   createdAt: Date;
   updatedAt: Date;
@@ -68,6 +69,10 @@ export default class Extraction extends Model<
   @Default(false)
   @Column
   isContinuous: boolean;
+
+  @Default(true)
+  @Column
+  isConvertible: boolean;
 
   @Default(1)
   @Column

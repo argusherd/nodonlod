@@ -78,4 +78,24 @@ describe("The extraction store route", () => {
 
     expect(extraction?.page).toEqual(1);
   });
+
+  it("can create an extraction that does not convert the raw info content into playables/playlists", async () => {
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: videoURL, isConvertible: 1 })
+      .expect(201);
+
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: videoURL, isConvertible: undefined })
+      .expect(201);
+
+    const isConvertible = await Extraction.findOne();
+    const isNotConvertible = await Extraction.findOne({ offset: 1 });
+
+    expect(isConvertible?.isConvertible).toBeTruthy();
+    expect(isNotConvertible?.isConvertible).toBeFalsy();
+  });
 });

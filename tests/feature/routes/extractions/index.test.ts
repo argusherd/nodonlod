@@ -10,6 +10,7 @@ describe("The extraction index page", () => {
       .expect((res) => {
         expect(res.text).toContain(`action="/extractions"`);
         expect(res.text).toContain(`name="isContinuous"`);
+        expect(res.text).toContain(`name="isConvertible"`);
         expect(res.text).toContain(`name="page"`);
       });
   });

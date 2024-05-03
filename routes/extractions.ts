@@ -52,6 +52,7 @@ router.post(
     await Extraction.create({
       url: req.body.url,
       isContinuous: Boolean(req.body.isContinuous),
+      isConvertible: Boolean(req.body.isConvertible),
       page: req.body.page || undefined,
     });
 

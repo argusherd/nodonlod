@@ -26,6 +26,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataType.BOOLEAN,
       defaultValue: false,
     },
+    is_convertible: {
+      type: DataType.BOOLEAN,
+      defaultValue: true,
+    },
     page: {
       type: DataType.INTEGER,
       defaultValue: 1,

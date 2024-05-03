@@ -3,7 +3,10 @@ extends ../_layout.pug
 block body
   form(action="/extractions", method="post")
     input(type="url", name="url", required)
-    input(type="checkbox", name="isContinuous")
+    label(for="isContinuous") isContinuous
+    input#isContinuous(type="checkbox", name="isContinuous")
+    label(for="isConvertible") isConvertible
+    input#isConvertible(type="checkbox", name="isConvertible", checked)
     input(type="number", name="page")
     button(type="submit") Extract
 

@@ -23,7 +23,7 @@ export default async function processOnePendingExtraction() {
   });
 
   worker.on("message", async (rawInfo: RawPlayable | RawPlaylist) => {
-    await convertRawInfo(rawInfo);
+    if (extraction.isConvertible) await convertRawInfo(rawInfo);
 
     await extraction.update({
       isProcessing: false,

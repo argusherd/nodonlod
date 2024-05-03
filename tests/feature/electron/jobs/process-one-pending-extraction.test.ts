@@ -218,4 +218,19 @@ describe("The job involves processing a pending extraction", () => {
 
     expect(await Extraction.count()).toEqual(1);
   });
+
+  it("can disable the raw info to playables/playlists conversion", async () => {
+    const rawPlayable = createRawPlayable();
+
+    jest.mocked(Worker.prototype).on.mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "message") listener(rawPlayable);
+      }),
+    );
+
+    await Extraction.create({ url: playlistURL, isConvertible: false });
+    await processOnePendingExtraction();
+
+    expect(convertRawInfo).not.toHaveBeenCalled();
+  });
 });
