@@ -9,6 +9,14 @@ export const up: Migration = async ({ context: queryInterface }) => {
         type: DataType.UUID,
         primaryKey: true,
       },
+      uploader_id: {
+        type: DataType.UUID,
+        references: {
+          key: "id",
+          model: "uploaders",
+        },
+        onDelete: "SET NULL",
+      },
       url: {
         type: DataType.TEXT,
         allowNull: false,

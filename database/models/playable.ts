@@ -2,11 +2,13 @@ import dayjs from "dayjs";
 import { Optional } from "sequelize";
 import {
   AllowNull,
+  BelongsTo,
   BelongsToMany,
   Column,
   CreatedAt,
   DataType,
   Default,
+  ForeignKey,
   IsDate,
   IsUUID,
   Model,
@@ -17,9 +19,11 @@ import {
 } from "sequelize-typescript";
 import PlayablePlaylist from "./playable-playlist";
 import Playlist from "./playlist";
+import Uploader from "./uploader";
 
 interface OptionalPlayableCreationAttributes {
   id: string;
+  uploaderId: string;
   description: string;
   thumbnail: string | null;
   ageLimit: number;
@@ -52,6 +56,10 @@ export default class Playable extends Model<
   @Default(DataType.UUIDV4)
   @Column
   id: string;
+
+  @ForeignKey(() => Uploader)
+  @Column
+  uploaderId: string;
 
   @AllowNull(false)
   @Unique
@@ -99,4 +107,7 @@ export default class Playable extends Model<
 
   @BelongsToMany(() => Playlist, () => PlayablePlaylist)
   playlists: Array<Playlist & { PlayablePlaylist: PlayablePlaylist }>;
+
+  @BelongsTo(() => Uploader)
+  uploader: Uploader;
 }

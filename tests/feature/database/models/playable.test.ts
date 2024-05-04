@@ -1,4 +1,5 @@
 import Playable from "@/database/models/playable";
+import Uploader from "@/database/models/uploader";
 import { faker } from "@faker-js/faker";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
 
@@ -48,5 +49,31 @@ describe("The playable model", () => {
     ).rejects.toThrow();
 
     expect(await Playable.count()).toEqual(4);
+  });
+
+  it("can belong to an uploader", async () => {
+    const uploader = await Uploader.create({
+      url: "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+      name: "Rick Astley",
+    });
+    const playable = await createPlayable({ uploaderId: uploader.id });
+
+    const belongsTo = await playable.$get("uploader");
+
+    expect(belongsTo?.id).toEqual(uploader.id);
+  });
+
+  it("resets the uploaderId if the uploader got deleted", async () => {
+    const uploader = await Uploader.create({
+      url: "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
+      name: "Rick Astley",
+    });
+    const playable = await createPlayable({ uploaderId: uploader.id });
+
+    await uploader.destroy();
+
+    await playable.reload();
+
+    expect(playable.uploaderId).toBeNull();
   });
 });
