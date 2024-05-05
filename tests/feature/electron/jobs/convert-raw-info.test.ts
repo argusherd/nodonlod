@@ -1,5 +1,6 @@
 import Playable from "@/database/models/playable";
 import Playlist from "@/database/models/playlist";
+import Uploader from "@/database/models/uploader";
 import convertRawInfo from "@/electron/jobs/convert-raw-info";
 import dayjs from "dayjs";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
@@ -200,5 +201,53 @@ describe("The job can convert raw info to playable/playlist", () => {
 
     expect(playable1?.playlists.at(0)?.PlayablePlaylist.order).toEqual(20);
     expect(playable2?.playlists.at(0)?.PlayablePlaylist.order).toEqual(21);
+  });
+
+  it("preserves the uploader of the playable when converting", async () => {
+    const rawPlayable = createRawPlayable({
+      channel: undefined,
+      channel_url: undefined,
+    });
+
+    await convertRawInfo(rawPlayable);
+
+    expect(await Uploader.count()).toEqual(1);
+
+    const uploader = await Uploader.findOne();
+    const playable = await Playable.findOne();
+
+    expect(uploader?.url).toEqual(rawPlayable.uploader_url);
+    expect(uploader?.name).toEqual(rawPlayable.uploader);
+    expect(playable?.uploaderId).toEqual(uploader?.id);
+  });
+
+  it("prioritizes the channel's URL and name over the uploader's URL and name when preserving the uploader", async () => {
+    const rawPlayable = createRawPlayable();
+
+    await convertRawInfo(rawPlayable);
+
+    const uploader = await Uploader.findOne();
+
+    expect(uploader?.url).toEqual(rawPlayable.channel_url);
+    expect(uploader?.name).toEqual(rawPlayable.channel);
+  });
+
+  it("does not create the same uploader twice but only updates the uploader's name", async () => {
+    const channel_url =
+      "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw";
+    const channel = "Rick Astley";
+
+    const uploader = await Uploader.create({
+      url: channel_url,
+      name: "Foo bar",
+    });
+
+    const rawPlayable = createRawPlayable({ channel, channel_url });
+
+    await convertRawInfo(rawPlayable);
+    await uploader.reload();
+
+    expect(await Uploader.count()).toEqual(1);
+    expect(uploader?.name).toEqual(channel);
   });
 });

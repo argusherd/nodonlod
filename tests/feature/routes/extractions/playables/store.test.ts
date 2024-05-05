@@ -1,5 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import Playable from "@/database/models/playable";
+import Uploader from "@/database/models/uploader";
 import express from "@/routes";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
@@ -195,5 +196,71 @@ describe("The store a playable from the extraction route", () => {
 
     expect(await Playable.count()).toEqual(1);
     expect(playable?.title).toEqual("New title");
+  });
+
+  it("preserves the uploader of the playable when storing", async () => {
+    const rawPlayable = createRawPlayable({
+      channel: undefined,
+      channel_url: undefined,
+    });
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    expect(await Uploader.count()).toEqual(1);
+
+    const uploader = await Uploader.findOne();
+    const playable = await Playable.findOne();
+
+    expect(uploader?.url).toEqual(rawPlayable.uploader_url);
+    expect(uploader?.name).toEqual(rawPlayable.uploader);
+    expect(playable?.uploaderId).toEqual(uploader?.id);
+  });
+
+  it("prioritizes the channel's URL and name over the uploader's URL and name when preserving the uploader", async () => {
+    const rawPlayable = createRawPlayable();
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    const uploader = await Uploader.findOne();
+
+    expect(uploader?.url).toEqual(rawPlayable.channel_url);
+    expect(uploader?.name).toEqual(rawPlayable.channel);
+  });
+
+  it("does not create the same uploader twice but only updates the uploader's name", async () => {
+    const channel_url =
+      "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw";
+    const channel = "Rick Astley";
+
+    const uploader = await Uploader.create({
+      url: channel_url,
+      name: "Foo bar",
+    });
+
+    const rawPlayable = createRawPlayable({ channel, channel_url });
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+    await uploader.reload();
+
+    expect(await Uploader.count()).toEqual(1);
+    expect(uploader?.name).toEqual(channel);
   });
 });

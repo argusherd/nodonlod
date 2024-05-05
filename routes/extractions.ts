@@ -8,6 +8,7 @@ import Playable, {
 import Playlist, {
   PlaylistCreationAttributes,
 } from "../database/models/playlist";
+import Uploader from "../database/models/uploader";
 import {
   RawPlayable,
   RawPlaylist,
@@ -146,7 +147,10 @@ async function createPlayable(
     return;
   }
 
+  const uploader = await createUploader(rawPlayable);
+
   await Playable.create({
+    uploaderId: uploader?.id,
     url: rawPlayable.webpage_url,
     resourceId: rawPlayable.id,
     domain: rawPlayable.webpage_url_domain,
@@ -155,6 +159,21 @@ async function createPlayable(
       : undefined,
     ...overwrite,
   });
+}
+
+async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
+  const url = rawInfo.channel_url ?? rawInfo.uploader_url;
+  const name = rawInfo.channel ?? rawInfo.uploader ?? "";
+
+  if (!url) return;
+
+  const uploader = await Uploader.findOne({ where: { url } });
+
+  if (uploader) {
+    return await uploader.update({ name });
+  }
+
+  return await Uploader.create({ url, name });
 }
 
 async function createPlaylist(
