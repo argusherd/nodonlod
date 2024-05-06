@@ -44,10 +44,7 @@ async function createPlayable(
   rawInfo: RawPlayable | SubRawPlayable,
 ): Promise<Playable> {
   const playable = await Playable.findOne({
-    where: {
-      url: rawInfo.webpage_url,
-      resourceId: rawInfo.id,
-    },
+    where: { url: rawInfo.webpage_url },
   });
 
   if (playable) {
@@ -91,10 +88,7 @@ async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
 
 async function createPlaylist(rawInfo: RawPlaylist): Promise<Playlist> {
   let playlist = await Playlist.findOne({
-    where: {
-      url: rawInfo.webpage_url,
-      resourceId: rawInfo.id,
-    },
+    where: { url: rawInfo.webpage_url },
   });
 
   if (!playlist) {

@@ -67,7 +67,6 @@ export default class Playable extends Model<
   url: string;
 
   @AllowNull(false)
-  @Unique
   @Column
   resourceId: string;
 

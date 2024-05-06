@@ -20,12 +20,11 @@ export const up: Migration = async ({ context: queryInterface }) => {
       url: {
         type: DataType.TEXT,
         allowNull: false,
-        unique: "unique_playables_url_resource_id",
+        unique: "unique_playables_url",
       },
       resource_id: {
         type: DataType.TEXT,
         allowNull: false,
-        unique: "unique_playables_url_resource_id",
       },
       domain: {
         type: DataType.STRING,
@@ -61,8 +60,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playables_url_resource_id: {
-          fields: ["url", "resource_id"],
+        unique_playables_url: {
+          fields: ["url"],
         },
       },
     },

@@ -56,7 +56,6 @@ export default class Playlist extends Model<
   @Column
   url: string;
 
-  @Unique
   @Column
   resourceId: string;
 

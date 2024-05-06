@@ -131,7 +131,7 @@ async function createPlayable(
   }: Partial<PlayableCreationAttributes>,
 ) {
   const playable = await Playable.findOne({
-    where: { url: rawPlayable.webpage_url, resourceId: rawPlayable.id },
+    where: { url: rawPlayable.webpage_url },
   });
 
   const overwrite = {
@@ -181,7 +181,7 @@ async function createPlaylist(
   { title, thumbnail, description }: Partial<PlaylistCreationAttributes>,
 ) {
   const playlist = await Playlist.findOne({
-    where: { url: rawPlaylist.webpage_url, resourceId: rawPlaylist.id },
+    where: { url: rawPlaylist.webpage_url },
   });
 
   const overwrite = {

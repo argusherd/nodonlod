@@ -15,11 +15,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
       },
       url: {
         type: DataType.TEXT,
-        unique: "unique_playlists_url_resource_id",
+        unique: "unique_playlists_url",
       },
       resource_id: {
         type: DataType.TEXT,
-        unique: "unique_playlists_url_resource_id",
       },
       domain: {
         type: DataType.STRING,
@@ -39,8 +38,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playlists_url_resource_id: {
-          fields: ["url", "resource_id"],
+        unique_playlists_url: {
+          fields: ["url"],
         },
       },
     },
