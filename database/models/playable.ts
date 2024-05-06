@@ -9,6 +9,7 @@ import {
   DataType,
   Default,
   ForeignKey,
+  HasMany,
   IsDate,
   IsUUID,
   Model,
@@ -17,6 +18,7 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import Chapter from "./chapters";
 import PlayablePlaylist from "./playable-playlist";
 import Playlist from "./playlist";
 import Uploader from "./uploader";
@@ -109,4 +111,7 @@ export default class Playable extends Model<
 
   @BelongsTo(() => Uploader)
   uploader: Uploader;
+
+  @HasMany(() => Chapter)
+  chapters: Chapter[];
 }

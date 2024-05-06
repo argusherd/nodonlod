@@ -1,3 +1,4 @@
+import Chapter from "@/database/models/chapters";
 import Playable from "@/database/models/playable";
 import Uploader from "@/database/models/uploader";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
@@ -56,5 +57,29 @@ describe("The playable model", () => {
     await playable.reload();
 
     expect(playable.uploaderId).toBeNull();
+  });
+
+  it("has many chapters", async () => {
+    const playable = await createPlayable();
+
+    const ep1 = await Chapter.create({
+      playableId: playable.id,
+      title: "ep1",
+      startTime: 20,
+      endTime: 120,
+    });
+
+    const ep2 = await Chapter.create({
+      playableId: playable.id,
+      title: "ep2",
+      startTime: 120,
+      endTime: 300,
+    });
+
+    const hasMany = await playable.$get("chapters");
+
+    expect(hasMany).toHaveLength(2);
+    expect(hasMany.at(0)?.id).toEqual(ep1.id);
+    expect(hasMany.at(1)?.id).toEqual(ep2.id);
   });
 });
