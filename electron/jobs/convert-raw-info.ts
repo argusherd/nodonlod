@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import Chapter from "../../database/models/chapters";
 import Playable from "../../database/models/playable";
 import PlayablePlaylist from "../../database/models/playable-playlist";
 import Playlist from "../../database/models/playlist";
@@ -43,32 +44,50 @@ export default async function convertRawInfo(
 async function createPlayable(
   rawInfo: RawPlayable | SubRawPlayable,
 ): Promise<Playable> {
-  const playable = await Playable.findOne({
+  let playable = await Playable.findOne({
     where: { url: rawInfo.webpage_url },
   });
 
   if (playable) {
+    for (const {
+      start_time: startTime,
+      end_time: endTime,
+      title,
+    } of rawInfo.chapters ?? []) {
+      await createChapter({ startTime, title, endTime }, playable as Playable);
+    }
+
     return await playable.update({
       duration: rawInfo.duration,
     });
-  } else {
-    const uploader = await createUploader(rawInfo);
-
-    return await Playable.create({
-      uploaderId: uploader?.id,
-      url: rawInfo.webpage_url,
-      resourceId: rawInfo.id,
-      domain: rawInfo.webpage_url_domain,
-      title: rawInfo.title,
-      duration: rawInfo.duration,
-      description: rawInfo.description,
-      thumbnail: rawInfo.thumbnail,
-      ageLimit: rawInfo.age_limit,
-      uploadDate: rawInfo.upload_date
-        ? dayjs(rawInfo.upload_date).toDate()
-        : undefined,
-    });
   }
+
+  const uploader = await createUploader(rawInfo);
+
+  playable = await Playable.create({
+    uploaderId: uploader?.id,
+    url: rawInfo.webpage_url,
+    resourceId: rawInfo.id,
+    domain: rawInfo.webpage_url_domain,
+    title: rawInfo.title,
+    duration: rawInfo.duration,
+    description: rawInfo.description,
+    thumbnail: rawInfo.thumbnail,
+    ageLimit: rawInfo.age_limit,
+    uploadDate: rawInfo.upload_date
+      ? dayjs(rawInfo.upload_date).toDate()
+      : undefined,
+  });
+
+  for (const {
+    start_time: startTime,
+    end_time: endTime,
+    title,
+  } of rawInfo.chapters ?? []) {
+    await createChapter({ startTime, title, endTime }, playable as Playable);
+  }
+
+  return playable;
 }
 
 async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
@@ -84,6 +103,27 @@ async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
   }
 
   return await Uploader.create({ url, name });
+}
+
+async function createChapter(
+  {
+    startTime,
+    endTime,
+    title,
+  }: { startTime: number; endTime: number; title: string },
+  playable: Playable,
+) {
+  const chapter = await Chapter.findOne({
+    where: { playableId: playable.id, startTime, endTime },
+  });
+
+  if (!chapter)
+    await Chapter.create({
+      playableId: playable.id,
+      startTime,
+      endTime,
+      title,
+    });
 }
 
 async function createPlaylist(rawInfo: RawPlaylist): Promise<Playlist> {

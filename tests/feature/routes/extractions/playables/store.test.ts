@@ -1,3 +1,4 @@
+import Chapter from "@/database/models/chapters";
 import Extraction from "@/database/models/extraction";
 import Playable from "@/database/models/playable";
 import Uploader from "@/database/models/uploader";
@@ -262,5 +263,75 @@ describe("The store a playable from the extraction route", () => {
 
     expect(await Uploader.count()).toEqual(1);
     expect(uploader?.name).toEqual(channel);
+  });
+
+  it("preserves the chapters from the raw-playable", async () => {
+    const rawPlayable = createRawPlayable({
+      chapters: [{ start_time: 0, end_time: 40, title: "ep1" }],
+    });
+
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    expect(await Chapter.count()).toEqual(1);
+
+    const chapter = await Chapter.findOne();
+
+    expect(chapter?.startTime).toEqual(0);
+    expect(chapter?.endTime).toEqual(40);
+    expect(chapter?.title).toEqual("ep1");
+  });
+
+  it("does not create the same chapter twice", async () => {
+    const rawPlayable = createRawPlayable({
+      chapters: [{ start_time: 0, end_time: 40, title: "ep1" }],
+    });
+
+    const extractoin = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    await supertest(express)
+      .post(`/extractions/${extractoin.id}/playables`)
+      .expect(201);
+
+    expect(await Chapter.count()).toEqual(1);
+  });
+
+  it("preserves the chapters even if the playable already exists", async () => {
+    const rawPlayable = createRawPlayable();
+
+    const noChapters = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    rawPlayable.chapters = [{ start_time: 0, end_time: 40, title: "ep1" }];
+
+    const withChapters = await Extraction.create({
+      url: rawPlayable.webpage_url,
+      content: JSON.stringify(rawPlayable),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${noChapters.id}/playables`)
+      .expect(201);
+
+    await supertest(express)
+      .post(`/extractions/${withChapters.id}/playables`)
+      .expect(201);
+
+    expect(await Chapter.count()).toEqual(1);
   });
 });

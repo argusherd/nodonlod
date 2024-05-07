@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
+import Chapter from "../database/models/chapters";
 import Extraction from "../database/models/extraction";
 import Playable, {
   PlayableCreationAttributes,
@@ -130,7 +131,7 @@ async function createPlayable(
     ageLimit,
   }: Partial<PlayableCreationAttributes>,
 ) {
-  const playable = await Playable.findOne({
+  let playable = await Playable.findOne({
     where: { url: rawPlayable.webpage_url },
   });
 
@@ -143,13 +144,21 @@ async function createPlayable(
   };
 
   if (playable) {
+    for (const {
+      start_time: startTime,
+      end_time: endTime,
+      title,
+    } of rawPlayable.chapters ?? []) {
+      await createChapter({ startTime, title, endTime }, playable as Playable);
+    }
+
     await playable.update(overwrite);
     return;
   }
 
   const uploader = await createUploader(rawPlayable);
 
-  await Playable.create({
+  playable = await Playable.create({
     uploaderId: uploader?.id,
     url: rawPlayable.webpage_url,
     resourceId: rawPlayable.id,
@@ -159,6 +168,14 @@ async function createPlayable(
       : undefined,
     ...overwrite,
   });
+
+  for (const {
+    start_time: startTime,
+    end_time: endTime,
+    title,
+  } of rawPlayable.chapters ?? []) {
+    await createChapter({ startTime, title, endTime }, playable as Playable);
+  }
 }
 
 async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
@@ -174,6 +191,27 @@ async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
   }
 
   return await Uploader.create({ url, name });
+}
+
+async function createChapter(
+  {
+    startTime,
+    endTime,
+    title,
+  }: { startTime: number; endTime: number; title: string },
+  playable: Playable,
+) {
+  const chapter = await Chapter.findOne({
+    where: { playableId: playable.id, startTime, endTime },
+  });
+
+  if (!chapter)
+    await Chapter.create({
+      playableId: playable.id,
+      startTime,
+      endTime,
+      title,
+    });
 }
 
 async function createPlaylist(

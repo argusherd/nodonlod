@@ -36,6 +36,7 @@ export interface RawPlayable {
   channel?: string | null;
   channel_id?: string | null;
   channel_url?: string | null;
+  chapters?: { start_time: number; title: string; end_time: number }[];
   description?: string;
   duration: number;
   id: string;

@@ -1,3 +1,4 @@
+import Chapter from "@/database/models/chapters";
 import Playable from "@/database/models/playable";
 import Playlist from "@/database/models/playlist";
 import Uploader from "@/database/models/uploader";
@@ -249,5 +250,44 @@ describe("The job can convert raw info to playable/playlist", () => {
 
     expect(await Uploader.count()).toEqual(1);
     expect(uploader?.name).toEqual(channel);
+  });
+
+  it("preserves the chapters from the raw-playable", async () => {
+    const rawPlayable = createRawPlayable({
+      chapters: [{ start_time: 0, end_time: 40, title: "ep1" }],
+    });
+
+    await convertRawInfo(rawPlayable);
+
+    expect(await Chapter.count()).toEqual(1);
+
+    const chapter = await Chapter.findOne();
+
+    expect(chapter?.startTime).toEqual(0);
+    expect(chapter?.endTime).toEqual(40);
+    expect(chapter?.title).toEqual("ep1");
+  });
+
+  it("does not create the same chapter twice", async () => {
+    const rawPlayable = createRawPlayable({
+      chapters: [{ start_time: 0, end_time: 40, title: "ep1" }],
+    });
+
+    await convertRawInfo(rawPlayable);
+    await convertRawInfo(rawPlayable);
+
+    expect(await Chapter.count()).toEqual(1);
+  });
+
+  it("preserves the chapters even if the playable already exists", async () => {
+    const rawPlayable = createRawPlayable();
+
+    await convertRawInfo(rawPlayable);
+
+    rawPlayable.chapters = [{ start_time: 0, end_time: 40, title: "ep1" }];
+
+    await convertRawInfo(rawPlayable);
+
+    expect(await Chapter.count()).toEqual(1);
   });
 });
