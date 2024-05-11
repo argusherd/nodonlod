@@ -2,8 +2,8 @@ import { join } from "path";
 import { Op } from "sequelize";
 import { Worker } from "worker_threads";
 import Extraction from "../../database/models/extraction";
+import RawInfoConverter from "../../src/raw-info-converter";
 import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
-import convertRawInfo from "./convert-raw-info";
 
 export default async function processOnePendingExtraction() {
   if (await isStillProcessing()) return;
@@ -23,7 +23,9 @@ export default async function processOnePendingExtraction() {
   });
 
   worker.on("message", async (rawInfo: RawPlayable | RawPlaylist) => {
-    if (extraction.isConvertible) await convertRawInfo(rawInfo);
+    const converter = new RawInfoConverter();
+
+    if (extraction.isConvertible) await converter.convertAll(rawInfo);
 
     await extraction.update({
       isProcessing: false,

@@ -1,6 +1,6 @@
 import Extraction from "@/database/models/extraction";
-import convertRawInfo from "@/electron/jobs/convert-raw-info";
 import processOnePendingExtraction from "@/electron/jobs/process-one-pending-extraction";
+import RawInfoConverter from "@/src/raw-info-converter";
 import { resolve } from "path";
 import { Worker } from "worker_threads";
 import {
@@ -10,7 +10,7 @@ import {
 } from "../../setup/create-raw-info";
 
 jest.mock("worker_threads");
-jest.mock("@/electron/jobs/convert-raw-info", () => jest.fn());
+jest.mock("@/src/raw-info-converter");
 
 describe("The job involves processing a pending extraction", () => {
   const videoURL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
@@ -93,6 +93,10 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("calls the function to convert the raw info to playables/playlists", async () => {
+    const mockedConvertAll = jest
+      .spyOn(RawInfoConverter.prototype, "convertAll")
+      .mockImplementation();
+
     const rawInfo = createRawPlayable();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
@@ -105,7 +109,7 @@ describe("The job involves processing a pending extraction", () => {
 
     await processOnePendingExtraction();
 
-    expect(convertRawInfo).toHaveBeenCalledWith(rawInfo);
+    expect(mockedConvertAll).toHaveBeenCalledWith(rawInfo);
   });
 
   it("dispatches another job if it's a continuous extraction", async () => {
@@ -220,6 +224,10 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("can disable the raw info to playables/playlists conversion", async () => {
+    const mockedConvertAll = jest
+      .spyOn(RawInfoConverter.prototype, "convertAll")
+      .mockImplementation();
+
     const rawPlayable = createRawPlayable();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
@@ -231,6 +239,6 @@ describe("The job involves processing a pending extraction", () => {
     await Extraction.create({ url: playlistURL, isConvertible: false });
     await processOnePendingExtraction();
 
-    expect(convertRawInfo).not.toHaveBeenCalled();
+    expect(mockedConvertAll).not.toHaveBeenCalled();
   });
 });
