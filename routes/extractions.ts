@@ -1,15 +1,7 @@
-import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
-import Chapter from "../database/models/chapters";
 import Extraction from "../database/models/extraction";
-import Playable, {
-  PlayableCreationAttributes,
-} from "../database/models/playable";
-import Playlist, {
-  PlaylistCreationAttributes,
-} from "../database/models/playlist";
-import Uploader from "../database/models/uploader";
+import RawInfoConverter from "../src/raw-info-converter";
 import {
   RawPlayable,
   RawPlaylist,
@@ -68,50 +60,42 @@ router.get("/:extraction", async (req: ExtractionRequest, res) => {
   res.render("extractions/show", { extraction });
 });
 
-router.post("/:extraction/playables", async (req: ExtractionRequest, res) => {
-  const rawPlayable = findRawInfoById(
-    req.extraction.content,
-    req.body.resourceId,
-  );
+router.post(
+  "/:extraction/convert",
+  body("resourceId").notEmpty(),
+  async (req: ExtractionRequest, res) => {
+    if (!validationResult(req).isEmpty()) {
+      res.sendStatus(422);
+      return;
+    }
 
-  if (
-    !rawPlayable ||
-    ("_type" in rawPlayable && rawPlayable._type === "playlist")
-  ) {
-    res.sendStatus(404);
-    return;
-  }
+    const rawInfo = findRawInfoById(
+      req.extraction.content,
+      req.body.resourceId,
+    );
 
-  await createPlayable(rawPlayable, req.body);
+    if (!rawInfo) {
+      res.sendStatus(404);
+      return;
+    }
 
-  res.sendStatus(201);
-});
+    const converter = new RawInfoConverter();
 
-router.post("/:extraction/playlists", async (req: ExtractionRequest, res) => {
-  const rawPlaylist = findRawInfoById(
-    req.extraction.content,
-    req.body.resourceId,
-  );
+    if ("_type" in rawInfo === false || rawInfo._type === "video") {
+      await converter.toPlayble(rawInfo);
+    } else {
+      await converter.toPlaylist(rawInfo);
+    }
 
-  if (
-    !rawPlaylist ||
-    "_type" in rawPlaylist === false ||
-    rawPlaylist._type === "video"
-  ) {
-    res.sendStatus(404);
-    return;
-  }
-
-  await createPlaylist(rawPlaylist, req.body);
-
-  res.sendStatus(201);
-});
+    res.sendStatus(201);
+  },
+);
 
 function findRawInfoById(
   rawInfo: RawPlayable | RawPlaylist | SubRawPlayable | null,
-  id?: string,
+  id: string,
 ): RawPlayable | RawPlaylist | SubRawPlayable | null {
-  if (!rawInfo || !id || rawInfo.id === id) return rawInfo;
+  if (!rawInfo || rawInfo.id === id) return rawInfo;
 
   for (const childRawInfo of "entries" in rawInfo ? rawInfo.entries : []) {
     const targetRawInfo = findRawInfoById(childRawInfo, id);
@@ -120,125 +104,6 @@ function findRawInfoById(
   }
 
   return null;
-}
-
-async function createPlayable(
-  rawPlayable: RawPlayable | SubRawPlayable,
-  {
-    title,
-    description,
-    thumbnail,
-    ageLimit,
-  }: Partial<PlayableCreationAttributes>,
-) {
-  let playable = await Playable.findOne({
-    where: { url: rawPlayable.webpage_url },
-  });
-
-  const overwrite = {
-    title: title ?? rawPlayable.title,
-    duration: rawPlayable.duration,
-    description: description ?? rawPlayable.description,
-    thumbnail: thumbnail ?? rawPlayable.thumbnail,
-    ageLimit: ageLimit ?? rawPlayable.age_limit,
-  };
-
-  if (playable) {
-    for (const {
-      start_time: startTime,
-      end_time: endTime,
-      title,
-    } of rawPlayable.chapters ?? []) {
-      await createChapter({ startTime, title, endTime }, playable as Playable);
-    }
-
-    await playable.update(overwrite);
-    return;
-  }
-
-  const uploader = await createUploader(rawPlayable);
-
-  playable = await Playable.create({
-    uploaderId: uploader?.id,
-    url: rawPlayable.webpage_url,
-    resourceId: rawPlayable.id,
-    domain: rawPlayable.webpage_url_domain,
-    uploadDate: rawPlayable.upload_date
-      ? dayjs(rawPlayable.upload_date).toDate()
-      : undefined,
-    ...overwrite,
-  });
-
-  for (const {
-    start_time: startTime,
-    end_time: endTime,
-    title,
-  } of rawPlayable.chapters ?? []) {
-    await createChapter({ startTime, title, endTime }, playable as Playable);
-  }
-}
-
-async function createUploader(rawInfo: RawPlayable | SubRawPlayable) {
-  const url = rawInfo.channel_url ?? rawInfo.uploader_url;
-  const name = rawInfo.channel ?? rawInfo.uploader ?? "";
-
-  if (!url) return;
-
-  const uploader = await Uploader.findOne({ where: { url } });
-
-  if (uploader) {
-    return await uploader.update({ name });
-  }
-
-  return await Uploader.create({ url, name });
-}
-
-async function createChapter(
-  {
-    startTime,
-    endTime,
-    title,
-  }: { startTime: number; endTime: number; title: string },
-  playable: Playable,
-) {
-  const chapter = await Chapter.findOne({
-    where: { playableId: playable.id, startTime, endTime },
-  });
-
-  if (!chapter)
-    await Chapter.create({
-      playableId: playable.id,
-      startTime,
-      endTime,
-      title,
-    });
-}
-
-async function createPlaylist(
-  rawPlaylist: RawPlaylist,
-  { title, thumbnail, description }: Partial<PlaylistCreationAttributes>,
-) {
-  const playlist = await Playlist.findOne({
-    where: { url: rawPlaylist.webpage_url },
-  });
-
-  const overwrite = {
-    title: title || rawPlaylist.title || rawPlaylist.id,
-    thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
-    description: description ?? rawPlaylist.description,
-  };
-
-  if (playlist) {
-    await playlist.update(overwrite);
-    return;
-  }
-
-  await Playlist.create({
-    url: rawPlaylist.webpage_url,
-    resourceId: rawPlaylist.id,
-    domain: rawPlaylist.webpage_url_domain,
-    ...overwrite,
-  });
 }
 
 export default router;
