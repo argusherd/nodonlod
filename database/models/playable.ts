@@ -21,6 +21,8 @@ import {
 import Chapter from "./chapters";
 import PlayablePlaylist from "./playable-playlist";
 import Playlist from "./playlist";
+import Tag from "./tag";
+import Taggable from "./taggable";
 import Uploader from "./uploader";
 
 interface OptionalPlayableCreationAttributes {
@@ -114,4 +116,10 @@ export default class Playable extends Model<
 
   @HasMany(() => Chapter)
   chapters: Chapter[];
+
+  @BelongsToMany(() => Tag, {
+    through: { model: () => Taggable, scope: { taggableType: "playable" } },
+    foreignKey: "taggableId",
+  })
+  tags: Tag[];
 }

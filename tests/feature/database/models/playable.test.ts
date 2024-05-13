@@ -1,5 +1,7 @@
 import Chapter from "@/database/models/chapters";
 import Playable from "@/database/models/playable";
+import Tag from "@/database/models/tag";
+import Taggable from "@/database/models/taggable";
 import Uploader from "@/database/models/uploader";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
 
@@ -81,5 +83,21 @@ describe("The playable model", () => {
     expect(hasMany).toHaveLength(2);
     expect(hasMany.at(0)?.id).toEqual(ep1.id);
     expect(hasMany.at(1)?.id).toEqual(ep2.id);
+  });
+
+  it("can belong to many tags", async () => {
+    const playable = await createPlayable();
+    const tag1 = await Tag.create({ name: "foo" });
+    const tag2 = await Tag.create({ name: "bar" });
+
+    await playable.$add("tag", [tag1, tag2]);
+
+    const tags = await playable.$get("tags");
+    const taggable = await Taggable.findOne();
+
+    expect(tags).toHaveLength(2);
+    expect(tags.at(0)?.name).toEqual("foo");
+    expect(tags.at(1)?.name).toEqual("bar");
+    expect(taggable?.taggableType).toEqual("playable");
   });
 });

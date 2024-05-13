@@ -1,4 +1,6 @@
 import Playlist from "@/database/models/playlist";
+import Tag from "@/database/models/tag";
+import Taggable from "@/database/models/taggable";
 import { createPlayable, createPlaylist } from "../../setup/create-playable";
 
 describe("The playlist model", () => {
@@ -28,5 +30,21 @@ describe("The playlist model", () => {
 
     expect(belongsToMany).toHaveLength(1);
     expect(belongsToMany.at(0)?.id).toEqual(playable.id);
+  });
+
+  it("can belong to many tags", async () => {
+    const playlist = await createPlaylist();
+    const tag1 = await Tag.create({ name: "foo" });
+    const tag2 = await Tag.create({ name: "bar" });
+
+    await playlist.$add("tag", [tag1, tag2]);
+
+    const tags = await playlist.$get("tags");
+    const taggable = await Taggable.findOne();
+
+    expect(tags).toHaveLength(2);
+    expect(tags.at(0)?.name).toEqual("foo");
+    expect(tags.at(1)?.name).toEqual("bar");
+    expect(taggable?.taggableType).toEqual("playlist");
   });
 });
