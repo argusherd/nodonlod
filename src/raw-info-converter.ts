@@ -3,6 +3,7 @@ import Chapter from "../database/models/chapters";
 import Playable from "../database/models/playable";
 import PlayablePlaylist from "../database/models/playable-playlist";
 import Playlist from "../database/models/playlist";
+import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
 import { RawPlayable, RawPlaylist, SubRawPlayable } from "./raw-info-extractor";
 
@@ -88,6 +89,7 @@ export default class RawInfoConverter {
     }
 
     await this.preserveAllChapters(rawPlayable, playable.id);
+    await this.preserveAllTags(rawPlayable, playable);
 
     return playable;
   }
@@ -145,6 +147,19 @@ export default class RawInfoConverter {
           endTime,
           title,
         });
+    }
+  }
+
+  async preserveAllTags(
+    rawPlayable: RawPlayable | SubRawPlayable,
+    playable: Playable,
+  ) {
+    for (const name of rawPlayable.tags ?? []) {
+      let tag = await Tag.findOne({ where: { name } });
+
+      if (!tag) tag = await Tag.create({ name });
+
+      await playable.$add("tag", tag);
     }
   }
 }

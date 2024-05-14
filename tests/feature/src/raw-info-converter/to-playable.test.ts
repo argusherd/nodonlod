@@ -122,4 +122,16 @@ describe("The toPlayable method in the RawInfoConverter", () => {
       playable?.id,
     );
   });
+
+  it("calls the preserveAllTags method when converting a raw-playable into a playable", async () => {
+    const mockedPreserveAllTags = jest
+      .spyOn(converter, "preserveAllTags")
+      .mockImplementation();
+
+    const rawPlayable = createRawPlayable({ tags: ["foo", "bar"] });
+
+    await converter.toPlayble(rawPlayable);
+
+    expect(mockedPreserveAllTags).toHaveBeenCalled();
+  });
 });
