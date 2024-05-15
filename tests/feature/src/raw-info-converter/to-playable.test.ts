@@ -62,6 +62,62 @@ describe("The toPlayable method in the RawInfoConverter", () => {
     expect(playable.duration).toEqual(120);
   });
 
+  it("can overwrite some properties when converting the raw-playable", async () => {
+    const rawPlayable = createRawPlayable();
+
+    await converter.toPlayble(rawPlayable, {
+      title: "New title",
+      description: "New description",
+      thumbnail: "https://foo.com/bar.jpg",
+      ageLimit: 18,
+    });
+
+    const playable = await Playable.findOne();
+
+    expect(playable?.title).toEqual("New title");
+    expect(playable?.description).toEqual("New description");
+    expect(playable?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(playable?.ageLimit).toEqual(18);
+  });
+
+  it("can overwrite some properties even if the related playable already existed when converting the raw-playable", async () => {
+    const playable = await createPlayable();
+
+    const rawPlayable = createRawPlayable({ webpage_url: playable.url });
+
+    await converter.toPlayble(rawPlayable, {
+      title: "New title",
+      description: "New description",
+      thumbnail: "https://foo.com/bar.jpg",
+      ageLimit: 18,
+    });
+
+    await playable.reload();
+
+    expect(playable?.title).toEqual("New title");
+    expect(playable?.description).toEqual("New description");
+    expect(playable?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(playable?.ageLimit).toEqual(18);
+  });
+
+  it("can overwrite some properties with empty values when converting the raw-playable", async () => {
+    const rawPlayable = createRawPlayable({ age_limit: 18 });
+
+    await converter.toPlayble(rawPlayable, {
+      title: "",
+      description: "",
+      thumbnail: "",
+      ageLimit: 0,
+    });
+
+    const playable = await Playable.findOne();
+
+    expect(playable?.title).toEqual("");
+    expect(playable?.description).toEqual("");
+    expect(playable?.thumbnail).toEqual("");
+    expect(playable?.ageLimit).toEqual(0);
+  });
+
   it("calls the preserveUploader method when converting a raw-playable into a playable", async () => {
     const mockedPreserveUploader = jest
       .spyOn(converter, "preserveUploader")

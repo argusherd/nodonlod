@@ -7,6 +7,13 @@ import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
 import { RawPlayable, RawPlaylist, SubRawPlayable } from "./raw-info-extractor";
 
+interface Overwritable {
+  title: string;
+  description: string;
+  thumbnail: string;
+  ageLimit: number;
+}
+
 export default class RawInfoConverter {
   async convertAll(rawInfo: RawPlayable | RawPlaylist) {
     if (rawInfo._type === "playlist") {
@@ -42,34 +49,52 @@ export default class RawInfoConverter {
     );
   }
 
-  async toPlaylist(rawPlaylist: RawPlaylist) {
+  async toPlaylist(
+    rawPlaylist: RawPlaylist,
+    { title, thumbnail, description }: Partial<Overwritable> = {},
+  ) {
     let playlist = await Playlist.findOne({
       where: { url: rawPlaylist.webpage_url },
     });
 
-    if (playlist) return playlist;
+    const overwritable = {
+      title: title || rawPlaylist.title || rawPlaylist.id,
+      thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
+      description: description ?? rawPlaylist.description,
+    };
+
+    if (playlist) return await playlist.update(overwritable);
 
     return await Playlist.create({
-      title: rawPlaylist.title || rawPlaylist.id,
       url: rawPlaylist.webpage_url,
       resourceId: rawPlaylist.id,
       domain: rawPlaylist.webpage_url_domain,
-      thumbnail: rawPlaylist.thumbnails && rawPlaylist.thumbnails[0]?.url,
-      description: rawPlaylist.description,
+      ...overwritable,
     });
   }
 
-  async toPlayble(rawPlayable: RawPlayable | SubRawPlayable) {
+  async toPlayble(
+    rawPlayable: RawPlayable | SubRawPlayable,
+    { title, description, thumbnail, ageLimit }: Partial<Overwritable> = {},
+  ) {
     let playable = await Playable.findOne({
       where: { url: rawPlayable.webpage_url },
     });
 
     const uploader = await this.preserveUploader(rawPlayable);
 
+    const overwritable = {
+      title: title ?? rawPlayable.title,
+      description: description ?? rawPlayable.description,
+      thumbnail: thumbnail ?? rawPlayable.thumbnail,
+      ageLimit: ageLimit !== undefined ? ageLimit : rawPlayable.age_limit,
+    };
+
     if (playable) {
       await playable.update({
         uploaderId: uploader?.id,
         duration: rawPlayable.duration,
+        ...overwritable,
       });
     } else {
       playable = await Playable.create({
@@ -77,14 +102,11 @@ export default class RawInfoConverter {
         url: rawPlayable.webpage_url,
         resourceId: rawPlayable.id,
         domain: rawPlayable.webpage_url_domain,
-        title: rawPlayable.title,
         duration: rawPlayable.duration,
-        description: rawPlayable.description,
-        thumbnail: rawPlayable.thumbnail,
-        ageLimit: rawPlayable.age_limit,
         uploadDate: rawPlayable.upload_date
           ? dayjs(rawPlayable.upload_date).toDate()
           : undefined,
+        ...overwritable,
       });
     }
 
