@@ -73,7 +73,7 @@ describe("The extraction show page", () => {
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
         expect(res.text).not.toContain(
-          `action="/extractions/${extraction.id}/playables"`,
+          `action="/extractions/${extraction.id}/convert"`,
         );
         expect(res.text).not.toContain(`method="post"`);
       });
@@ -84,7 +84,7 @@ describe("The extraction show page", () => {
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
         expect(res.text).toContain(
-          `action="/extractions/${extraction.id}/playables"`,
+          `action="/extractions/${extraction.id}/convert"`,
         );
         expect(res.text).toContain(`method="post"`);
       });
@@ -193,7 +193,9 @@ describe("The extraction show page", () => {
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
-        expect(res.text).not.toContain(`action="/playlists"`);
+        expect(res.text).not.toContain(
+          `action="/extractions/${extraction.id}/convert"`,
+        );
         expect(res.text).not.toContain(`method="post"`);
       });
 
@@ -202,7 +204,9 @@ describe("The extraction show page", () => {
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
-        expect(res.text).toContain(`action="/playlists"`);
+        expect(res.text).toContain(
+          `action="/extractions/${extraction.id}/convert"`,
+        );
         expect(res.text).toContain(`method="post"`);
       });
   });

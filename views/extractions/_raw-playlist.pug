@@ -1,6 +1,6 @@
-form(action="/playlists", method="post")
+form(action=`/extractions/${extraction.id}/convert`, method="post")
   textarea(name="description") #{ rawPlaylist.description }
-  input(type="hidden", name="resource_id", value=rawPlaylist.id)
+  input(type="hidden", name="resourceId", value=rawPlaylist.id)
   - var thumbnail = rawPlaylist.thumbnails ? rawPlaylist.thumbnails[0]?.url : "";
   input(type="url", name="thumbnail", value=thumbnail)
   - var thumbnails = rawPlaylist.thumbnails ? rawPlaylist.thumbnails : [];

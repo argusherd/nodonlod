@@ -1,9 +1,4 @@
-form(
-  action=`/extractions/${extraction.id}/playables`,
-  method="post",
-  hx-sawp="outerHTML",
-  hx-target="this"
-)
+form(action=`/extractions/${extraction.id}/convert`, method="post")
   input(type="number", name="ageLimit", value=rawPlayable.age_limit)
   textarea(name="description") #{ rawPlayable.description }
   input(type="hidden", name="duration", value=rawPlayable.duration)
