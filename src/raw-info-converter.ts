@@ -7,7 +7,7 @@ import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
 import { RawPlayable, RawPlaylist, SubRawPlayable } from "./raw-info-extractor";
 
-interface Overwritable {
+export interface Overwritable {
   title: string;
   description: string;
   thumbnail: string;

@@ -1,7 +1,7 @@
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import Extraction from "../database/models/extraction";
-import RawInfoConverter from "../src/raw-info-converter";
+import RawInfoConverter, { Overwritable } from "../src/raw-info-converter";
 import {
   RawPlayable,
   RawPlaylist,
@@ -80,11 +80,17 @@ router.post(
     }
 
     const converter = new RawInfoConverter();
+    const { title, description, thumbnail, ageLimit }: Overwritable = req.body;
 
     if ("_type" in rawInfo === false || rawInfo._type === "video") {
-      await converter.toPlayble(rawInfo);
+      await converter.toPlayble(rawInfo, {
+        title,
+        description,
+        thumbnail,
+        ageLimit,
+      });
     } else {
-      await converter.toPlaylist(rawInfo);
+      await converter.toPlaylist(rawInfo, { title, description, thumbnail });
     }
 
     res.sendStatus(201);
