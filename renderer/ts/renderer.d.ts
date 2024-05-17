@@ -1,3 +1,4 @@
+import Alpine from "alpinejs";
 import htmx from "htmx.org";
 
 export {};
@@ -5,6 +6,7 @@ export {};
 declare global {
   interface Window {
     htmx: typeof htmx;
+    Alpine: typeof Alpine;
   }
 }
 
