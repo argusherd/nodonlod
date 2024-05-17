@@ -8,7 +8,8 @@ block body
     label(for="isConvertible") isConvertible
     input#isConvertible(type="checkbox", name="isConvertible", checked)
     input(type="number", name="page")
-    button(type="button", @click="url = 'C://users/user/Desktop'") File
+    button(type="button", @click="url = await window.electron.openFile()") File
+    button(type="button", @click="url = await window.electron.openDir()") Directory
     button(type="submit") Extract
 
   each extraction in extractions
