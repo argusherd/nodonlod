@@ -1,8 +1,18 @@
 import { spawnSync } from "child_process";
-import { join } from "path";
+import { statSync } from "fs";
+import { extname, join } from "path";
 import { isMainThread, parentPort, workerData } from "worker_threads";
 
 const ytdlpPath = join(process.cwd(), "/bin/yt-dlp");
+const ytdlpParams = (url: string, startAt: number, stopAt: number) => [
+  url,
+  "-J",
+  "-I",
+  `${startAt}:${stopAt}`,
+  "--no-warnings",
+  "--enable-file-urls",
+];
+const ffprobePath = join(process.cwd(), "/bin/ffprobe");
 
 export default async function extractRawInfoFrom({
   url,
@@ -13,21 +23,58 @@ export default async function extractRawInfoFrom({
   startAt: number;
   stopAt: number;
 }): Promise<RawPlayable | RawPlaylist> {
-  const response = spawnSync(
-    ytdlpPath,
-    [url, "-J", "-I", `${startAt}:${stopAt}`, "--no-warnings"],
-    { maxBuffer: 1024 * 1024 * 10 },
-  );
+  const urlStat = statSync(url, { throwIfNoEntry: false });
+  const extension = extname(url);
+  const fileUrl = url;
+
+  if (urlStat && urlStat.isFile()) url = `file:///${url}`.replace(/\\/g, "/");
+
+  const response = spawnSync(ytdlpPath, ytdlpParams(url, startAt, stopAt), {
+    maxBuffer: 1024 * 1024 * 10,
+  });
 
   if (String(response.stderr)) {
     throw new Error(String(response.stderr));
   }
 
-  return JSON.parse(String(response.stdout));
+  const rawInfo: RawPlayable | RawPlaylist = JSON.parse(
+    String(response.stdout),
+  );
+
+  if (urlStat && rawInfo._type === "video")
+    updateFileRawPlayable(rawInfo, extension, fileUrl);
+
+  return rawInfo;
 }
 
 if (!isMainThread) {
   (async () => parentPort?.postMessage(await extractRawInfoFrom(workerData)))();
+}
+
+function updateFileRawPlayable(
+  rawPlayable: RawPlayable,
+  extension: string,
+  ffprobeInput: string,
+) {
+  const response = spawnSync(ffprobePath, [
+    ffprobeInput,
+    "-output_format",
+    "json",
+    "-show_format",
+  ]);
+
+  if (response.status != 0) {
+    throw new Error(String(response.stderr));
+  }
+
+  const ffprobeOutput = JSON.parse(String(response.stdout));
+
+  rawPlayable.id += extension;
+  rawPlayable.title =
+    rawPlayable.title.split("/").pop()?.replace(extension, "") ||
+    rawPlayable.title;
+  rawPlayable.duration = Number(ffprobeOutput.format.duration);
+  rawPlayable.webpage_url_domain = "file";
 }
 
 export interface RawPlayable {
