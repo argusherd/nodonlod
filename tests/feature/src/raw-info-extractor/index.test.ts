@@ -1,14 +1,15 @@
-import extractRawInfoFrom, { RawPlayable } from "@/src/raw-info-extractor";
+import extractRawInfoFrom, {
+  RawPlayable,
+  RawPlaylist,
+} from "@/src/raw-info-extractor";
 import { existsSync } from "fs";
 import { join } from "path";
 
 describe("The raw info extractor module", () => {
   const ytdlpPath = join(process.cwd(), "/bin/yt-dlp");
   const ffprobePath = join(process.cwd(), "/bin/ffprobe");
-  const samplePath = join(
-    process.cwd(),
-    "/tests/feature/src/raw-info-extractor/sample.mp3",
-  );
+  const dirPath = join(process.cwd(), "/tests/feature/src/raw-info-extractor");
+  const samplePath = dirPath + "/sample.mp3";
 
   beforeAll(() => {
     expect(
@@ -43,5 +44,20 @@ describe("The raw info extractor module", () => {
     })) as RawPlayable;
 
     expect(rawPlayable.webpage_url).not.toContain("%5C");
+  });
+
+  it("can extract information from local directories", () => {
+    const rawPlaylist = extractRawInfoFrom({
+      url: dirPath,
+      startAt: 1,
+      stopAt: 1,
+    }) as RawPlaylist;
+
+    expect(rawPlaylist._type).toEqual("playlist");
+    expect(rawPlaylist.entries).toHaveLength(1);
+    expect(rawPlaylist.entries.at(0)?.title).toEqual("sample");
+    expect(rawPlaylist.id).toEqual(dirPath.replace(/\\/g, "/"));
+    expect(rawPlaylist.webpage_url).toEqual(dirPath.replace(/\\/g, "/"));
+    expect(rawPlaylist.webpage_url_domain).toEqual("file");
   });
 });

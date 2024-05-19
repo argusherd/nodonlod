@@ -1,5 +1,5 @@
 import { spawnSync } from "child_process";
-import { statSync } from "fs";
+import { readdirSync, statSync } from "fs";
 import { extname, join } from "path";
 import { isMainThread, parentPort, workerData } from "worker_threads";
 
@@ -13,8 +13,19 @@ const ytdlpParams = (url: string, startAt: number, stopAt: number) => [
   "--enable-file-urls",
 ];
 const ffprobePath = join(process.cwd(), "/bin/ffprobe");
+const extensions = [
+  "avi",
+  "flv",
+  "mp3",
+  "mp4",
+  "mpv",
+  "ogg",
+  "wav",
+  "webm",
+  "wmv",
+];
 
-export default async function extractRawInfoFrom({
+export default function extractRawInfoFrom({
   url,
   startAt = 1,
   stopAt = 10,
@@ -22,12 +33,14 @@ export default async function extractRawInfoFrom({
   url: string;
   startAt: number;
   stopAt: number;
-}): Promise<RawPlayable | RawPlaylist> {
+}): RawPlayable | RawPlaylist {
   const urlStat = statSync(url, { throwIfNoEntry: false });
   const extension = extname(url);
   const fileUrl = url;
 
-  if (urlStat && urlStat.isFile()) url = `file:///${url}`.replace(/\\/g, "/");
+  if (urlStat) url = url.replace(/\\/g, "/");
+  if (urlStat?.isFile()) url = `file:///${url}`;
+  if (urlStat?.isDirectory()) return getRawPlaylistFromDir(url);
 
   const response = spawnSync(ytdlpPath, ytdlpParams(url, startAt, stopAt), {
     maxBuffer: 1024 * 1024 * 10,
@@ -48,7 +61,35 @@ export default async function extractRawInfoFrom({
 }
 
 if (!isMainThread) {
-  (async () => parentPort?.postMessage(await extractRawInfoFrom(workerData)))();
+  (async () => parentPort?.postMessage(extractRawInfoFrom(workerData)))();
+}
+
+function getRawPlaylistFromDir(dir: string) {
+  const entries = readdirSync(dir, { withFileTypes: true })
+    .filter(
+      (dirent) =>
+        !dirent.isDirectory() &&
+        extensions.includes(extname(dirent.name).replace(".", "")),
+    )
+    .map((dirent) => {
+      const { _type, ...subRawPlayble } = extractRawInfoFrom({
+        url: join(dir, dirent.name),
+        startAt: 1,
+        stopAt: 1,
+      });
+
+      return subRawPlayble as SubRawPlayable;
+    });
+
+  const rawPlaylist: RawPlaylist = {
+    _type: "playlist",
+    entries,
+    id: dir,
+    webpage_url: dir,
+    webpage_url_domain: "file",
+  };
+
+  return rawPlaylist;
 }
 
 function updateFileRawPlayable(
