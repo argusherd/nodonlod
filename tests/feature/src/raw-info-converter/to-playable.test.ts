@@ -107,7 +107,7 @@ describe("The toPlayable method in the RawInfoConverter", () => {
       title: "",
       description: "",
       thumbnail: "",
-      ageLimit: 0,
+      ageLimit: "",
     });
 
     const playable = await Playable.findOne();

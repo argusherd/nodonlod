@@ -11,7 +11,7 @@ export interface Overwritable {
   title: string;
   description: string;
   thumbnail: string;
-  ageLimit: number;
+  ageLimit: string | number;
 }
 
 export default class RawInfoConverter {
@@ -87,7 +87,8 @@ export default class RawInfoConverter {
       title: title ?? rawPlayable.title,
       description: description ?? rawPlayable.description,
       thumbnail: thumbnail ?? rawPlayable.thumbnail,
-      ageLimit: ageLimit !== undefined ? ageLimit : rawPlayable.age_limit,
+      ageLimit:
+        ageLimit !== undefined ? Number(ageLimit) : rawPlayable.age_limit,
     };
 
     if (playable) {
