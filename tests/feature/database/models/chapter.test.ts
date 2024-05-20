@@ -1,5 +1,5 @@
 import Chapter from "@/database/models/chapters";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 
 describe("The chapter model", () => {
   it("belongs to a playable", async () => {

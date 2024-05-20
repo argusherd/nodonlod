@@ -1,12 +1,8 @@
-import Uploader from "@/database/models/uploader";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable, createUploader } from "../../setup/create-model";
 
 describe("The uploader model", () => {
   it("can has many playables", async () => {
-    const uploader = await Uploader.create({
-      url: "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
-      name: "Rick Astley",
-    });
+    const uploader = await createUploader();
 
     const playable = await createPlayable({ uploaderId: uploader.id });
 

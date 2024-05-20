@@ -1,6 +1,6 @@
 import express from "@/routes";
 import supertest from "supertest";
-import { createPlaylist } from "../../setup/create-playable";
+import { createPlaylist } from "../../setup/create-model";
 
 describe("The playlist index page", () => {
   it("can view all the playlists", async () => {

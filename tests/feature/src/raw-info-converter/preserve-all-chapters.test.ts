@@ -1,6 +1,6 @@
 import Chapter from "@/database/models/chapters";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 import { createRawPlayable } from "../../setup/create-raw-info";
 
 describe("The preserveAllChapters method in the RawInfoConverter", () => {

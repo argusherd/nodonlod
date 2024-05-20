@@ -25,7 +25,7 @@ interface UploaderAttributes extends OptionalUploaderCreationAttributes {
   name: string;
 }
 
-interface UploaderCreationAttributes
+export interface UploaderCreationAttributes
   extends Optional<
     UploaderAttributes,
     keyof OptionalUploaderCreationAttributes

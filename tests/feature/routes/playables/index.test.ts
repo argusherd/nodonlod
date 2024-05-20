@@ -1,6 +1,6 @@
 import express from "@/routes";
 import supertest from "supertest";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 
 describe("The playable index page", () => {
   it("lists all playables and provides a link for each playable", async () => {

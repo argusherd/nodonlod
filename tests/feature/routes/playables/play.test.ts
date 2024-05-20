@@ -2,7 +2,7 @@ import express from "@/routes";
 import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 
 describe("The playable play route", () => {
   it("can instruct the media player to play the playable", async () => {

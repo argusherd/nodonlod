@@ -1,6 +1,6 @@
 import PlayablePlaylist from "@/database/models/playable-playlist";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import { createPlayable, createPlaylist } from "../../setup/create-model";
 
 describe("The createAssociation method in the RawInfoConverter", () => {
   let converter: RawInfoConverter;

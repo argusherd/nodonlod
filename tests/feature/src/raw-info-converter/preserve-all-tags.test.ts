@@ -1,7 +1,7 @@
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 import { createRawPlayable } from "../../setup/create-raw-info";
 
 describe("The preserveAllTags method in the RawInfoConverter", () => {

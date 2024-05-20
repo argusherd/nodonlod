@@ -1,9 +1,7 @@
 import Playable from "@/database/models/playable";
-import Uploader from "@/database/models/uploader";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable, createUploader } from "../../setup/create-model";
 import { createRawPlayable } from "../../setup/create-raw-info";
 
 describe("The toPlayable method in the RawInfoConverter", () => {
@@ -130,10 +128,7 @@ describe("The toPlayable method in the RawInfoConverter", () => {
   });
 
   it("establishes a relationship between the playable and the uploader when converting the raw-playable", async () => {
-    const uploader = await Uploader.create({
-      url: faker.internet.url(),
-      name: faker.person.fullName(),
-    });
+    const uploader = await createUploader();
     const rawPlayable = createRawPlayable();
 
     jest.spyOn(converter, "preserveUploader").mockResolvedValue(uploader);
@@ -146,10 +141,7 @@ describe("The toPlayable method in the RawInfoConverter", () => {
   });
 
   it("establishes a relationship between the playable and the uploader, even if the playable already exists", async () => {
-    const uploader = await Uploader.create({
-      url: faker.internet.url(),
-      name: faker.person.fullName(),
-    });
+    const uploader = await createUploader();
     const playable = await createPlayable();
     const rawPlayable = createRawPlayable({ webpage_url: playable.url });
 

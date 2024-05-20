@@ -4,6 +4,9 @@ import Playable, {
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
+import Uploader, {
+  UploaderCreationAttributes,
+} from "@/database/models/uploader";
 import { faker } from "@faker-js/faker";
 
 export const createPlayable = async (
@@ -23,5 +26,14 @@ export const createPlaylist = async (
 ) =>
   await Playlist.create({
     title: faker.lorem.text(),
+    ...overwrite,
+  });
+
+export const createUploader = async (
+  overwrite?: Partial<UploaderCreationAttributes>,
+) =>
+  await Uploader.create({
+    name: faker.person.fullName(),
+    url: faker.internet.url(),
     ...overwrite,
   });

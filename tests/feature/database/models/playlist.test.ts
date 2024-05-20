@@ -1,7 +1,7 @@
 import Playlist from "@/database/models/playlist";
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import { createPlayable, createPlaylist } from "../../setup/create-model";
 
 describe("The playlist model", () => {
   it("can persist one record to the database", async () => {

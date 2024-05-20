@@ -1,6 +1,6 @@
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import { createPlayable, createPlaylist } from "../../setup/create-model";
 
 describe("The tag model", () => {
   it("can belong to many playables", async () => {

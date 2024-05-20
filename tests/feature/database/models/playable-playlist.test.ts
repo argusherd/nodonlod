@@ -1,5 +1,5 @@
 import PlayablePlaylist from "@/database/models/playable-playlist";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import { createPlayable, createPlaylist } from "../../setup/create-model";
 
 describe("The pivot between playable and playlist", () => {
   it("removes the relationship once one of them has been deleted", async () => {

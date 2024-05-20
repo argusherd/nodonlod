@@ -1,7 +1,7 @@
 import express from "@/routes";
 import dayjs from "dayjs";
 import supertest from "supertest";
-import { createPlayable } from "../../setup/create-playable";
+import { createPlayable } from "../../setup/create-model";
 
 describe("The playable show page", () => {
   it("can only be accessed with an existing playable", async () => {

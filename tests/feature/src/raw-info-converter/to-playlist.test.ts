@@ -1,6 +1,6 @@
 import Playlist from "@/database/models/playlist";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlaylist } from "../../setup/create-playable";
+import { createPlaylist } from "../../setup/create-model";
 import { createRawPlaylist } from "../../setup/create-raw-info";
 
 describe("The toPlaylist method in the RawInfoConverter", () => {

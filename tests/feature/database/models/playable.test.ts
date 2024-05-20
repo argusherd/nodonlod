@@ -2,8 +2,11 @@ import Chapter from "@/database/models/chapters";
 import Playable from "@/database/models/playable";
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
-import Uploader from "@/database/models/uploader";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import {
+  createPlayable,
+  createPlaylist,
+  createUploader,
+} from "../../setup/create-model";
 
 describe("The playable model", () => {
   it("can persist one record to the database", async () => {
@@ -36,10 +39,7 @@ describe("The playable model", () => {
   });
 
   it("can belong to an uploader", async () => {
-    const uploader = await Uploader.create({
-      url: "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
-      name: "Rick Astley",
-    });
+    const uploader = await createUploader();
     const playable = await createPlayable({ uploaderId: uploader.id });
 
     const belongsTo = await playable.$get("uploader");
@@ -48,10 +48,7 @@ describe("The playable model", () => {
   });
 
   it("resets the uploaderId if the uploader got deleted", async () => {
-    const uploader = await Uploader.create({
-      url: "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw",
-      name: "Rick Astley",
-    });
+    const uploader = await createUploader();
     const playable = await createPlayable({ uploaderId: uploader.id });
 
     await uploader.destroy();

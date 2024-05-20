@@ -1,6 +1,6 @@
 import express from "@/routes";
 import supertest from "supertest";
-import { createPlayable, createPlaylist } from "../../setup/create-playable";
+import { createPlayable, createPlaylist } from "../../setup/create-model";
 
 describe("The playlist show page", () => {
   it("can only be accessed with an existing playlist", async () => {
