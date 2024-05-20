@@ -1,0 +1,11 @@
+extends ../_layout.pug
+
+block body
+  h2 #{ playable.title }
+  a(href=playable.url) url
+  p #{ playable.description }
+  span #{ dayjs.duration(playable.duration, "seconds").format("HH:mm:ss") }
+  span #{ playable.uploadDate ? dayjs(playable.uploadDate).format("YYYY-MM-DD") : "" }
+  span #{ dayjs(playable.createdAt).format("YYYY-MM-DD HH:mm:ss") }
+  span #{ dayjs(playable.updatedAt).format("YYYY-MM-DD HH:mm:ss") }
+  img(src=playable.thumbnail)

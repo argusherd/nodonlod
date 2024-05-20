@@ -97,8 +97,10 @@ export default class Playable extends Model<
   ageLimit: number;
 
   @IsDate
-  @Column
-  get uploadDate(): Date {
+  @Column(DataType.DATE)
+  get uploadDate(): Date | null {
+    if (!this.getDataValue("uploadDate")) return null;
+
     return dayjs(this.getDataValue("uploadDate")).toDate();
   }
 

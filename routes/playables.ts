@@ -26,6 +26,10 @@ router.get("/", async (_req, res) => {
   });
 });
 
+router.get("/:playable", async (req: PlayableRequest, res) => {
+  res.render("playables/show", { playable: req.playable });
+});
+
 router.get("/:playable/play", (req: PlayableRequest, res) => {
   mediaPlayer.play(req.playable.url as string);
 
