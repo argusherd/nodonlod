@@ -24,7 +24,7 @@ interface TagAttributes extends OptionalTagCreationAttributes {
   name: string;
 }
 
-interface TagCreationAttributes
+export interface TagCreationAttributes
   extends Optional<TagAttributes, keyof OptionalTagCreationAttributes> {}
 
 @Table({ underscored: true })

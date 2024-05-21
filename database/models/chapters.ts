@@ -27,7 +27,7 @@ interface ChapterAttributes extends OptionalChapterCreationAttributes {
   title: string;
 }
 
-interface ChapterCreationAttributes
+export interface ChapterCreationAttributes
   extends Optional<
     ChapterAttributes,
     keyof OptionalChapterCreationAttributes

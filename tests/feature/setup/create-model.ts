@@ -1,9 +1,11 @@
+import Chapter, { ChapterCreationAttributes } from "@/database/models/chapters";
 import Playable, {
   PlayableCreationAttributes,
 } from "@/database/models/playable";
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
+import Tag, { TagCreationAttributes } from "@/database/models/tag";
 import Uploader, {
   UploaderCreationAttributes,
 } from "@/database/models/uploader";
@@ -35,5 +37,20 @@ export const createUploader = async (
   await Uploader.create({
     name: faker.person.fullName(),
     url: faker.internet.url(),
+    ...overwrite,
+  });
+
+export const createTag = async (overwrite?: Partial<TagCreationAttributes>) =>
+  await Tag.create({
+    name: faker.lorem.slug(),
+    ...overwrite,
+  });
+
+export const createChapter = async (
+  overwrite?: Partial<ChapterCreationAttributes>,
+) =>
+  await Chapter.create({
+    playableId: overwrite?.playableId || (await createPlayable()).id,
+    title: faker.lorem.slug(),
     ...overwrite,
   });
