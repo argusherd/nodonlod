@@ -27,7 +27,10 @@ router.get("/", async (_req, res) => {
 });
 
 router.get("/:playable", async (req: PlayableRequest, res) => {
-  res.render("playables/show", { playable: req.playable });
+  res.render("playables/show", {
+    playable: req.playable,
+    uploader: await req.playable.$get("uploader"),
+  });
 });
 
 router.get("/:playable/play", (req: PlayableRequest, res) => {

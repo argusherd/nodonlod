@@ -9,3 +9,5 @@ block body
   span #{ dayjs(playable.createdAt).format("YYYY-MM-DD HH:mm:ss") }
   span #{ dayjs(playable.updatedAt).format("YYYY-MM-DD HH:mm:ss") }
   img(src=playable.thumbnail)
+  if uploader
+    a(href=uploader.url) #{ uploader.name }

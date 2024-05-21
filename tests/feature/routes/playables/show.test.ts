@@ -1,7 +1,7 @@
 import express from "@/routes";
 import dayjs from "dayjs";
 import supertest from "supertest";
-import { createPlayable } from "../../setup/create-model";
+import { createPlayable, createUploader } from "../../setup/create-model";
 
 describe("The playable show page", () => {
   it("can only be accessed with an existing playable", async () => {
@@ -47,6 +47,19 @@ describe("The playable show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).not.toContain("Invalid Date");
+      });
+  });
+
+  it("displays the uploader of the playable", async () => {
+    const uploader = await createUploader();
+    const playable = await createPlayable({ uploaderId: uploader.id });
+
+    await supertest(express)
+      .get(`/playables/${playable.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(uploader.name);
+        expect(res.text).toContain(uploader.url);
       });
   });
 });
