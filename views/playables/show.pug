@@ -11,3 +11,16 @@ block body
   img(src=playable.thumbnail)
   if uploader
     a(href=uploader.url) #{ uploader.name }
+
+  each chapter in chapters
+    div
+      span #{ chapter.title }
+      span #{ chapter.startTime }
+      span #{ chapter.endTime }
+
+  each tag in tags
+    span #{ tag.name }
+
+  each playlist in playlists
+    div
+      a(href=`/playlists/${playlist.id}`) #{ playlist.title }

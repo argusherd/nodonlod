@@ -30,6 +30,9 @@ router.get("/:playable", async (req: PlayableRequest, res) => {
   res.render("playables/show", {
     playable: req.playable,
     uploader: await req.playable.$get("uploader"),
+    chapters: await req.playable.$get("chapters"),
+    tags: await req.playable.$get("tags"),
+    playlists: await req.playable.$get("playlists"),
   });
 });
 

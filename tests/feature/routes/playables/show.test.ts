@@ -1,7 +1,12 @@
 import express from "@/routes";
 import dayjs from "dayjs";
 import supertest from "supertest";
-import { createPlayable, createUploader } from "../../setup/create-model";
+import {
+  createPlayable,
+  createPlaylist,
+  createTag,
+  createUploader,
+} from "../../setup/create-model";
 
 describe("The playable show page", () => {
   it("can only be accessed with an existing playable", async () => {
@@ -60,6 +65,55 @@ describe("The playable show page", () => {
       .expect((res) => {
         expect(res.text).toContain(uploader.name);
         expect(res.text).toContain(uploader.url);
+      });
+  });
+
+  it("displays all the chapters of the playable", async () => {
+    const playable = await createPlayable();
+
+    await playable.$create("chapter", { title: "ep1" });
+    await playable.$create("chapter", { title: "ep2" });
+
+    await supertest(express)
+      .get(`/playables/${playable.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("ep1");
+        expect(res.text).toContain("ep2");
+      });
+  });
+
+  it("displays all the tags of the playable", async () => {
+    const playable = await createPlayable();
+    const tag1 = await createTag();
+    const tag2 = await createTag();
+
+    await playable.$add("tag", [tag1, tag2]);
+
+    await supertest(express)
+      .get(`/playables/${playable.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(tag1.name);
+        expect(res.text).toContain(tag2.name);
+      });
+  });
+
+  it("displays all related playlists of the playable", async () => {
+    const playable = await createPlayable();
+    const playlist1 = await createPlaylist();
+    const playlist2 = await createPlaylist();
+
+    await playable.$add("playlist", [playlist1, playlist2]);
+
+    await supertest(express)
+      .get(`/playables/${playable.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(playlist1.title);
+        expect(res.text).toContain(playlist2.title);
+        expect(res.text).toContain(`/playlists/${playlist1.id}`);
+        expect(res.text).toContain(`/playlists/${playlist2.id}`);
       });
   });
 });
