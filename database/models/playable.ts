@@ -18,7 +18,7 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
-import Chapter from "./chapters";
+import Chapter from "./chapter";
 import PlayablePlaylist from "./playable-playlist";
 import Playlist from "./playlist";
 import Tag from "./tag";

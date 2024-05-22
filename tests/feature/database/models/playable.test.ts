@@ -1,4 +1,4 @@
-import Chapter from "@/database/models/chapters";
+import Chapter from "@/database/models/chapter";
 import Playable from "@/database/models/playable";
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";

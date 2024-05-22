@@ -1,4 +1,4 @@
-import Chapter from "@/database/models/chapters";
+import Chapter from "@/database/models/chapter";
 import RawInfoConverter from "@/src/raw-info-converter";
 import { createPlayable } from "../../setup/create-model";
 import { createRawPlayable } from "../../setup/create-raw-info";

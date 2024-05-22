@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import Chapter from "../database/models/chapters";
+import Chapter from "../database/models/chapter";
 import Playable from "../database/models/playable";
 import PlayablePlaylist from "../database/models/playable-playlist";
 import Playlist from "../database/models/playlist";

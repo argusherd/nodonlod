@@ -1,4 +1,4 @@
-import Chapter, { ChapterCreationAttributes } from "@/database/models/chapters";
+import Chapter, { ChapterCreationAttributes } from "@/database/models/chapter";
 import Playable, {
   PlayableCreationAttributes,
 } from "@/database/models/playable";

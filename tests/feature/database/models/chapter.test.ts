@@ -1,4 +1,4 @@
-import Chapter from "@/database/models/chapters";
+import Chapter from "@/database/models/chapter";
 import { createPlayable } from "../../setup/create-model";
 
 describe("The chapter model", () => {
