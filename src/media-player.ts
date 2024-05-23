@@ -6,6 +6,7 @@ import { join } from "path";
 interface PlayerObserver {
   emit(event: "duration", duration: number): void;
   emit(event: "current-time", currentTime: number): void;
+  emit(event: "end"): void;
 
   /**
    * @param event
@@ -17,6 +18,7 @@ interface PlayerObserver {
    * @param listener - currentTime is in seconds, ex. 123.120000
    */
   on(event: "current-time", listener: (currentTime: number) => void): void;
+  on(event: "end", listener: () => void): void;
   on(event: string, listener: (...args: any[]) => void): void;
 }
 
@@ -28,9 +30,10 @@ interface IpcMessage {
 
 export interface MediaPlayer {
   launch: () => void;
-  play: (url: string) => void;
+  play: (url: string, startTime?: number, endTime?: number) => void;
   pause: () => void;
   resume: () => void;
+  seek: (time: number) => void;
   on: Pick<PlayerObserver, "on">["on"];
 }
 
@@ -46,6 +49,9 @@ let ipcClient: Socket;
 let mpvPlayer: ChildProcessWithoutNullStreams;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
+let duration = 0;
+let startAt = 0;
+let endAt = 0;
 
 const commandPrompt = (command: any[]): string =>
   JSON.stringify({ command }) + "\n";
@@ -89,29 +95,54 @@ const socketOnData = (data: Buffer) => {
   for (let section of String(data).trim().split("\n")) {
     const message: IpcMessage = JSON.parse(section);
 
-    if (message.event === "property-change" && "data" in message) {
-      if (message.name === "duration")
-        playerObserver.emit("duration", message.data);
-      else if (message.name === "time-pos")
-        playerObserver.emit("current-time", message.data);
+    if (message.event != "property-change" || "data" in message === false)
+      return;
+
+    if (message.name === "duration") {
+      duration = message.data - 0.1;
+      playerObserver.emit("duration", message.data);
+
+      if (startAt) {
+        mediaPlayer.seek(startAt);
+        mediaPlayer.resume();
+      }
+    }
+
+    if (message.name === "time-pos") {
+      playerObserver.emit("current-time", message.data);
+
+      if (message.data >= endAt) {
+        ipcClient.write(commandPrompt(["set_property", "pause", true]));
+        playerObserver.emit("end");
+      }
+
+      if (message.data >= duration) playerObserver.emit("end");
     }
   }
 };
 
 const mediaPlayer: MediaPlayer = {
   launch: launchPlayer,
-  play: (url: string) => {
+  play: (url: string, startTime = 0, endTime = 0) => {
+    startAt = startTime;
+    endAt = endTime;
+
     if (isConnected) {
       ipcClient.write(commandPrompt(["loadfile", url]));
+      if (startAt) mediaPlayer.pause();
       return;
     }
 
     commandQueue.push(commandPrompt(["loadfile", url]));
+    if (startAt)
+      commandQueue.push(commandPrompt(["set_property", "pause", true]));
     launchPlayer();
   },
   pause: () => ipcClient.write(commandPrompt(["set_property", "pause", true])),
   resume: () =>
     ipcClient.write(commandPrompt(["set_property", "pause", false])),
+  seek: (time: number) =>
+    ipcClient.write(commandPrompt(["seek", time, "absolute"])),
   on: (event, listener) => {
     playerObserver.on(event, listener);
   },
