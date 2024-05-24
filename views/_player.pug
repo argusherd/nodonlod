@@ -1,2 +1,9 @@
 #player
-  p#title #{ mediaInfo.title }
+  p#title #{ title }
+
+  if chapter
+    p #{ chapter }
+    - var startAt = startTime ? dayjs.duration(startTime, "seconds").format("HH:mm:ss") : "";
+    - var endAt = endTime ? dayjs.duration(endTime, "seconds").format("HH:mm:ss") : "";
+    span #{ startAt }
+    span #{ endAt }

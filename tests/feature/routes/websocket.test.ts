@@ -21,4 +21,21 @@ describe("The websocket server", () => {
 
     wss.nowPlaying({ title: "Rick Astley - Never Gonna Give You Up" });
   });
+
+  it("can broadcast the media information with chapter", () => {
+    client.on("message", (data) => {
+      const res = data.toString();
+      expect(res).toContain("Rick Astley - Never Gonna Give You Up");
+      expect(res).toContain("foo");
+      expect(res).toContain("00:00:10");
+      expect(res).toContain("00:00:30");
+    });
+
+    wss.nowPlaying({
+      title: "Rick Astley - Never Gonna Give You Up",
+      chapter: "foo",
+      startTime: 10,
+      endTime: 30,
+    });
+  });
 });

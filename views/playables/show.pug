@@ -14,9 +14,11 @@ block body
 
   each chapter in chapters
     div
-      span #{ chapter.title }
-      span #{ chapter.startTime }
-      span #{ chapter.endTime }
+      a(href=`/chapters/${chapter.id}/play`, hx-swap="none") #{ chapter.title }
+      - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
+      - var endAt = chapter.endTime ? dayjs.duration(chapter.endTime, "seconds").format("HH:mm:ss") : "";
+      span #{ startAt }
+      span #{ endAt }
 
   each tag in tags
     span #{ tag.name }

@@ -71,15 +71,23 @@ describe("The playable show page", () => {
   it("displays all the chapters of the playable", async () => {
     const playable = await createPlayable();
 
-    await playable.$create("chapter", { title: "ep1" });
-    await playable.$create("chapter", { title: "ep2" });
+    const chapter1 = await playable.$create("chapter", {
+      title: "ep1",
+      startTime: 10,
+      endTime: 30,
+    });
+    const chapter2 = await playable.$create("chapter", { title: "ep2" });
 
     await supertest(express)
       .get(`/playables/${playable.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain("ep1");
+        expect(res.text).toContain("00:00:10");
+        expect(res.text).toContain("00:00:30");
         expect(res.text).toContain("ep2");
+        expect(res.text).toContain(`/chapters/${chapter1.id}/play`);
+        expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
       });
   });
 
