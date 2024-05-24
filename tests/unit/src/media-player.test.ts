@@ -117,7 +117,7 @@ describe("The media player module", () => {
 
     let expectedDuration = 0;
 
-    mediaPlayer.on("duration", (duration) => (expectedDuration = duration));
+    mediaPlayer.on("start", (duration) => (expectedDuration = duration));
 
     mediaPlayer.launch();
 
@@ -166,7 +166,7 @@ describe("The media player module", () => {
 
     const shouldNotReceive = jest.fn();
 
-    mediaPlayer.on("duration", shouldNotReceive);
+    mediaPlayer.on("start", shouldNotReceive);
 
     mediaPlayer.launch();
 

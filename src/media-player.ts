@@ -4,7 +4,7 @@ import { Socket } from "net";
 import { join } from "path";
 
 interface PlayerObserver {
-  emit(event: "duration", duration: number): void;
+  emit(event: "start", duration: number): void;
   emit(event: "current-time", currentTime: number): void;
   emit(event: "end"): void;
 
@@ -12,7 +12,7 @@ interface PlayerObserver {
    * @param event
    * @param listener - duration is in seconds, ex. 123.120000
    */
-  on(event: "duration", listener: (duration: number) => void): void;
+  on(event: "start", listener: (duration: number) => void): void;
   /**
    * @param event
    * @param listener - currentTime is in seconds, ex. 123.120000
@@ -100,7 +100,7 @@ const socketOnData = (data: Buffer) => {
 
     if (message.name === "duration") {
       duration = message.data - 0.1;
-      playerObserver.emit("duration", message.data);
+      playerObserver.emit("start", message.data);
 
       if (startAt) {
         mediaPlayer.seek(startAt);
