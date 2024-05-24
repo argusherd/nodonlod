@@ -317,6 +317,32 @@ describe("The media player module", () => {
     expect(mockedWrite).toHaveBeenCalledWith(pasueMedia);
   });
 
+  it("only instruct the player to stop at a specific time when the endAt param is greater than 0", () => {
+    const mockedWrite = jest.fn();
+
+    const ipcMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 30.01,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(ipcMessage));
+      }),
+    );
+
+    const pasueMedia =
+      JSON.stringify({ command: ["set_property", "pause", true] }) + "\n";
+
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 0);
+
+    expect(mockedWrite).not.toHaveBeenCalledWith(pasueMedia);
+  });
+
   it("can observe the player end event", () => {
     const durationMessage =
       JSON.stringify({

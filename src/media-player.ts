@@ -49,7 +49,7 @@ let ipcClient: Socket;
 let mpvPlayer: ChildProcessWithoutNullStreams;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
-let duration = 0;
+let duration = Number.MAX_VALUE;
 let startAt = 0;
 let endAt = 0;
 
@@ -111,7 +111,7 @@ const socketOnData = (data: Buffer) => {
     if (message.name === "time-pos") {
       playerObserver.emit("current-time", message.data);
 
-      if (message.data >= endAt) {
+      if (endAt && message.data >= endAt) {
         ipcClient.write(commandPrompt(["set_property", "pause", true]));
         playerObserver.emit("end");
       }
