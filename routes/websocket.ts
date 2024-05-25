@@ -5,6 +5,7 @@ import { join } from "path";
 import { renderFile } from "pug";
 import internal from "stream";
 import { WebSocketServer } from "ws";
+import mediaPlayer from "../src/media-player";
 
 interface MediaInfo {
   title: string;
@@ -36,6 +37,14 @@ const wss = {
     wsServer.clients.forEach((ws) => {
       ws.send(render("_player.pug", { ...mediaInfo }));
     }),
+  mediaStart: (duration: number) =>
+    wsServer.clients.forEach((ws) =>
+      ws.send(
+        `<span id="duration">${dayjs.duration(duration, "seconds").format("HH:mm:ss")}</span>`,
+      ),
+    ),
 };
+
+mediaPlayer.on("start", wss.mediaStart);
 
 export default wss;

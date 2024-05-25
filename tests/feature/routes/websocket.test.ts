@@ -7,6 +7,10 @@ describe("The websocket server", () => {
   httpServer.listen(6869);
   const client = new WebSocket("ws://localhost:6869");
 
+  beforeEach(() => {
+    client.removeAllListeners();
+  });
+
   afterAll(() => {
     client.close();
     httpServer.close();
@@ -37,5 +41,14 @@ describe("The websocket server", () => {
       startTime: 10,
       endTime: 30,
     });
+  });
+
+  it("can broadcast the media when it starts and display its duration", async () => {
+    client.on("message", (data) => {
+      expect(data.toString()).toContain("duration");
+      expect(data.toString()).toContain("00:02:03");
+    });
+
+    wss.mediaStart(123);
   });
 });
