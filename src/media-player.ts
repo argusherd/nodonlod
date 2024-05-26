@@ -57,7 +57,10 @@ const commandPrompt = (command: any[]): string =>
   JSON.stringify({ command }) + "\n";
 
 const launchPlayer = () => {
-  mpvPlayer = spawn(mpvPath, mpvArgs.split(" "));
+  mpvPlayer = spawn(
+    mpvPath,
+    `${mpvArgs} ${process.env.MPV_OPTION_APPEND}`.split(" "),
+  );
   mpvPlayer.on("error", (error) => console.log(error));
   mpvPlayer.on("spawn", connectIpcServer);
 };
