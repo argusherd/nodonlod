@@ -7,7 +7,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     {
       playable_id: {
         type: DataType.UUID,
-        unique: "unique_playable_id_playlist_id",
+        unique: "unique_playable_playlist_id",
         allowNull: false,
         references: {
           key: "id",
@@ -17,11 +17,20 @@ export const up: Migration = async ({ context: queryInterface }) => {
       },
       playlist_id: {
         type: DataType.UUID,
-        unique: "unique_playable_id_playlist_id",
+        unique: "unique_playable_playlist_id",
         allowNull: false,
         references: {
           key: "id",
           model: "playlists",
+        },
+        onDelete: "CASCADE",
+      },
+      chapter_id: {
+        type: DataType.UUID,
+        unique: "unique_playable_playlist_id",
+        references: {
+          key: "id",
+          model: "chapters",
         },
         onDelete: "CASCADE",
       },
@@ -37,8 +46,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playable_id_playlist_id: {
-          fields: ["playable_id", "playlist_id"],
+        unique_playable_playlist_id: {
+          fields: ["playable_id", "playlist_id", "chapter_id"],
         },
       },
     },
