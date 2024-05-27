@@ -19,8 +19,8 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import Chapter from "./chapter";
-import PlayablePlaylist from "./playable-playlist";
 import Playlist from "./playlist";
+import PlaylistItem from "./playlist-item";
 import Tag from "./tag";
 import Taggable from "./taggable";
 import Uploader from "./uploader";
@@ -110,8 +110,8 @@ export default class Playable extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsToMany(() => Playlist, () => PlayablePlaylist)
-  playlists: Array<Playlist & { PlayablePlaylist: PlayablePlaylist }>;
+  @BelongsToMany(() => Playlist, () => PlaylistItem)
+  playlists: Array<Playlist & { PlaylistItem: PlaylistItem }>;
 
   @BelongsTo(() => Uploader)
   uploader: Uploader;

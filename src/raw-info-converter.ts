@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
 import Chapter from "../database/models/chapter";
 import Playable from "../database/models/playable";
-import PlayablePlaylist from "../database/models/playable-playlist";
 import Playlist from "../database/models/playlist";
+import PlaylistItem from "../database/models/playlist-item";
 import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
 import { RawPlayable, RawPlaylist, SubRawPlayable } from "./raw-info-extractor";
@@ -122,17 +122,28 @@ export default class RawInfoConverter {
     playables: Playable[],
     orders: number[] = [],
   ) {
-    await PlayablePlaylist.bulkCreate(
-      playables.map((playable, idx) => ({
-        playableId: playable.id,
+    let idx = 0;
+
+    for (const playable of playables) {
+      const playlistItem = await PlaylistItem.findOne({
+        where: {
+          playlistId: playlist.id,
+          playableId: playable.id,
+          chapterId: null,
+        },
+      });
+
+      if (playlistItem) {
+        await playlistItem.update({ order: orders.at(idx++) });
+        return;
+      }
+
+      await PlaylistItem.create({
         playlistId: playlist.id,
-        order: orders.at(idx),
-      })),
-      {
-        conflictAttributes: ["playableId", "playlistId"],
-        updateOnDuplicate: ["order", "updatedAt"],
-      },
-    );
+        playableId: playable.id,
+        order: orders.at(idx++),
+      });
+    }
   }
 
   async preserveUploader(rawInfo: RawPlayable | SubRawPlayable) {

@@ -12,37 +12,37 @@ import Chapter from "./chapter";
 import Playable from "./playable";
 import Playlist from "./playlist";
 
-interface OptionalPlayablePlaylistCreationAttributes {
-  chapterId: string;
+interface OptionalPlaylistItemCreationAttributes {
+  chapterId: string | null;
   order: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface PlayablePlaylistAttributes
-  extends OptionalPlayablePlaylistCreationAttributes {
-  playableId: string;
+interface PlaylistItemAttributes
+  extends OptionalPlaylistItemCreationAttributes {
   playlistId: string;
+  playableId: string;
 }
 
-interface PlayablePlaylistCreationAttributes
+interface PlaylistItemCreationAttributes
   extends Optional<
-    PlayablePlaylistAttributes,
-    keyof OptionalPlayablePlaylistCreationAttributes
+    PlaylistItemAttributes,
+    keyof OptionalPlaylistItemCreationAttributes
   > {}
 
-@Table({ underscored: true, tableName: "playable_playlist" })
-export default class PlayablePlaylist extends Model<
-  PlayablePlaylistAttributes,
-  PlayablePlaylistCreationAttributes
+@Table({ underscored: true })
+export default class PlaylistItem extends Model<
+  PlaylistItemAttributes,
+  PlaylistItemCreationAttributes
 > {
-  @ForeignKey(() => Playable)
-  @Column
-  playableId: string;
-
   @ForeignKey(() => Playlist)
   @Column
   playlistId: string;
+
+  @ForeignKey(() => Playable)
+  @Column
+  playableId: string;
 
   @ForeignKey(() => Chapter)
   @Column

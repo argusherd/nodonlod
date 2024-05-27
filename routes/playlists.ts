@@ -29,7 +29,7 @@ router.get("/:playlist", async (req: PlaylistRequest, res) => {
   res.render("playlists/show.pug", {
     playlist: req.playlist,
     playables: await req.playlist.$get("playables", {
-      order: [[Sequelize.literal("`PlayablePlaylist.order`"), "ASC"]],
+      order: [[Sequelize.literal("`PlaylistItem.order`"), "ASC"]],
     }),
   });
 });

@@ -1,4 +1,4 @@
-import PlayablePlaylist from "@/database/models/playable-playlist";
+import PlaylistItem from "@/database/models/playlist-item";
 import {
   createChapter,
   createPlayable,
@@ -11,23 +11,23 @@ describe("The pivot between playable and playlist", () => {
     const playlist = await createPlaylist();
 
     await playable.$add("playlist", playlist);
-    expect(await PlayablePlaylist.findOne()).not.toBeNull();
+    expect(await PlaylistItem.findOne()).not.toBeNull();
 
     await playable.destroy();
-    expect(await PlayablePlaylist.findOne()).toBeNull();
+    expect(await PlaylistItem.findOne()).toBeNull();
   });
 
   it("can belong to a chapter", async () => {
     const chapter = await createChapter();
     const playlist = await createPlaylist();
 
-    const playablePlaylist = await PlayablePlaylist.create({
+    const playlistItem = await PlaylistItem.create({
       playableId: chapter.playableId,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
 
-    const belongsTo = await playablePlaylist.$get("chapter");
+    const belongsTo = await playlistItem.$get("chapter");
 
     expect(belongsTo?.id).toEqual(chapter.id);
   });
@@ -37,19 +37,14 @@ describe("The pivot between playable and playlist", () => {
     const chapter = await createChapter({ playableId: playable.id });
     const playlist = await createPlaylist();
 
-    await PlayablePlaylist.create({
-      playableId: playable.id,
-      playlistId: playlist.id,
-    });
-
-    await PlayablePlaylist.create({
+    await PlaylistItem.create({
       playableId: playable.id,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
 
     await expect(
-      PlayablePlaylist.create({
+      PlaylistItem.create({
         playableId: playable.id,
         playlistId: playlist.id,
         chapterId: chapter.id,

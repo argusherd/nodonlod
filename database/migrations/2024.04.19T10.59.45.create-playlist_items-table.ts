@@ -3,21 +3,10 @@ import { Migration } from "../migrator";
 
 export const up: Migration = async ({ context: queryInterface }) => {
   await queryInterface.createTable(
-    "playable_playlist",
+    "playlist_items",
     {
-      playable_id: {
-        type: DataType.UUID,
-        unique: "unique_playable_playlist_id",
-        allowNull: false,
-        references: {
-          key: "id",
-          model: "playables",
-        },
-        onDelete: "CASCADE",
-      },
       playlist_id: {
         type: DataType.UUID,
-        unique: "unique_playable_playlist_id",
         allowNull: false,
         references: {
           key: "id",
@@ -25,9 +14,17 @@ export const up: Migration = async ({ context: queryInterface }) => {
         },
         onDelete: "CASCADE",
       },
+      playable_id: {
+        type: DataType.UUID,
+        allowNull: false,
+        references: {
+          key: "id",
+          model: "playables",
+        },
+        onDelete: "CASCADE",
+      },
       chapter_id: {
         type: DataType.UUID,
-        unique: "unique_playable_playlist_id",
         references: {
           key: "id",
           model: "chapters",
@@ -46,8 +43,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playable_playlist_id: {
-          fields: ["playable_id", "playlist_id", "chapter_id"],
+        unique_playlist_playable_chapter: {
+          fields: ["playlist_id", "playable_id", "chapter_id"],
         },
       },
     },
@@ -55,5 +52,5 @@ export const up: Migration = async ({ context: queryInterface }) => {
 };
 
 export const down: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.dropTable("playable_playlist");
+  await queryInterface.dropTable("playlist_items");
 };

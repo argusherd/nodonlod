@@ -14,7 +14,7 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import Playable from "./playable";
-import PlayablePlaylist from "./playable-playlist";
+import PlaylistItem from "./playlist-item";
 import Tag from "./tag";
 import Taggable from "./taggable";
 
@@ -76,8 +76,8 @@ export default class Playlist extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsToMany(() => Playable, () => PlayablePlaylist)
-  playables: Array<Playable & { PlayablePlaylist: PlayablePlaylist }>;
+  @BelongsToMany(() => Playable, () => PlaylistItem)
+  playables: Array<Playable & { PlaylistItem: PlaylistItem }>;
 
   @BelongsToMany(() => Tag, {
     through: { model: () => Taggable, scope: { taggableType: "playlist" } },
