@@ -57,6 +57,9 @@ export default class PlaylistItem extends Model<
   @UpdatedAt
   updatedAt: Date;
 
+  @BelongsTo(() => Playable)
+  playable: Playable;
+
   @BelongsTo(() => Chapter)
   chapter: Chapter;
 }

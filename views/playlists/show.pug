@@ -3,6 +3,8 @@ extends ../_layout.pug
 block body
   p #{ playlist.title }
 
-  each playable in playables
+  each item in items
     div
-      a(href=`/playables/${playable.id}`) #{ playable.title }
+      if (item.chapter)
+        span #{ item.chapter.title }
+      a(href=`/playables/${item.playable.id}`) #{ item.playable.title }

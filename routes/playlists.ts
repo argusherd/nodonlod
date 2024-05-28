@@ -1,6 +1,8 @@
 import { Request, Router } from "express";
-import { Sequelize } from "sequelize";
+import Chapter from "../database/models/chapter";
+import Playable from "../database/models/playable";
 import Playlist from "../database/models/playlist";
+import PlaylistItem from "../database/models/playlist-item";
 
 interface PlaylistRequest extends Request {
   playlist: Playlist;
@@ -28,8 +30,10 @@ router.get("/", async (_req, res) => {
 router.get("/:playlist", async (req: PlaylistRequest, res) => {
   res.render("playlists/show.pug", {
     playlist: req.playlist,
-    playables: await req.playlist.$get("playables", {
-      order: [[Sequelize.literal("`PlaylistItem.order`"), "ASC"]],
+    items: await PlaylistItem.findAll({
+      where: { playlistId: req.playlist.id },
+      include: [Playable, Chapter],
+      order: [["order", "ASC"]],
     }),
   });
 });
