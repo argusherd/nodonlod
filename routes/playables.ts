@@ -1,4 +1,5 @@
 import { Request, Router } from "express";
+import PlayQueue from "../database/models/play-queue";
 import Playable from "../database/models/playable";
 import mediaPlayer from "../src/media-player";
 import wss from "./websocket";
@@ -42,6 +43,15 @@ router.get("/:playable/play", (req: PlayableRequest, res) => {
   wss.nowPlaying({ title: req.playable.title });
 
   res.sendStatus(202);
+});
+
+router.post("/:playable/queue", async (req: PlayableRequest, res) => {
+  await PlayQueue.create({
+    playableId: req.playable.id,
+    order: Number(await PlayQueue.max("order")) + 1,
+  });
+
+  res.sendStatus(201);
 });
 
 export default router;
