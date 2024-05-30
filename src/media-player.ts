@@ -105,10 +105,9 @@ const socketOnData = (data: Buffer) => {
       duration = message.data - 0.1;
       playerObserver.emit("start", message.data);
 
-      if (startAt) {
-        mediaPlayer.seek(startAt);
-        mediaPlayer.resume();
-      }
+      if (startAt) mediaPlayer.seek(startAt);
+
+      mediaPlayer.resume();
     }
 
     if (message.name === "time-pos") {
