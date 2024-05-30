@@ -5,7 +5,9 @@ import { join } from "path";
 import { renderFile } from "pug";
 import internal from "stream";
 import { WebSocketServer } from "ws";
-import mediaPlayer from "../src/media-player";
+import Chapter from "../database/models/chapter";
+import PlayQueue from "../database/models/play-queue";
+import Playable from "../database/models/playable";
 
 interface MediaInfo {
   title: string;
@@ -14,9 +16,37 @@ interface MediaInfo {
   endTime?: number;
 }
 
+interface WsServer extends WebSocketServer {
+  emit(
+    event: "play-next",
+    url: string,
+    startTime?: number,
+    endTime?: number,
+  ): boolean;
+
+  on(
+    event: "play-next",
+    listener: (url: string, startTime?: number, endTime?: number) => void,
+  ): void;
+  on(event: string, listener: (...args: any[]) => void): this;
+}
+
+export interface WSS {
+  handleUpgrade: (
+    request: IncomingMessage,
+    socket: internal.Duplex,
+    head: Buffer,
+  ) => void;
+  nowPlaying: (mediaInfo: MediaInfo) => void;
+  mediaStart: (duration: number) => void;
+  playNext: () => Promise<void>;
+  on: Pick<WsServer, "on">["on"];
+  removeAllListeners: (event: "play-next") => void;
+}
+
 dayjs.extend(duration);
 
-const wsServer = new WebSocketServer({ noServer: true });
+const wsServer: WsServer = new WebSocketServer({ noServer: true });
 const viewDir = process.env.NODE_ENV !== "test" ? "../" : "";
 const render = (filename: string, params?: object) =>
   renderFile(join(__dirname, `${viewDir}../views`, filename), {
@@ -24,7 +54,19 @@ const render = (filename: string, params?: object) =>
     dayjs,
   });
 
-const wss = {
+function playChapter(playable: Playable, chapter: Chapter) {
+  const mediaInfo: MediaInfo = { title: playable.title };
+  const { title: chTitle, startTime, endTime } = chapter;
+
+  mediaInfo.chapter = chTitle;
+  mediaInfo.startTime = startTime;
+  mediaInfo.endTime = endTime;
+
+  wsServer.emit("play-next", playable.url, startTime, endTime);
+  wss.nowPlaying(mediaInfo);
+}
+
+const wss: WSS = {
   handleUpgrade: (
     request: IncomingMessage,
     socket: internal.Duplex,
@@ -43,8 +85,26 @@ const wss = {
         `<span id="duration">${dayjs.duration(duration, "seconds").format("HH:mm:ss")}</span>`,
       ),
     ),
-};
+  playNext: async () => {
+    const playQueue = await PlayQueue.findOne({
+      include: [Playable, Chapter],
+      order: [["order", "ASC"]],
+    });
 
-mediaPlayer.on("start", wss.mediaStart);
+    if (!playQueue) return;
+
+    const { playable, chapter } = playQueue;
+
+    if (chapter) playChapter(playable, chapter);
+    else {
+      wsServer.emit("play-next", playable.url);
+      wss.nowPlaying({ title: playable.title });
+    }
+
+    await playQueue.destroy();
+  },
+  on: (event, listener) => wsServer.on(event, listener),
+  removeAllListeners: (event) => wsServer.removeAllListeners(event),
+};
 
 export default wss;

@@ -62,5 +62,5 @@ export default class PlayQueue extends Model<
   playable: Playable;
 
   @BelongsTo(() => Chapter)
-  chapter: Chapter;
+  chapter?: Chapter;
 }
