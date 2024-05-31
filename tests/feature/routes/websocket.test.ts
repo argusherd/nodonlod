@@ -154,4 +154,12 @@ describe("The websocket server", () => {
 
     await wss.playNext();
   });
+
+  it("can broadcast the current play time of the media", () => {
+    client.on("message", (data) => {
+      expect(data.toString()).toContain(JSON.stringify({ currentTime: 30 }));
+    });
+
+    wss.currentTime(30);
+  });
 });

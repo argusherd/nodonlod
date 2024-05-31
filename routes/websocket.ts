@@ -40,6 +40,7 @@ export interface WSS {
   nowPlaying: (mediaInfo: MediaInfo) => void;
   mediaStart: (duration: number) => void;
   playNext: () => Promise<void>;
+  currentTime: (currentTime: number) => void;
   on: Pick<WsServer, "on">["on"];
   removeAllListeners: (event: "play-next") => void;
 }
@@ -103,6 +104,8 @@ const wss: WSS = {
 
     await playQueue.destroy();
   },
+  currentTime: (currentTime) =>
+    wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ currentTime }))),
   on: (event, listener) => wsServer.on(event, listener),
   removeAllListeners: (event) => wsServer.removeAllListeners(event),
 };

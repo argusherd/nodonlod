@@ -1,4 +1,4 @@
-#player
+#player(x-data="currentTime")
   p#title #{ title }
     span#duration
 
@@ -8,3 +8,5 @@
     - var endAt = endTime ? dayjs.duration(endTime, "seconds").format("HH:mm:ss") : "";
     span #{ startAt }
     span #{ endAt }
+
+  p(x-text="currentTime")
