@@ -7,6 +7,8 @@ import { join } from "path";
 import sequelize from "../database/connection";
 import umzug from "../database/migrator";
 import express from "../routes";
+import wss from "../routes/websocket";
+import mediaPlayer from "../src/media-player";
 
 export function preConfigDotenv() {
   configDotenv();
@@ -19,6 +21,7 @@ export function preConfigDotenv() {
 export function postConfigDotenv() {
   setDatabaseLocation();
   setDatabaseLogging();
+  setUpMediaEvent();
 
   if (!electron.isPackaged) return;
 
@@ -61,4 +64,13 @@ export function setDatabaseLogging() {
   if (process.env.UMZUG_MIGRATOR_LOGGING)
     umzug.options.logger =
       process.env.UMZUG_MIGRATOR_LOGGING === "1" ? console : undefined;
+}
+
+function setUpMediaEvent() {
+  wss.on("play-next", (url, startTime, endTime) =>
+    mediaPlayer.play(url, startTime, endTime),
+  );
+
+  mediaPlayer.on("start", (duration) => wss.mediaStart(duration));
+  mediaPlayer.on("end", () => wss.playNext());
 }
