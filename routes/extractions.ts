@@ -54,6 +54,12 @@ router.post(
   },
 );
 
+router.delete("/", async (_req, res) => {
+  await Extraction.truncate();
+
+  res.sendStatus(204);
+});
+
 router.get("/:extraction", async (req: ExtractionRequest, res) => {
   const extraction = req.extraction;
 
@@ -96,6 +102,12 @@ router.post(
     res.sendStatus(201);
   },
 );
+
+router.delete("/:extraction", async (req: ExtractionRequest, res) => {
+  await req.extraction.destroy();
+
+  res.sendStatus(204);
+});
 
 function findRawInfoById(
   rawInfo: RawPlayable | RawPlaylist | SubRawPlayable | null,

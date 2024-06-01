@@ -43,4 +43,10 @@ router.post("/:chapter/queue", async (req: ChapterRequest, res) => {
   res.sendStatus(201);
 });
 
+router.delete("/:chapter", async (req: ChapterRequest, res) => {
+  await req.chapter.destroy();
+
+  res.sendStatus(204);
+});
+
 export default router;

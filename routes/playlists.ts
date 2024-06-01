@@ -57,4 +57,10 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
   res.sendStatus(201);
 });
 
+router.delete("/:playlist", async (req: PlaylistRequest, res) => {
+  await req.playlist.destroy();
+
+  res.sendStatus(204);
+});
+
 export default router;

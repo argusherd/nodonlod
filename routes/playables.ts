@@ -54,4 +54,10 @@ router.post("/:playable/queue", async (req: PlayableRequest, res) => {
   res.sendStatus(201);
 });
 
+router.delete("/:playable", async (req: PlayableRequest, res) => {
+  await req.playable.destroy();
+
+  res.sendStatus(204);
+});
+
 export default router;
