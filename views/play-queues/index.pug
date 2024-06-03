@@ -1,2 +1,4 @@
-each item in items
-  p #{ item.chapter ? item.chapter.title : "" } #{ item.playable.title }
+#play-queue
+  h3 Play queue
+  each item in items
+    p #{ item.chapter ? item.chapter.title : "" } #{ item.playable.title }

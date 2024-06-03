@@ -16,3 +16,10 @@ html(lang="en")
 
     #player-container(hx-ext="ws", ws-connect="/", hx-preserve)
       #player
+
+    #play-queue-container(x-data="{ show: false }", hx-preserve)
+      button(
+        @click="show = !show; $nextTick(() => htmx.process($el.parentNode))"
+      ) Open play queue
+      template(x-if="show")
+        #play-queue(hx-get="/play-queues", hx-trigger="load")

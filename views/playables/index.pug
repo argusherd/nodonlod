@@ -5,3 +5,4 @@ block body
     div
       a(href=`/playables/${playable.id}`) #{ playable.title }
       button(hx-get=`/playables/${playable.id}/play`, hx-swap="none") Play
+      button(hx-post=`/playables/${playable.id}/queue`, hx-swap="none") Queue
