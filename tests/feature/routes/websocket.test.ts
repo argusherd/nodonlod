@@ -1,4 +1,5 @@
 import PlayQueue from "@/database/models/play-queue";
+import Playable from "@/database/models/playable";
 import wss from "@/routes/websocket";
 import { createServer } from "http";
 import { WebSocket } from "ws";
@@ -161,5 +162,37 @@ describe("The websocket server", () => {
     });
 
     wss.currentTime(30);
+  });
+
+  it("can broadcast the latest play queue", async () => {
+    const chapter = await createChapter();
+    const playable = (await chapter.$get("playable")) as Playable;
+
+    client.on("message", (data) => {
+      expect(data.toString()).toContain(playable.title);
+      expect(data.toString()).toContain(chapter.title);
+    });
+
+    await PlayQueue.create({ playableId: playable.id, chapterId: chapter.id });
+
+    await wss.latestPlayQueue();
+  });
+
+  it("broadcasts the latest play queue items based on their order", async () => {
+    const playable1 = await createPlayable();
+    const playable2 = await createPlayable();
+
+    client.on("message", (data) => {
+      const displayOrder = new RegExp(
+        `.*${playable2.title}.*${playable1.title}.*`,
+      );
+
+      expect(data.toString().match(displayOrder)).not.toBeNull();
+    });
+
+    await PlayQueue.create({ playableId: playable1.id, order: 15 });
+    await PlayQueue.create({ playableId: playable2.id, order: 14 });
+
+    await wss.latestPlayQueue();
   });
 });

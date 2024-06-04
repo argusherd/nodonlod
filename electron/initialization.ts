@@ -67,9 +67,10 @@ export function setDatabaseLogging() {
 }
 
 function setUpMediaEvent() {
-  wss.on("play-next", (url, startTime, endTime) =>
-    mediaPlayer.play(url, startTime, endTime),
-  );
+  wss.on("play-next", (url, startTime, endTime) => {
+    mediaPlayer.play(url, startTime, endTime);
+    wss.latestPlayQueue();
+  });
 
   mediaPlayer.on("start", (duration) => wss.mediaStart(duration));
   mediaPlayer.on("end", () => wss.playNext());

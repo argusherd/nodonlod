@@ -7,22 +7,22 @@ html(lang="en")
     link(rel="stylesheet", href="/css/app.css")
     script(src="/js/app.js")
 
-  body(hx-boost="true")
+  body(hx-boost="true", hx-ext="ws", ws-connect="/")
     a(href="/extractions") + Create
     a(href="/") Home
     a(href="/playables") Playables
     a(href="/playlists") Playlists
     block body
 
-    #player-container(hx-ext="ws", ws-connect="/", hx-preserve)
+    #player-container(hx-preserve)
       #player
 
-    #play-queue-container(x-data="{ show: false }", hx-preserve)
-      button(
-        @click="show = !show; $nextTick(() => htmx.process($el.parentNode))"
-      ) Open play queue
-      template(x-if="show")
-        #play-queue(
-          hx-get="/play-queues",
-          hx-trigger="load, play-queue from:body"
-        )
+    #play-queue-container(
+      x-data="{ open: false }",
+      hx-preserve,
+      hx-get="/play-queues",
+      hx-trigger="load, play-queue from:body",
+      hx-target="#play-queue"
+    )
+      button(@click="open = !open") Open play queue
+      #play-queue(x-show="open")

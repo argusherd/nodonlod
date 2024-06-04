@@ -41,6 +41,7 @@ export interface WSS {
   mediaStart: (duration: number) => void;
   playNext: () => Promise<void>;
   currentTime: (currentTime: number) => void;
+  latestPlayQueue: () => Promise<void>;
   on: Pick<WsServer, "on">["on"];
   removeAllListeners: (event: "play-next") => void;
 }
@@ -96,16 +97,26 @@ const wss: WSS = {
 
     const { playable, chapter } = playQueue;
 
+    await playQueue.destroy();
+
     if (chapter) playChapter(playable, chapter);
     else {
       wsServer.emit("play-next", playable.url);
       wss.nowPlaying({ title: playable.title });
     }
-
-    await playQueue.destroy();
   },
   currentTime: (currentTime) =>
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ currentTime }))),
+  latestPlayQueue: async () => {
+    const items = await PlayQueue.findAll({
+      include: [Playable, Chapter],
+      order: [["order", "ASC"]],
+    });
+
+    wsServer.clients.forEach(async (ws) =>
+      ws.send(render("play-queues/index.pug", { items })),
+    );
+  },
   on: (event, listener) => wsServer.on(event, listener),
   removeAllListeners: (event) => wsServer.removeAllListeners(event),
 };
