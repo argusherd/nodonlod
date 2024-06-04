@@ -54,7 +54,7 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
     });
   }
 
-  res.sendStatus(201);
+  res.set("HX-Trigger", "play-queue").sendStatus(201);
 });
 
 router.delete("/:playlist", async (req: PlaylistRequest, res) => {

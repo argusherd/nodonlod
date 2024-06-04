@@ -60,4 +60,12 @@ describe("The queue playlist route", () => {
     expect(playFirst?.order).toEqual(1);
     expect(playSecond?.order).toEqual(2);
   });
+
+  it("triggers htmx to reload the play queue list via the header", async () => {
+    const playlist = await createPlaylist();
+
+    await supertest(express)
+      .post(`/playlists/${playlist.id}/queue`)
+      .expect("HX-Trigger", "play-queue");
+  });
 });

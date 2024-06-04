@@ -51,7 +51,7 @@ router.post("/:playable/queue", async (req: PlayableRequest, res) => {
     order: Number(await PlayQueue.max("order")) + 1,
   });
 
-  res.sendStatus(201);
+  res.set("HX-Trigger", "play-queue").sendStatus(201);
 });
 
 router.delete("/:playable", async (req: PlayableRequest, res) => {

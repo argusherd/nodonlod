@@ -22,4 +22,7 @@ html(lang="en")
         @click="show = !show; $nextTick(() => htmx.process($el.parentNode))"
       ) Open play queue
       template(x-if="show")
-        #play-queue(hx-get="/play-queues", hx-trigger="load")
+        #play-queue(
+          hx-get="/play-queues",
+          hx-trigger="load, play-queue from:body"
+        )

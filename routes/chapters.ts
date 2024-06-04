@@ -40,7 +40,7 @@ router.post("/:chapter/queue", async (req: ChapterRequest, res) => {
     order: Number(await PlayQueue.max("order")) + 1,
   });
 
-  res.sendStatus(201);
+  res.set("HX-Trigger", "play-queue").sendStatus(201);
 });
 
 router.delete("/:chapter", async (req: ChapterRequest, res) => {

@@ -34,4 +34,12 @@ describe("The queue playable route", () => {
 
     expect(playSecond?.order).toEqual(1);
   });
+
+  it("triggers htmx to reload the play queue list via the header", async () => {
+    const playable = await createPlayable();
+
+    await supertest(express)
+      .post(`/playables/${playable.id}/queue`)
+      .expect("HX-Trigger", "play-queue");
+  });
 });

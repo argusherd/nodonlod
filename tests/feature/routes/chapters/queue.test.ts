@@ -34,4 +34,12 @@ describe("The queue chapter route", () => {
 
     expect(playSecond?.order).toEqual(1);
   });
+
+  it("triggers htmx to reload the play queue list via the header", async () => {
+    const chapter = await createChapter();
+
+    await supertest(express)
+      .post(`/chapters/${chapter.id}/queue`)
+      .expect("HX-Trigger", "play-queue");
+  });
 });
