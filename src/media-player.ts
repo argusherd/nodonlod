@@ -132,6 +132,7 @@ const mediaPlayer: MediaPlayer = {
     if (isConnected) {
       ipcClient.write(commandPrompt(["loadfile", url]));
       if (startAt) mediaPlayer.pause();
+      else mediaPlayer.resume();
       return;
     }
 
