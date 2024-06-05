@@ -26,6 +26,7 @@ interface IpcMessage {
   event: "property-change";
   name: "duration" | "time-pos";
   data?: any;
+  request_id?: number;
 }
 
 export interface MediaPlayer {
@@ -44,6 +45,7 @@ const mpvArgs = `--idle --keep-open --force-window --input-ipc-server=${ipcPath}
 
 const commandQueue: string[] = [];
 const playerObserver: PlayerObserver = new EventEmitter();
+const durationId = 1;
 
 let ipcClient: Socket;
 let mpvPlayer: ChildProcessWithoutNullStreams;
@@ -53,8 +55,8 @@ let duration = Number.MAX_VALUE;
 let startAt = 0;
 let endAt = 0;
 
-const commandPrompt = (command: any[]): string =>
-  JSON.stringify({ command }) + "\n";
+const commandPrompt = (command: any[], request_id = 0): string =>
+  JSON.stringify({ command, request_id }) + "\n";
 
 const launchPlayer = () => {
   mpvPlayer = spawn(
@@ -98,10 +100,9 @@ const socketOnData = (data: Buffer) => {
   for (let section of String(data).trim().split("\n")) {
     const message: IpcMessage = JSON.parse(section);
 
-    if (message.event != "property-change" || "data" in message === false)
-      return;
+    if ("data" in message === false) return;
 
-    if (message.name === "duration") {
+    if (message.name === "duration" || message.request_id === durationId) {
       duration = message.data - 0.1;
       playerObserver.emit("start", message.data);
 
@@ -118,7 +119,12 @@ const socketOnData = (data: Buffer) => {
         playerObserver.emit("end");
       }
 
-      if (message.data >= duration) playerObserver.emit("end");
+      if (!duration)
+        ipcClient.write(
+          commandPrompt(["get_property", "duration"], durationId),
+        );
+
+      if (duration && message.data >= duration) playerObserver.emit("end");
     }
   }
 };
@@ -128,6 +134,7 @@ const mediaPlayer: MediaPlayer = {
   play: (url: string, startTime = 0, endTime = 0) => {
     startAt = startTime;
     endAt = endTime;
+    duration = 0;
 
     if (isConnected) {
       ipcClient.write(commandPrompt(["loadfile", url]));

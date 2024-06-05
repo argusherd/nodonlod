@@ -13,6 +13,8 @@ jest.mock("net");
 
 describe("The media player module", () => {
   let mediaPlayer: MediaPlayer;
+  const commandPrompt = (command: any[], request_id = 0): string =>
+    JSON.stringify({ command, request_id }) + "\n";
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -33,10 +35,8 @@ describe("The media player module", () => {
 
     mediaPlayer.launch();
 
-    const observeDuration =
-      JSON.stringify({ command: ["observe_property", 0, "duration"] }) + "\n";
-    const observeTimePos =
-      JSON.stringify({ command: ["observe_property", 0, "time-pos"] }) + "\n";
+    const observeDuration = commandPrompt(["observe_property", 0, "duration"]);
+    const observeTimePos = commandPrompt(["observe_property", 0, "time-pos"]);
 
     expect(mockedWrite).toHaveBeenCalledWith(observeDuration);
     expect(mockedWrite).toHaveBeenCalledWith(observeTimePos);
@@ -52,10 +52,10 @@ describe("The media player module", () => {
       }),
     );
 
-    const loadUrl =
-      JSON.stringify({
-        command: ["loadfile", "https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
-      }) + "\n";
+    const loadUrl = commandPrompt([
+      "loadfile",
+      "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    ]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 
@@ -72,8 +72,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const pasueMedia =
-      JSON.stringify({ command: ["set_property", "pause", true] }) + "\n";
+    const pasueMedia = commandPrompt(["set_property", "pause", true]);
 
     mediaPlayer.launch();
     mediaPlayer.pause();
@@ -91,8 +90,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const resumeMedia =
-      JSON.stringify({ command: ["set_property", "pause", false] }) + "\n";
+    const resumeMedia = commandPrompt(["set_property", "pause", false]);
 
     mediaPlayer.launch();
     mediaPlayer.resume();
@@ -148,6 +146,31 @@ describe("The media player module", () => {
     mediaPlayer.launch();
 
     expect(expectedCurrentTime).toEqual(12.12);
+  });
+
+  it("instructs the player to retrieve the duration time if the time-pos property is observed but not the duration", () => {
+    const ipcMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 12.12,
+      }) + "\n";
+
+    const mockedWrite = jest.fn();
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(ipcMessage));
+      }),
+    );
+
+    const getDuration = commandPrompt(["get_property", "duration"], 1);
+
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+
+    expect(mockedWrite).toHaveBeenCalledWith(getDuration);
   });
 
   it("will not receive a duration event if the observed message does not contain a data property", () => {
@@ -206,7 +229,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const seek = JSON.stringify({ command: ["seek", 30, "absolute"] }) + "\n";
+    const seek = commandPrompt(["seek", 30, "absolute"]);
 
     mediaPlayer.launch();
     mediaPlayer.seek(30);
@@ -232,7 +255,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const seek = JSON.stringify({ command: ["seek", 30, "absolute"] }) + "\n";
+    const seek = commandPrompt(["seek", 30, "absolute"]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 30);
 
@@ -257,8 +280,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const pasueMedia =
-      JSON.stringify({ command: ["set_property", "pause", true] }) + "\n";
+    const pasueMedia = commandPrompt(["set_property", "pause", true]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 30);
 
@@ -283,8 +305,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const resumeMedia =
-      JSON.stringify({ command: ["set_property", "pause", false] }) + "\n";
+    const resumeMedia = commandPrompt(["set_property", "pause", false]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 30);
 
@@ -309,8 +330,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const pasueMedia =
-      JSON.stringify({ command: ["set_property", "pause", true] }) + "\n";
+    const pasueMedia = commandPrompt(["set_property", "pause", true]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 30);
 
@@ -335,8 +355,7 @@ describe("The media player module", () => {
       }),
     );
 
-    const pasueMedia =
-      JSON.stringify({ command: ["set_property", "pause", true] }) + "\n";
+    const pasueMedia = commandPrompt(["set_property", "pause", true]);
 
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 0);
 
@@ -409,5 +428,29 @@ describe("The media player module", () => {
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 30);
 
     expect(endOfChapter).toBeTruthy();
+  });
+
+  it("only emits the player end event when there is a duration because local files sometimes do not callback the duration", () => {
+    const currentTimeMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 30.01,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(currentTimeMessage));
+      }),
+    );
+
+    let endOfMedia = false;
+
+    mediaPlayer.on("end", () => (endOfMedia = true));
+
+    mediaPlayer.play("file:///C:/Users/user/Desktop/NGGYU.mp4");
+
+    expect(endOfMedia).toBeFalsy();
   });
 });
