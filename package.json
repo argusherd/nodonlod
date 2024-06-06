@@ -12,7 +12,10 @@
     "migrator:create": "ts-node database/migrator.ts create --skip-verify --folder database/migrations --name",
     "postinstall": "electron-builder install-app-deps",
     "tailwind": "tailwindcss -o public/css/app.css --minify",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "watch": "concurrently \"npm:watch:*\" \"npm:dev\"",
+    "watch:tailwind": "npm run tailwind -- --watch",
+    "watch:webpack": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -50,6 +53,7 @@
     "@types/pug": "^2.0.10",
     "@types/supertest": "^6.0.2",
     "@types/ws": "^8.5.10",
+    "concurrently": "^8.2.2",
     "electron": "^28.1.4",
     "electron-builder": "^24.9.1",
     "htmx.org": "^1.9.10",
