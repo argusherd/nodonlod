@@ -4,7 +4,11 @@ import { gracefulShutdown } from "node-schedule";
 import { join } from "path";
 import umzug from "./database/migrator";
 import Extraction from "./database/models/extraction";
-import { postConfigDotenv, preConfigDotenv } from "./electron/initialization";
+import {
+  onDevWatch,
+  postConfigDotenv,
+  preConfigDotenv,
+} from "./electron/initialization";
 import registerIpcMain from "./electron/ipc-main-handler";
 import "./electron/schedule";
 import express from "./routes";
@@ -14,6 +18,7 @@ preConfigDotenv();
 configDotenv();
 postConfigDotenv();
 registerIpcMain();
+onDevWatch();
 
 const port = process.env.SERVER_PORT || "6869";
 

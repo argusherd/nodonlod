@@ -1,5 +1,5 @@
 import { configDotenv } from "dotenv";
-import { app as electron } from "electron";
+import { BrowserWindow, app as electron } from "electron";
 import coreExpress from "express";
 import { copyFileSync } from "fs";
 import { constants } from "fs/promises";
@@ -75,4 +75,17 @@ function setUpMediaEvent() {
   mediaPlayer.on("start", (duration) => wss.mediaStart(duration));
   mediaPlayer.on("end", () => wss.playNext());
   mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
+}
+
+export async function onDevWatch() {
+  if (electron.isPackaged) return;
+
+  const chokidar = await import("chokidar");
+  const watcher = chokidar.watch("{public,views}/**");
+
+  watcher.on("all", () => {
+    BrowserWindow.getAllWindows().forEach((window) =>
+      window.webContents.reloadIgnoringCache(),
+    );
+  });
 }

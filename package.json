@@ -53,6 +53,7 @@
     "@types/pug": "^2.0.10",
     "@types/supertest": "^6.0.2",
     "@types/ws": "^8.5.10",
+    "chokidar": "^3.6.0",
     "concurrently": "^8.2.2",
     "electron": "^28.1.4",
     "electron-builder": "^24.9.1",
