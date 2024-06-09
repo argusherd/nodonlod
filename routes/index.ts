@@ -4,6 +4,7 @@ import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import chapterRouter from "./chapters";
 import extractionRouter from "./extractions";
+import i18nMiddleware from "./middlewares/i18n";
 import playQueueRouter from "./play-queues";
 import playableRouter from "./playables";
 import playlistRouter from "./playlists";
@@ -16,6 +17,7 @@ express.set("view engine", "pug");
 express.use(coreExpress.static("public"));
 express.use(coreExpress.urlencoded({ extended: true }));
 express.use(cookieParser());
+express.use(i18nMiddleware);
 
 express.locals.dayjs = dayjs;
 

@@ -2,5 +2,5 @@
 module.exports = {
   asar: true,
   extraFiles: [".env.example", "bin"],
-  files: ["main", "public", "views"],
+  files: ["main", "public", "views", "locales"],
 };

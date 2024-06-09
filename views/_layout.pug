@@ -1,5 +1,5 @@
 doctype html
-html(lang="en")
+html(lang=`${getLocale()}`)
   head
     meta(charset="UTF-8")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
@@ -10,7 +10,7 @@ html(lang="en")
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
     a(href="/extractions") + Create
     a(href="/") Home
-    a(href="/playables") Playables
+    a(href="/playables") #{ __("Playables") }
     a(href="/playlists") Playlists
     block body
 
@@ -26,3 +26,7 @@ html(lang="en")
     )
       button(@click="open = !open") Open play queue
       #play-queue(x-show="open")
+
+    #locales
+      a(href="?locale=en") en
+      a(href="?locale=zh-TW") zh-TW

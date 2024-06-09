@@ -8,6 +8,7 @@ import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
 import PlayQueue from "../database/models/play-queue";
 import Playable from "../database/models/playable";
+import { i18n } from "./middlewares/i18n";
 
 interface MediaInfo {
   title: string;
@@ -49,11 +50,13 @@ export interface WSS {
 dayjs.extend(duration);
 
 const wsServer: WsServer = new WebSocketServer({ noServer: true });
-const viewDir = process.env.NODE_ENV !== "test" ? "../" : "";
+const relativePath =
+  process.env.NODE_ENV === "test" ? "../views" : "../../views";
 const render = (filename: string, params?: object) =>
-  renderFile(join(__dirname, `${viewDir}../views`, filename), {
+  renderFile(join(__dirname, relativePath, filename), {
     ...params,
     dayjs,
+    __: i18n.__,
   });
 
 function playChapter(playable: Playable, chapter: Chapter) {
