@@ -8,11 +8,26 @@ html(lang=`${getLocale()}`)
     script(src="/js/app.js")
 
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
-    a(href="/extractions") + Create
-    a(href="/") Home
-    a(href="/playables") #{ __("Playables") }
-    a(href="/playlists") Playlists
-    block body
+    nav.fixed.left-0.top-0.flex.h-screen.max-w-fit.flex-col.gap-2.bg-gray-300.p-2(
+      x-data="{ show: false }",
+      @mouseenter="show = true",
+      @mouseleave="show = false"
+    )
+      a.flex.items-center.gap-1(href="/")
+        i.text-2xl(class="icon-[material-symbols--home-outline]")
+        span.mr-2(x-show="show") #{ __("Home") }
+      a.flex.items-center.gap-1(href="/extractions")
+        i.text-2xl(class="icon-[gridicons--create]")
+        span.mr-2(x-show="show") #{ __("Create") }
+      a.flex.items-center.gap-1(href="/playables")
+        i.text-2xl(class="icon-[carbon--play]")
+        span.mr-2(x-show="show") #{ __("Playables") }
+      a.flex.items-center.gap-1(href="/playlists")
+        i.text-2xl(class="icon-[mage--playlist]")
+        span.mr-2(x-show="show") #{ __("Playlists") }
+
+    .ml-10.p-2
+      block body
 
     #player-container(hx-preserve)
       #player
