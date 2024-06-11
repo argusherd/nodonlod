@@ -2,29 +2,35 @@ doctype html
 html(lang=`${getLocale()}`)
   head
     meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    meta(content="width=device-width, initial-scale=1.0", name="viewport")
     title nodonlod
-    link(rel="stylesheet", href="/css/app.css")
+    link(href="/css/app.css", rel="stylesheet")
     script(src="/js/app.js")
 
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
-    nav.fixed.left-0.top-0.flex.h-screen.max-w-fit.flex-col.gap-2.bg-gray-300.p-2(
-      x-data="{ show: false }",
+    nav.fixed.left-0.top-0.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
       @mouseenter="show = true",
-      @mouseleave="show = false"
+      @mouseleave="show = false",
+      x-data="{ show: false }"
     )
-      a.flex.items-center.gap-1(href="/")
-        i.text-2xl(class="icon-[material-symbols--home-outline]")
-        span.mr-2(x-show="show") #{ __("Home") }
-      a.flex.items-center.gap-1(href="/extractions")
-        i.text-2xl(class="icon-[gridicons--create]")
-        span.mr-2(x-show="show") #{ __("Create") }
-      a.flex.items-center.gap-1(href="/playables")
-        i.text-2xl(class="icon-[carbon--play]")
-        span.mr-2(x-show="show") #{ __("Playables") }
-      a.flex.items-center.gap-1(href="/playlists")
-        i.text-2xl(class="icon-[mage--playlist]")
-        span.mr-2(x-show="show") #{ __("Playlists") }
+      .flex.flex-col.gap-2
+        a.flex.items-center.gap-1(href="/")
+          i.text-2xl(class="icon-[material-symbols--home-outline]")
+          span.mr-2(x-show="show") #{ __("Home") }
+        a.flex.items-center.gap-1(href="/extractions")
+          i.text-2xl(class="icon-[gridicons--create]")
+          span.mr-2(x-show="show") #{ __("Create") }
+        a.flex.items-center.gap-1(href="/playables")
+          i.text-2xl(class="icon-[carbon--play]")
+          span.mr-2(x-show="show") #{ __("Playables") }
+        a.flex.items-center.gap-1(href="/playlists")
+          i.text-2xl(class="icon-[mage--playlist]")
+          span.mr-2(x-show="show") #{ __("Playlists") }
+
+      .flex.flex-col.gap-2
+        button.flex.items-center.gap-1(@click="$dispatch('toggle-play-queue')")
+          i.text-2xl(class="icon-[heroicons--queue-list]")
+          span.mr-2(x-show="show") #{ __("Play Queue") }
 
     .ml-10.p-2
       block body
@@ -32,15 +38,17 @@ html(lang=`${getLocale()}`)
     #player-container(hx-preserve)
       #player
 
-    #play-queue-container(
-      x-data="{ open: false }",
-      hx-preserve,
+    #play-queue-container.fixed.right-0.top-0.h-screen.min-w-40.overflow-y-auto.bg-blue-100(
+      @toggle-play-queue.window="show = !show",
+      class="w-4/12 shadow-[0_0_50px_10px_rgba(0,0,0,0.25)]",
       hx-get="/play-queues",
+      hx-preserve,
+      hx-target="#play-queue",
       hx-trigger="load, play-queue from:body",
-      hx-target="#play-queue"
+      x-data="{ show: false }",
+      x-show="show"
     )
-      button(@click="open = !open") Open play queue
-      #play-queue(x-show="open")
+      #play-queue
 
     #locales
       a(href="?locale=en") en

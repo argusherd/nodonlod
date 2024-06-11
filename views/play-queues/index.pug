@@ -1,4 +1,9 @@
-#play-queue(x-show="open")
-  h3 Play queue
-  each item in items
-    p #{ item.chapter ? item.chapter.title : "" } #{ item.playable.title }
+#play-queue
+  .relative.p-2
+    button.absolute.right-2.top-2.text-2xl(
+      @click="show = false",
+      class="icon-[material-symbols-light--close]"
+    )
+    h3.mb-2.text-center.text-lg.font-semibold #{ __("Play Queue") }
+    each item in items
+      p #{ item.chapter ? item.chapter.title : "" } #{ item.playable.title }
