@@ -1,6 +1,5 @@
-#player(x-data="currentTime")
-  p#title #{ title }
-    span#duration
+#player.rounded-sm.bg-pink-100.p-2(x-data="currentTime")
+  p#title #{ title || "-" }
 
   if chapter
     p #{ chapter }
@@ -9,4 +8,9 @@
     span #{ startAt }
     span #{ endAt }
 
-  p(x-text="currentTime")
+  p
+    span(x-text="currentTime")
+    |
+    | -
+    |
+    span#duration

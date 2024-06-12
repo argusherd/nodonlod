@@ -8,7 +8,7 @@ html(lang=`${getLocale()}`)
     script(src="/js/app.js")
 
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
-    nav.fixed.left-0.top-0.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
+    nav.fixed.left-0.top-0.z-10.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
       @mouseenter="show = true",
       @mouseleave="show = false",
       x-data="{ show: false }"
@@ -21,13 +21,16 @@ html(lang=`${getLocale()}`)
           i.text-2xl(class="icon-[gridicons--create]")
           span.mr-2(x-show="show") #{ __("Create") }
         a.flex.items-center.gap-1(href="/playables")
-          i.text-2xl(class="icon-[carbon--play]")
+          i.text-2xl(class="icon-[mdi--play-box-outline]")
           span.mr-2(x-show="show") #{ __("Playables") }
         a.flex.items-center.gap-1(href="/playlists")
           i.text-2xl(class="icon-[mage--playlist]")
           span.mr-2(x-show="show") #{ __("Playlists") }
 
       .flex.flex-col.gap-2
+        button.flex.items-center.gap-1(@click="$dispatch('toggle-player')")
+          i.text-2xl(class="icon-[carbon--play]")
+          span.mr-2(x-show="show") #{ __("Player") }
         button.flex.items-center.gap-1(@click="$dispatch('toggle-play-queue')")
           i.text-2xl(class="icon-[heroicons--queue-list]")
           span.mr-2(x-show="show") #{ __("Play Queue") }
@@ -35,8 +38,22 @@ html(lang=`${getLocale()}`)
     .ml-10.p-2
       block body
 
-    #player-container(hx-preserve)
-      #player
+    #player-container.fixed.bottom-4(
+      @toggle-player.window="show = !show",
+      class="left-1/2 w-5/6 -translate-x-1/2",
+      hx-preserve,
+      x-data="{ show: true }",
+      x-show="show"
+    )
+      .relative.ml-10
+        button.absolute.-top-2.right-5.text-lg.text-gray-400(
+          class="icon-[fluent--minimize-12-regular]"
+        )
+        button.absolute.-top-2.right-0.text-lg.text-gray-400(
+          @click="show = false",
+          class="icon-[material-symbols--close]"
+        )
+        include _player.pug
 
     #play-queue-container.fixed.right-0.top-0.h-screen.min-w-40.overflow-y-auto.bg-blue-100(
       @toggle-play-queue.window="show = !show",
@@ -50,6 +67,6 @@ html(lang=`${getLocale()}`)
     )
       #play-queue
 
-    #locales
-      a(href="?locale=en") en
-      a(href="?locale=zh-TW") zh-TW
+    //- #locales
+    //-   a(href="?locale=en") en
+    //-   a(href="?locale=zh-TW") zh-TW
