@@ -28,7 +28,12 @@ html(lang=`${getLocale()}`)
           span.mr-2(x-show="show") #{ __("Playlists") }
 
       .flex.flex-col.gap-2
-        button.flex.items-center.gap-1(@click="$dispatch('toggle-player')")
+        button.flex.items-center.gap-1(
+          @click="playerClosed = false; $dispatch('open-player')",
+          @player-closed.window="playerClosed = true",
+          x-data="{ playerClosed: false }",
+          x-show="playerClosed"
+        )
           i.text-2xl(class="icon-[carbon--play]")
           span.mr-2(x-show="show") #{ __("Player") }
         button.flex.items-center.gap-1(@click="$dispatch('toggle-play-queue')")
@@ -39,21 +44,15 @@ html(lang=`${getLocale()}`)
       block body
 
     #player-container.fixed.bottom-4(
-      @toggle-player.window="show = !show",
-      class="left-1/2 w-5/6 -translate-x-1/2",
+      :class="minimize || 'w-5/6'",
+      @open-player.window="show = true",
+      class="left-1/2 -translate-x-1/2",
       hx-preserve,
-      x-data="{ show: true }",
+      x-data="{ show: true, minimize: false }",
       x-show="show"
     )
-      .relative.ml-10
-        button.absolute.-top-2.right-5.text-lg.text-gray-400(
-          class="icon-[fluent--minimize-12-regular]"
-        )
-        button.absolute.-top-2.right-0.text-lg.text-gray-400(
-          @click="show = false",
-          class="icon-[material-symbols--close]"
-        )
-        include _player.pug
+      .relative.ml-10.rounded.bg-pink-100
+        #player
 
     #play-queue-container.fixed.right-0.top-0.h-screen.min-w-40.overflow-y-auto.bg-blue-100(
       @toggle-play-queue.window="show = !show",
