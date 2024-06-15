@@ -62,6 +62,24 @@ describe("The media player module", () => {
     expect(mockedWrite).toHaveBeenCalledWith(loadUrl);
   });
 
+  it("instructs the player unload the media first if the player is already launched or played", () => {
+    const mockedWrite = jest.fn();
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+      }),
+    );
+
+    const unload = commandPrompt(["loadfile", ""]);
+
+    mediaPlayer.launch();
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+
+    expect(mockedWrite).toHaveBeenCalledWith(unload);
+  });
+
   it("can instruct the player to pause the media", () => {
     const mockedWrite = jest.fn();
 

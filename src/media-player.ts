@@ -103,7 +103,7 @@ const socketOnData = (data: Buffer) => {
     if ("data" in message === false) return;
 
     if (message.name === "duration" || message.request_id === durationId) {
-      duration = message.data - 0.1;
+      duration = message.data - 0.01;
       playerObserver.emit("start", message.data);
 
       if (startAt) mediaPlayer.seek(startAt);
@@ -119,12 +119,12 @@ const socketOnData = (data: Buffer) => {
         playerObserver.emit("end");
       }
 
-      if (!duration)
+      if (duration == Number.MAX_VALUE)
         ipcClient.write(
           commandPrompt(["get_property", "duration"], durationId),
         );
 
-      if (duration && message.data >= duration) playerObserver.emit("end");
+      if (message.data >= duration) playerObserver.emit("end");
     }
   }
 };
@@ -134,9 +134,10 @@ const mediaPlayer: MediaPlayer = {
   play: (url: string, startTime = 0, endTime = 0) => {
     startAt = startTime;
     endAt = endTime;
-    duration = 0;
+    duration = Number.MAX_VALUE;
 
     if (isConnected) {
+      ipcClient.write(commandPrompt(["loadfile", ""]));
       ipcClient.write(commandPrompt(["loadfile", url]));
       if (startAt) mediaPlayer.pause();
       else mediaPlayer.resume();
