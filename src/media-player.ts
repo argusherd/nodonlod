@@ -1,4 +1,4 @@
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { ChildProcess, spawn } from "child_process";
 import EventEmitter from "events";
 import { Socket } from "net";
 import { join } from "path";
@@ -49,7 +49,7 @@ const playerObserver: PlayerObserver = new EventEmitter();
 const durationId = 1;
 
 let ipcClient: Socket;
-let mpvPlayer: ChildProcessWithoutNullStreams;
+let mpvPlayer: ChildProcess;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
 let duration = Number.MAX_VALUE;
@@ -63,6 +63,7 @@ const launchPlayer = () => {
   mpvPlayer = spawn(
     mpvPath,
     `${mpvArgs} ${process.env.MPV_OPTION_APPEND}`.split(" "),
+    { stdio: "ignore" },
   );
   mpvPlayer.on("error", (error) => console.log(error));
   mpvPlayer.on("spawn", connectIpcServer);
