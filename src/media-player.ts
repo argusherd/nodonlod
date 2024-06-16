@@ -35,6 +35,7 @@ export interface MediaPlayer {
   pause: () => void;
   resume: () => void;
   seek: (time: number) => void;
+  stop: () => void;
   on: Pick<PlayerObserver, "on">["on"];
 }
 
@@ -154,6 +155,7 @@ const mediaPlayer: MediaPlayer = {
     ipcClient.write(commandPrompt(["set_property", "pause", false])),
   seek: (time: number) =>
     ipcClient.write(commandPrompt(["seek", time, "absolute"])),
+  stop: () => mpvPlayer?.kill(),
   on: (event, listener) => {
     playerObserver.on(event, listener);
   },
