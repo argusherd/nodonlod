@@ -18,4 +18,12 @@ describe("The media player hook route", () => {
 
     expect(mockedResume).toHaveBeenCalled();
   });
+
+  it("can tell the player to stop the media", async () => {
+    const mockedStop = jest.spyOn(mediaPlayer, "stop").mockImplementation();
+
+    await supertest(express).put("/player/stop").expect(204);
+
+    expect(mockedStop).toHaveBeenCalled();
+  });
 });

@@ -23,7 +23,7 @@ interface PlayerObserver {
 }
 
 interface IpcMessage {
-  event: "property-change";
+  event: "property-change" | "end-file";
   name: "duration" | "time-pos";
   data?: any;
   request_id?: number;
@@ -102,6 +102,8 @@ const socketOnData = (data: Buffer) => {
   for (let section of String(data).trim().split("\n")) {
     const message: IpcMessage = JSON.parse(section);
 
+    if (message.event === "end-file") playerObserver.emit("end");
+
     if ("data" in message === false) return;
 
     if (message.name === "duration" || message.request_id === durationId) {
@@ -139,7 +141,7 @@ const mediaPlayer: MediaPlayer = {
     duration = Number.MAX_VALUE;
 
     if (isConnected) {
-      ipcClient.write(commandPrompt(["loadfile", ""]));
+      ipcClient.write(commandPrompt(["stop"]));
       ipcClient.write(commandPrompt(["loadfile", url]));
       if (startAt) mediaPlayer.pause();
       else mediaPlayer.resume();
@@ -156,7 +158,7 @@ const mediaPlayer: MediaPlayer = {
     ipcClient.write(commandPrompt(["set_property", "pause", false])),
   seek: (time: number) =>
     ipcClient.write(commandPrompt(["seek", time, "absolute"])),
-  stop: () => mpvPlayer?.kill(),
+  stop: () => ipcClient.write(commandPrompt(["stop"])),
   on: (event, listener) => {
     playerObserver.on(event, listener);
   },

@@ -12,7 +12,7 @@
     .flex.items-center.gap-2
       i.text-2xl(class="icon-[line-md--loading-loop]")
 
-      button.text-lg(class="icon-[material-symbols--stop]")
+      button.text-lg(class="icon-[material-symbols--stop]", hx-put="/player/stop")
 
       span.flex.text-sm(class="gap-0.5")
         span(x-text="currentTime")

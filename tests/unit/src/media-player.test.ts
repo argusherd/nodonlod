@@ -62,7 +62,7 @@ describe("The media player module", () => {
     expect(mockedWrite).toHaveBeenCalledWith(loadUrl);
   });
 
-  it("instructs the player unload the media first if the player is already launched or played", () => {
+  it("instructs the player stop the media first if the player is already launched or played", () => {
     const mockedWrite = jest.fn();
 
     jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
@@ -72,12 +72,12 @@ describe("The media player module", () => {
       }),
     );
 
-    const unload = commandPrompt(["loadfile", ""]);
+    const stop = commandPrompt(["stop"]);
 
     mediaPlayer.launch();
     mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 
-    expect(mockedWrite).toHaveBeenCalledWith(unload);
+    expect(mockedWrite).toHaveBeenCalledWith(stop);
   });
 
   it("can instruct the player to pause the media", () => {
@@ -470,5 +470,41 @@ describe("The media player module", () => {
     mediaPlayer.play("file:///C:/Users/user/Desktop/NGGYU.mp4");
 
     expect(endOfMedia).toBeFalsy();
+  });
+
+  it("can instruct the player to stop", () => {
+    const mockedWrite = jest.fn();
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+      }),
+    );
+
+    mediaPlayer.launch();
+    mediaPlayer.stop();
+
+    const stop = commandPrompt(["stop"]);
+
+    expect(mockedWrite).toHaveBeenCalledWith(stop);
+  });
+
+  it("omits the player end event if received a end-file message", () => {
+    const endFile = JSON.stringify({ event: "end-file" }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(endFile));
+      }),
+    );
+
+    let endOfMedia = false;
+
+    mediaPlayer.on("end", () => (endOfMedia = true));
+    mediaPlayer.launch();
+
+    expect(endOfMedia).toBeTruthy();
   });
 });

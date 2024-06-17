@@ -13,4 +13,9 @@ router.put("/resume", (_req, res) => {
   res.sendStatus(204);
 });
 
+router.put("/stop", (_req, res) => {
+  mediaPlayer.stop();
+  res.sendStatus(204);
+});
+
 export default router;
