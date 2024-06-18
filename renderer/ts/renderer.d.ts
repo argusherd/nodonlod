@@ -1,12 +1,14 @@
 import Alpine from "alpinejs";
+import dayjs from "dayjs";
 import htmx from "htmx.org";
 
 export {};
 
 declare global {
   interface Window {
-    htmx: typeof htmx;
     Alpine: typeof Alpine;
+    dayjs: typeof dayjs;
+    htmx: typeof htmx;
   }
 }
 

@@ -1,10 +1,5 @@
-import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
-
-dayjs.extend(duration);
-
 const currentTime = () => ({
-  currentTime: "",
+  currentTime: 0,
   ws: new WebSocket(`ws://${window.location.host}`),
 
   init() {
@@ -12,10 +7,7 @@ const currentTime = () => ({
       try {
         const payload = JSON.parse(message.data);
 
-        if ("currentTime" in payload)
-          this.currentTime = dayjs
-            .duration(payload.currentTime, "seconds")
-            .format("HH:mm:ss");
+        if ("currentTime" in payload) this.currentTime = payload.currentTime;
       } catch (e) {}
     };
   },

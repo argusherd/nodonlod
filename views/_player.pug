@@ -15,7 +15,7 @@
       button.text-lg(class="icon-[material-symbols--stop]", hx-put="/player/stop")
 
       span.flex.text-sm(class="gap-0.5")
-        span(x-text="currentTime")
+        span(x-text="dayjs.neatDuration(currentTime)")
         span /
         span#duration
 
@@ -24,7 +24,7 @@
     span.cursor-pointer(
       @click="minimize = false",
       title=title,
-      x-text="currentTime"
+      x-text="dayjs.neatDuration(currentTime)"
     )
 
   .absolute.-right-2.-top-2.flex.gap-1

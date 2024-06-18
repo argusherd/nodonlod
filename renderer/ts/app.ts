@@ -2,10 +2,15 @@ import htmx from "htmx.org";
 window.htmx = htmx;
 
 import Alpine from "alpinejs";
+import dayjs from "dayjs";
 import "htmx.org/dist/ext/ws";
+import neatDuration from "../../src/neat-duration";
 import currentTime from "./current-time";
 import { HTMXEvent } from "./renderer";
 
+dayjs.extend(neatDuration);
+
+window.dayjs = dayjs;
 window.Alpine = Alpine;
 Alpine.data("currentTime", currentTime);
 Alpine.start();
