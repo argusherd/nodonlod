@@ -26,4 +26,16 @@ describe("The media player hook route", () => {
 
     expect(mockedStop).toHaveBeenCalled();
   });
+
+  it("can instruct the player to seek a specific time", async () => {
+    const mockedSeek = jest.spyOn(mediaPlayer, "seek").mockImplementation();
+
+    await supertest(express)
+      .put("/player/seek")
+      .type("form")
+      .send({ seek: 10 })
+      .expect(204);
+
+    expect(mockedSeek).toHaveBeenCalledWith(10);
+  });
 });

@@ -18,4 +18,9 @@ router.put("/stop", (_req, res) => {
   res.sendStatus(204);
 });
 
+router.put("/seek", (req, res) => {
+  mediaPlayer.seek(Number(req.body.seek));
+  res.sendStatus(204);
+});
+
 export default router;
