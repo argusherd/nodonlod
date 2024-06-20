@@ -5,7 +5,7 @@ html(lang=`${getLocale()}`)
     meta(content="width=device-width, initial-scale=1.0", name="viewport")
     title nodonlod
     link(href="/css/app.css", rel="stylesheet")
-    script(src="/js/app.js")
+    script(defer, src="/js/app.js")
 
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
     nav.fixed.left-0.top-0.z-10.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(

@@ -35,15 +35,15 @@ describe("The websocket server", () => {
       const res = data.toString();
       expect(res).toContain("Rick Astley - Never Gonna Give You Up");
       expect(res).toContain("foo");
-      expect(res).toContain("00:00:10");
-      expect(res).toContain("00:00:30");
+      expect(res).toContain("666");
+      expect(res).toContain("777");
     });
 
     wss.nowPlaying({
       title: "Rick Astley - Never Gonna Give You Up",
       chapter: "foo",
-      startTime: 10,
-      endTime: 30,
+      startTime: 666,
+      endTime: 777,
     });
   });
 
@@ -113,8 +113,8 @@ describe("The websocket server", () => {
       const res = data.toString();
       expect(res).toContain("Rick Astley - Never Gonna Give You Up");
       expect(res).toContain("foo");
-      expect(res).toContain("00:00:10");
-      expect(res).toContain("00:00:30");
+      expect(res).toContain("666");
+      expect(res).toContain("777");
     });
 
     const playable = await createPlayable({
@@ -123,8 +123,8 @@ describe("The websocket server", () => {
 
     const chapter = await createChapter({
       playableId: playable.id,
-      startTime: 10,
-      endTime: 30,
+      startTime: 666,
+      endTime: 777,
       title: "foo",
     });
 
