@@ -1,0 +1,37 @@
+#progress-bar.group.relative.flex.h-2(
+  x-data=`{ duration: ${duration}, percent: 0, startTime: ${startTime}, endTime: ${endTime} }`,
+  x-effect="percent = Math.min((currentTime / duration) * 100, 100)"
+)
+  #track-bg.pointer-events-none.absolute.rounded.bg-gray-300(
+    class="top-1/2 h-1.5 w-[calc(100%-0.5rem)] -translate-y-1/2 group-hover:h-2"
+  )
+  #played-track.pointer-events-none.absolute.rounded.bg-pink-400(
+    :style="{ width: `calc(${percent}% + ${offset}px)` }",
+    class="top-1/2 h-1.5 -translate-y-1/2 group-hover:h-2",
+    x-data="{ offset: 0, thumbWidth: 16 }",
+    x-effect="offset = thumbWidth * (0.5 - currentTime / duration)"
+  )
+  #chapter-start.pointer-events-none.absolute.h-4.border-r-2.border-blue-400(
+    :style="{ width: Math.min((startTime / duration) * 100, 100) + '%' }",
+    class="top-1/2 -translate-y-1/2",
+    x-show="!isNaN(startTime)"
+  )
+  #chapter-end.pointer-events-none.absolute.h-4.border-r-2.border-blue-400(
+    :style="{ width: Math.min((endTime / duration) * 100, 100) + '%' }",
+    class="top-1/2 -translate-y-1/2",
+    x-show="!isNaN(endTime)"
+  )
+  input.w-full.cursor-pointer.appearance-none.bg-transparent(
+    :value="!seek && currentTime",
+    @mousedown="seek = true",
+    @mouseup.debounce="seek = false",
+    class="[&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:-translate-y-1/4 [&::-webkit-slider-thumb]:scale-0 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-pink-500 [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:hover:scale-100",
+    hx-include="[name='seek']",
+    hx-put="/player/seek",
+    max=duration,
+    min="0",
+    name="seek",
+    step="0.01",
+    type="range",
+    x-data="{ seek: false }"
+  )

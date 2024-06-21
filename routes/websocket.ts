@@ -1,5 +1,4 @@
 import dayjs from "dayjs";
-import duration from "dayjs/plugin/duration";
 import { IncomingMessage } from "http";
 import { join } from "path";
 import { renderFile } from "pug";
@@ -8,6 +7,7 @@ import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
 import PlayQueue from "../database/models/play-queue";
 import Playable from "../database/models/playable";
+import neatDuration from "../src/neat-duration";
 import { i18n } from "./middlewares/i18n";
 
 interface MediaInfo {
@@ -47,7 +47,7 @@ export interface WSS {
   removeAllListeners: (event: "play-next") => void;
 }
 
-dayjs.extend(duration);
+dayjs.extend(neatDuration);
 
 const wsServer: WsServer = new WebSocketServer({ noServer: true });
 const relativePath =
@@ -71,6 +71,8 @@ function playChapter(playable: Playable, chapter: Chapter) {
   wss.nowPlaying(mediaInfo);
 }
 
+let cachedInfo = {};
+
 const wss: WSS = {
   handleUpgrade: (
     request: IncomingMessage,
@@ -82,12 +84,14 @@ const wss: WSS = {
     }),
   nowPlaying: (mediaInfo: MediaInfo) =>
     wsServer.clients.forEach((ws) => {
-      ws.send(render("_player.pug", { ...mediaInfo }));
+      cachedInfo = mediaInfo;
+      ws.send(render("player/_player.pug", { ...mediaInfo }));
     }),
   mediaStart: (duration: number) =>
     wsServer.clients.forEach((ws) =>
       ws.send(
-        `<span id="duration">${dayjs.duration(duration, "seconds").format("HH:mm:ss")}</span>`,
+        render("player/_progress-bar.pug", { ...cachedInfo, duration }) +
+          render("player/_duration.pug", { duration }),
       ),
     ),
   playNext: async () => {

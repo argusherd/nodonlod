@@ -1,0 +1,37 @@
+#player(x-data="currentTime")
+  .flex.flex-col.gap-2.p-2(x-show="!minimize")
+    p.overflow-hidden.text-ellipsis.whitespace-nowrap.py-1(title=title)
+      if chapter
+        span.mr-1.rounded-lg.bg-blue-200.px-2 #{ chapter || 'Chapter' }
+      span #{ title }
+
+    include _progress-bar.pug
+
+    .flex.items-center.gap-2
+      i.text-2xl(class="icon-[line-md--loading-loop]")
+
+      button.text-lg(class="icon-[material-symbols--stop]", hx-put="/player/stop")
+
+      span.flex.text-sm(class="gap-0.5")
+        span(x-text="dayjs.neatDuration(currentTime)")
+        span /
+        include _duration.pug
+
+  .flex.gap-2.p-1(x-show="minimize")
+    i.text-2xl(class="icon-[line-md--loading-loop]")
+    span.cursor-pointer(
+      @click="minimize = false",
+      title=title,
+      x-text="dayjs.neatDuration(currentTime)"
+    )
+
+  .absolute.-right-2.-top-2.flex.gap-1
+    button.flex.rounded-full.bg-pink-400.text-white(
+      @click="minimize = !minimize",
+      x-show="!minimize"
+    )
+      i(class="icon-[fluent--minimize-12-regular]")
+    button.flex.rounded-full.bg-pink-400.text-white(
+      @click="show = false; minimize = false; $dispatch('player-closed')"
+    )
+      i(class="icon-[material-symbols--close]")

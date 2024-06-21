@@ -47,13 +47,33 @@ describe("The websocket server", () => {
     });
   });
 
-  it("can broadcast the media when it starts and display its duration", () => {
+  it("can broadcast the media duration and display it in the progress bar and the duration tag", () => {
     client.on("message", (data) => {
-      expect(data.toString()).toContain("duration");
-      expect(data.toString()).toContain("00:02:03");
+      expect(data.toString()).toContain('id="progress-bar"');
+      expect(data.toString()).toContain("duration: 123");
+      expect(data.toString()).toContain('<span id="duration">2:03</span>');
     });
 
     wss.mediaStart(123);
+  });
+
+  it("caches the media info to broadcast the progress bar later", () => {
+    client.on("message", (data) => {
+      if (data.toString().includes('id="player"')) return;
+
+      expect(data.toString()).toContain('id="progress-bar"');
+      expect(data.toString()).toContain("startTime: 50");
+      expect(data.toString()).toContain("endTime: 90");
+    });
+
+    wss.nowPlaying({
+      title: "Rick Astley - Never Gonna Give You Up",
+      chapter: "foo",
+      startTime: 50,
+      endTime: 90,
+    });
+
+    wss.mediaStart(212);
   });
 
   it("can broadcast that there is new media in the play queue about to be played", async () => {
