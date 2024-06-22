@@ -5,17 +5,17 @@ const router = Router();
 
 router.put("/pause", (_req, res) => {
   mediaPlayer.pause();
-  res.sendStatus(204);
+  res.render("player/_resume.pug");
 });
 
 router.put("/resume", (_req, res) => {
   mediaPlayer.resume();
-  res.sendStatus(204);
+  res.render("player/_pause.pug");
 });
 
 router.put("/stop", (_req, res) => {
   mediaPlayer.stop();
-  res.sendStatus(204);
+  res.render("player/_replay.pug");
 });
 
 router.put("/seek", (req, res) => {

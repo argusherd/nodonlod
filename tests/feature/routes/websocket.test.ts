@@ -76,6 +76,15 @@ describe("The websocket server", () => {
     wss.mediaStart(212);
   });
 
+  it("also broadcasts a pause button when broadcasting the media duration", () => {
+    client.on("message", (data) => {
+      expect(data.toString()).toContain('id="play-btn"');
+      expect(data.toString()).toContain("/player/pause");
+    });
+
+    wss.mediaStart(123);
+  });
+
   it("can broadcast that there is new media in the play queue about to be played", async () => {
     client.on("message", (data) => {
       expect(data.toString()).toContain("Together forever");

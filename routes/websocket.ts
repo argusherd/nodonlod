@@ -71,7 +71,7 @@ function playChapter(playable: Playable, chapter: Chapter) {
   wss.nowPlaying(mediaInfo);
 }
 
-let cachedInfo = {};
+let cachedInfo: MediaInfo;
 
 const wss: WSS = {
   handleUpgrade: (
@@ -91,7 +91,8 @@ const wss: WSS = {
     wsServer.clients.forEach((ws) =>
       ws.send(
         render("player/_progress-bar.pug", { ...cachedInfo, duration }) +
-          render("player/_duration.pug", { duration }),
+          render("player/_duration.pug", { duration }) +
+          render("player/_pause.pug"),
       ),
     ),
   playNext: async () => {
