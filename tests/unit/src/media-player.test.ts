@@ -490,7 +490,7 @@ describe("The media player module", () => {
     expect(mockedWrite).toHaveBeenCalledWith(stop);
   });
 
-  it("omits the player end event if received a end-file message", () => {
+  it("omits the player stop event if received a end-file message", () => {
     const endFile = JSON.stringify({ event: "end-file" }) + "\n";
 
     jest.mocked(Socket.prototype.on).mockImplementation(
@@ -500,11 +500,11 @@ describe("The media player module", () => {
       }),
     );
 
-    let endOfMedia = false;
+    let mediaStop = false;
 
-    mediaPlayer.on("end", () => (endOfMedia = true));
+    mediaPlayer.on("stop", () => (mediaStop = true));
     mediaPlayer.launch();
 
-    expect(endOfMedia).toBeTruthy();
+    expect(mediaStop).toBeTruthy();
   });
 });

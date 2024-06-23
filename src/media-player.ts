@@ -7,6 +7,7 @@ interface PlayerObserver {
   emit(event: "start", duration: number): void;
   emit(event: "current-time", currentTime: number): void;
   emit(event: "end"): void;
+  emit(event: "stop"): void;
 
   /**
    * @param event
@@ -19,6 +20,7 @@ interface PlayerObserver {
    */
   on(event: "current-time", listener: (currentTime: number) => void): void;
   on(event: "end", listener: () => void): void;
+  on(event: "stop", listener: () => void): void;
   on(event: string, listener: (...args: any[]) => void): void;
 }
 
@@ -102,7 +104,7 @@ const socketOnData = (data: Buffer) => {
   for (let section of String(data).trim().split("\n")) {
     const message: IpcMessage = JSON.parse(section);
 
-    if (message.event === "end-file") playerObserver.emit("end");
+    if (message.event === "end-file") playerObserver.emit("stop");
 
     if ("data" in message === false) return;
 

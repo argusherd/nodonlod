@@ -15,7 +15,7 @@ router.put("/resume", (_req, res) => {
 
 router.put("/stop", (_req, res) => {
   mediaPlayer.stop();
-  res.render("player/_replay.pug");
+  res.sendStatus(204);
 });
 
 router.put("/seek", (req, res) => {

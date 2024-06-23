@@ -40,6 +40,7 @@ export interface WSS {
   ) => void;
   nowPlaying: (mediaInfo: MediaInfo) => void;
   mediaStart: (duration: number) => void;
+  mediaStop: () => void;
   playNext: () => Promise<void>;
   currentTime: (currentTime: number) => void;
   latestPlayQueue: () => Promise<void>;
@@ -95,6 +96,8 @@ const wss: WSS = {
           render("player/_pause.pug"),
       ),
     ),
+  mediaStop: () =>
+    wsServer.clients.forEach((ws) => ws.send(render("player/_replay.pug"))),
   playNext: async () => {
     const playQueue = await PlayQueue.findOne({
       include: [Playable, Chapter],

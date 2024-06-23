@@ -224,4 +224,13 @@ describe("The websocket server", () => {
 
     await wss.latestPlayQueue();
   });
+
+  it("can broadcast the media is stopped", () => {
+    client.on("message", (data) => {
+      expect(data.toString()).toContain('id="play-btn"');
+      expect(data.toString()).toContain("/player/replay");
+    });
+
+    wss.mediaStop();
+  });
 });
