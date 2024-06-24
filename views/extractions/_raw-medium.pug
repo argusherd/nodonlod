@@ -1,0 +1,21 @@
+form(action=`/extractions/${extraction.id}/convert`, method="post")
+  input(name="ageLimit", type="number", value=rawMedium.age_limit)
+  textarea(name="description") #{ rawMedium.description }
+  input(name="duration", type="hidden", value=rawMedium.duration)
+  span #{ dayjs.duration(rawMedium.duration, "seconds").format("HH:mm:ss") }
+  input(name="resourceId", type="hidden", value=rawMedium.id)
+  input(name="thumbnail", type="url", value=rawMedium.thumbnail)
+  - var thumbnails = rawMedium.thumbnails ? rawMedium.thumbnails : [];
+  each thumbnail in thumbnails
+    span #{ thumbnail.url }
+  input(name="title", type="text", value=rawMedium.title)
+  input(name="uploadDate", type="hidden", value=rawMedium.upload_date)
+  input(name="url", type="text", value=rawMedium.webpage_url)
+  input(name="domain", type="text", value=rawMedium.webpage_url_domain)
+  - var uploader = rawMedium.channel ?? rawMedium.uploader;
+  input(name="uploader", type="text", value=uploader)
+  - var uploader_id = rawMedium.channel_id ?? rawMedium.uploader_id;
+  input(name="uploaderId", type="text", value=uploader_id)
+  - var uploader_url = rawMedium.channel_url ?? rawMedium.uploader_url;
+  input(name="uploaderUrl", type="text", value=uploader_url)
+  button(type="submit") Save

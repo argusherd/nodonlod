@@ -9,13 +9,13 @@ export const up: Migration = async ({ context: queryInterface }) => {
         type: DataType.UUID,
         primaryKey: true,
       },
-      playable_id: {
+      medium_id: {
         type: DataType.UUID,
         allowNull: false,
         unique: "unique_chapters_start_end_time",
         references: {
           key: "id",
-          model: "playables",
+          model: "media",
         },
         onDelete: "CASCADE",
       },
@@ -41,7 +41,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     {
       uniqueKeys: {
         unique_chapters_start_end_time: {
-          fields: ["playable_id", "start_time", "end_time"],
+          fields: ["medium_id", "start_time", "end_time"],
         },
       },
     },

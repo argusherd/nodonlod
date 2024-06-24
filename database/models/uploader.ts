@@ -12,7 +12,7 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
-import Playable from "./playable";
+import Medium from "./medium";
 
 interface OptionalUploaderCreationAttributes {
   id: string;
@@ -56,6 +56,6 @@ export default class Uploader extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @HasMany(() => Playable)
-  playables: Playable[];
+  @HasMany(() => Medium)
+  media: Medium[];
 }

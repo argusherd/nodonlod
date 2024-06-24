@@ -2,19 +2,19 @@ import express from "@/routes";
 import dayjs from "dayjs";
 import supertest from "supertest";
 import {
-  createPlayable,
+  createMedium,
   createPlaylist,
   createTag,
   createUploader,
 } from "../../setup/create-model";
 
-describe("The playable show page", () => {
-  it("can only be accessed with an existing playable", async () => {
-    await supertest(express).get("/playables/NOT_EXISTS").expect(404);
+describe("The medium show page", () => {
+  it("can only be accessed with an existing medium", async () => {
+    await supertest(express).get("/media/NOT_EXISTS").expect(404);
   });
 
-  it("displays the properties of the playable", async () => {
-    const playable = await createPlayable({
+  it("displays the properties of the medium", async () => {
+    const medium = await createMedium({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       title: "My title",
       duration: 123,
@@ -24,7 +24,7 @@ describe("The playable show page", () => {
     });
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(
@@ -36,31 +36,31 @@ describe("The playable show page", () => {
         expect(res.text).toContain("https://foo.com/bar.jpg");
         expect(res.text).toContain("1995-01-01");
         expect(res.text).toContain(
-          dayjs(playable.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+          dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         );
         expect(res.text).toContain(
-          dayjs(playable.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
+          dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss"),
         );
       });
   });
 
   it("does not attempt to format the upload date if there isn't one", async () => {
-    const playable = await createPlayable();
+    const medium = await createMedium();
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).not.toContain("Invalid Date");
       });
   });
 
-  it("displays the uploader of the playable", async () => {
+  it("displays the uploader of the medium", async () => {
     const uploader = await createUploader();
-    const playable = await createPlayable({ uploaderId: uploader.id });
+    const medium = await createMedium({ uploaderId: uploader.id });
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(uploader.name);
@@ -68,18 +68,18 @@ describe("The playable show page", () => {
       });
   });
 
-  it("displays all the chapters of the playable", async () => {
-    const playable = await createPlayable();
+  it("displays all the chapters of the medium", async () => {
+    const medium = await createMedium();
 
-    const chapter1 = await playable.$create("chapter", {
+    const chapter1 = await medium.$create("chapter", {
       title: "ep1",
       startTime: 10,
       endTime: 30,
     });
-    const chapter2 = await playable.$create("chapter", { title: "ep2" });
+    const chapter2 = await medium.$create("chapter", { title: "ep2" });
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain("ep1");
@@ -91,15 +91,15 @@ describe("The playable show page", () => {
       });
   });
 
-  it("displays all the tags of the playable", async () => {
-    const playable = await createPlayable();
+  it("displays all the tags of the medium", async () => {
+    const medium = await createMedium();
     const tag1 = await createTag();
     const tag2 = await createTag();
 
-    await playable.$add("tag", [tag1, tag2]);
+    await medium.$add("tag", [tag1, tag2]);
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(tag1.name);
@@ -107,15 +107,15 @@ describe("The playable show page", () => {
       });
   });
 
-  it("displays all related playlists of the playable", async () => {
-    const playable = await createPlayable();
+  it("displays all related playlists of the medium", async () => {
+    const medium = await createMedium();
     const playlist1 = await createPlaylist();
     const playlist2 = await createPlaylist();
 
-    await playable.$add("playlist", [playlist1, playlist2]);
+    await medium.$add("playlist", [playlist1, playlist2]);
 
     await supertest(express)
-      .get(`/playables/${playable.id}`)
+      .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(playlist1.title);

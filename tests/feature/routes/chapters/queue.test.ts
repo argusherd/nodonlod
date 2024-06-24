@@ -13,7 +13,7 @@ describe("The queue chapter route", () => {
 
     const playQueue = await PlayQueue.findOne();
 
-    expect(playQueue?.playableId).toEqual(chapter.playableId);
+    expect(playQueue?.mediumId).toEqual(chapter.mediumId);
     expect(playQueue?.chapterId).toEqual(chapter.id);
   });
 
@@ -22,7 +22,7 @@ describe("The queue chapter route", () => {
     const chapter2 = await createChapter();
 
     await PlayQueue.create({
-      playableId: chapter1.playableId,
+      mediumId: chapter1.mediumId,
       chapterId: chapter1.id,
     });
 

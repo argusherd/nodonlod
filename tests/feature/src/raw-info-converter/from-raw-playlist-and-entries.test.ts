@@ -1,10 +1,10 @@
 import sequelize from "@/database/connection";
-import Playable from "@/database/models/playable";
+import Medium from "@/database/models/medium";
 import Playlist from "@/database/models/playlist";
 import RawInfoConverter from "@/src/raw-info-converter";
 import {
   createRawPlaylist,
-  createSubRawPlayable,
+  createSubRawMedium,
 } from "../../setup/create-raw-info";
 
 describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
@@ -43,19 +43,19 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
     expect(mockedToPlaylist).toHaveBeenNthCalledWith(3, nestedRawPlaylist2);
   });
 
-  it("calls the toPlayable method when providing a raw-playlist that contains raw-playables", async () => {
+  it("calls the toMedium method when providing a raw-playlist that contains raw-media", async () => {
     const mockedToPlaylist = jest
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
-    const mockedToPlayable = jest
+    const mockedToMedium = jest
       .spyOn(converter, "toPlayble")
       .mockImplementation();
     jest.spyOn(converter, "createAssociation").mockImplementation();
 
-    const subRawPlayable1 = createSubRawPlayable();
-    const subRawPlayable2 = createSubRawPlayable();
+    const subRawMedium1 = createSubRawMedium();
+    const subRawMedium2 = createSubRawMedium();
     const rawPlaylist = createRawPlaylist({
-      entries: [subRawPlayable1, subRawPlayable2],
+      entries: [subRawMedium1, subRawMedium2],
     });
 
     sequelize.options.logging = console.log;
@@ -64,44 +64,44 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
 
     sequelize.options.logging = undefined;
     expect(mockedToPlaylist).toHaveBeenCalledTimes(1);
-    expect(mockedToPlayable).toHaveBeenCalledTimes(2);
+    expect(mockedToMedium).toHaveBeenCalledTimes(2);
     expect(mockedToPlaylist).toHaveBeenNthCalledWith(1, rawPlaylist);
-    expect(mockedToPlayable).toHaveBeenNthCalledWith(1, subRawPlayable1);
-    expect(mockedToPlayable).toHaveBeenNthCalledWith(2, subRawPlayable2);
+    expect(mockedToMedium).toHaveBeenNthCalledWith(1, subRawMedium1);
+    expect(mockedToMedium).toHaveBeenNthCalledWith(2, subRawMedium2);
   });
 
-  it("calls the toPlayable method even if the raw-playable content is deeply nested within the nested raw-playlist", async () => {
+  it("calls the toMedium method even if the raw-medium content is deeply nested within the nested raw-playlist", async () => {
     const mockedToPlaylist = jest
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
-    const mockedToPlayable = jest
+    const mockedToMedium = jest
       .spyOn(converter, "toPlayble")
       .mockImplementation();
     jest.spyOn(converter, "createAssociation").mockImplementation();
 
-    const subRawPlayable = createSubRawPlayable();
-    const nestedRawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
+    const subRawMedium = createSubRawMedium();
+    const nestedRawPlaylist = createRawPlaylist({ entries: [subRawMedium] });
     const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
 
     await converter.fromRawPlaylistAndEntries(rawPlaylist);
 
     expect(mockedToPlaylist).toHaveBeenCalledTimes(2);
-    expect(mockedToPlayable).toHaveBeenCalledTimes(1);
+    expect(mockedToMedium).toHaveBeenCalledTimes(1);
   });
 
-  it("calls the createAssociation method after converted the raw-playlist that with raw-playables to a playlist and playables", async () => {
+  it("calls the createAssociation method after converted the raw-playlist that with raw-media to a playlist and media", async () => {
     const playlist = new Playlist();
-    const playable = new Playable();
+    const medium = new Medium();
 
     jest.spyOn(converter, "toPlaylist").mockResolvedValue(playlist);
-    jest.spyOn(converter, "toPlayble").mockResolvedValue(playable);
+    jest.spyOn(converter, "toPlayble").mockResolvedValue(medium);
     const mockedCreateAssociation = jest
       .spyOn(converter, "createAssociation")
       .mockImplementation();
 
-    const subRawPlayable = createSubRawPlayable();
+    const subRawMedium = createSubRawMedium();
     const rawPlaylist = createRawPlaylist({
-      entries: [subRawPlayable],
+      entries: [subRawMedium],
       requested_entries: [20],
     });
 
@@ -109,7 +109,7 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
 
     expect(mockedCreateAssociation).toHaveBeenCalledWith(
       playlist,
-      [playable],
+      [medium],
       [20],
     );
   });

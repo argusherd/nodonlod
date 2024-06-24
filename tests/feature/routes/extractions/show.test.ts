@@ -1,9 +1,9 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
-import { RawPlayable, RawPlaylist, thumbnails } from "@/src/raw-info-extractor";
+import { RawMedium, RawPlaylist, thumbnails } from "@/src/raw-info-extractor";
 import supertest from "supertest";
 import {
-  createRawPlayable,
+  createRawMedium,
   createRawPlaylist,
 } from "../../setup/create-raw-info";
 
@@ -16,12 +16,12 @@ describe("The extraction show page", () => {
     await supertest(express).get("/extractions/NOT_EXIST").expect(404);
   });
 
-  it("displays the content of an extraction with raw-playable", async () => {
-    const rawPlayable = createRawPlayable();
+  it("displays the content of an extraction with raw-medium", async () => {
+    const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
@@ -29,31 +29,31 @@ describe("The extraction show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(`value="0"`); // age_limit
-        expect(res.text).toContain(rawPlayable.description);
-        expect(res.text).toContain(rawPlayable.duration.toString());
-        expect(res.text).toContain(rawPlayable.id);
-        expect(res.text).toContain(rawPlayable.thumbnail);
+        expect(res.text).toContain(rawMedium.description);
+        expect(res.text).toContain(rawMedium.duration.toString());
+        expect(res.text).toContain(rawMedium.id);
+        expect(res.text).toContain(rawMedium.thumbnail);
         expect(res.text).toContain(
-          (rawPlayable.thumbnails as thumbnails)[0]?.url,
+          (rawMedium.thumbnails as thumbnails)[0]?.url,
         );
         expect(res.text).toContain(
-          (rawPlayable.thumbnails as thumbnails)[1]?.url,
+          (rawMedium.thumbnails as thumbnails)[1]?.url,
         );
-        expect(res.text).toContain(rawPlayable.title);
-        expect(res.text).toContain(rawPlayable.upload_date);
-        expect(res.text).toContain(rawPlayable.webpage_url);
-        expect(res.text).toContain(rawPlayable.webpage_url_domain);
+        expect(res.text).toContain(rawMedium.title);
+        expect(res.text).toContain(rawMedium.upload_date);
+        expect(res.text).toContain(rawMedium.webpage_url);
+        expect(res.text).toContain(rawMedium.webpage_url_domain);
       });
   });
 
   it("displays well-formatted duration", async () => {
-    const rawPlayable = createRawPlayable({
+    const rawMedium = createRawMedium({
       duration: 123,
     });
 
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
@@ -63,7 +63,7 @@ describe("The extraction show page", () => {
       });
   });
 
-  it("displays a form that can save the playable information if the extracted content is not empty", async () => {
+  it("displays a form that can save the medium information if the extracted content is not empty", async () => {
     const extraction = await Extraction.create({
       url: videoURL,
       content: null,
@@ -78,7 +78,7 @@ describe("The extraction show page", () => {
         expect(res.text).not.toContain(`method="post"`);
       });
 
-    await extraction.update({ content: JSON.stringify(createRawPlayable()) });
+    await extraction.update({ content: JSON.stringify(createRawMedium()) });
 
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
@@ -94,7 +94,7 @@ describe("The extraction show page", () => {
     const extraction = await Extraction.create({
       url: videoURL,
       content: JSON.stringify(
-        createRawPlayable({
+        createRawMedium({
           channel: "Rick Astley (channel)",
           channel_id: "UCuAXFkgsw1L7xaCfnd5JJOw",
           channel_url:
@@ -124,7 +124,7 @@ describe("The extraction show page", () => {
     const extraction = await Extraction.create({
       url: videoURL,
       content: JSON.stringify(
-        createRawPlayable({
+        createRawMedium({
           channel: null,
           channel_id: null,
           channel_url: null,
@@ -212,10 +212,10 @@ describe("The extraction show page", () => {
   });
 
   it("lists all entries of the playlist information from the extracted content", async () => {
-    const rawPlayable1 = createRawPlayable();
-    const rawPlayable2 = createRawPlayable();
+    const rawMedium1 = createRawMedium();
+    const rawMedium2 = createRawMedium();
     const rawPlaylist: RawPlaylist = createRawPlaylist({
-      entries: [rawPlayable1, rawPlayable2],
+      entries: [rawMedium1, rawMedium2],
     });
 
     const extraction = await Extraction.create({
@@ -227,31 +227,31 @@ describe("The extraction show page", () => {
       .get(`/extractions/${extraction.id}`)
       .expect(200)
       .expect((res) => {
-        expect(res.text).toContain(rawPlayable1.description);
-        expect(res.text).toContain(rawPlayable1.duration.toString());
-        expect(res.text).toContain(rawPlayable1.id);
-        expect(res.text).toContain(rawPlayable1.thumbnail);
-        expect(res.text).toContain(rawPlayable1.title);
-        expect(res.text).toContain(rawPlayable1.upload_date);
-        expect(res.text).toContain(rawPlayable1.webpage_url);
-        expect(res.text).toContain(rawPlayable1.webpage_url_domain);
+        expect(res.text).toContain(rawMedium1.description);
+        expect(res.text).toContain(rawMedium1.duration.toString());
+        expect(res.text).toContain(rawMedium1.id);
+        expect(res.text).toContain(rawMedium1.thumbnail);
+        expect(res.text).toContain(rawMedium1.title);
+        expect(res.text).toContain(rawMedium1.upload_date);
+        expect(res.text).toContain(rawMedium1.webpage_url);
+        expect(res.text).toContain(rawMedium1.webpage_url_domain);
 
-        expect(res.text).toContain(rawPlayable2.description);
-        expect(res.text).toContain(rawPlayable2.duration.toString());
-        expect(res.text).toContain(rawPlayable2.id);
-        expect(res.text).toContain(rawPlayable2.thumbnail);
-        expect(res.text).toContain(rawPlayable2.title);
-        expect(res.text).toContain(rawPlayable2.upload_date);
-        expect(res.text).toContain(rawPlayable2.webpage_url);
-        expect(res.text).toContain(rawPlayable2.webpage_url_domain);
+        expect(res.text).toContain(rawMedium2.description);
+        expect(res.text).toContain(rawMedium2.duration.toString());
+        expect(res.text).toContain(rawMedium2.id);
+        expect(res.text).toContain(rawMedium2.thumbnail);
+        expect(res.text).toContain(rawMedium2.title);
+        expect(res.text).toContain(rawMedium2.upload_date);
+        expect(res.text).toContain(rawMedium2.webpage_url);
+        expect(res.text).toContain(rawMedium2.webpage_url_domain);
       });
   });
 
   it("can display nested playlist information from the extracted content, such as a YouTube channel", async () => {
     const channelURL =
       "https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw";
-    const rawPlayable = createRawPlayable();
-    const nestedRawPlaylist = createRawPlaylist({ entries: [rawPlayable] });
+    const rawMedium = createRawMedium();
+    const nestedRawPlaylist = createRawPlaylist({ entries: [rawMedium] });
     const rawPlaylist = createRawPlaylist({ entries: [nestedRawPlaylist] });
 
     const extraction = await Extraction.create({
@@ -267,13 +267,13 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawPlaylist.description);
         expect(res.text).toContain(nestedRawPlaylist.id);
         expect(res.text).toContain(nestedRawPlaylist.description);
-        expect(res.text).toContain(rawPlayable.id);
-        expect(res.text).toContain(rawPlayable.description);
+        expect(res.text).toContain(rawMedium.id);
+        expect(res.text).toContain(rawMedium.description);
       });
   });
 
-  it("can display raw-playable successfully without optional properties", async () => {
-    const onlyRequired: RawPlayable = {
+  it("can display raw-medium successfully without optional properties", async () => {
+    const onlyRequired: RawMedium = {
       _type: "video",
       duration: 123,
       id: "ID",

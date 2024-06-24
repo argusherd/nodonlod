@@ -1,10 +1,10 @@
-import Playable from "@/database/models/playable";
+import Medium from "@/database/models/medium";
 import RawInfoConverter from "@/src/raw-info-converter";
 import dayjs from "dayjs";
-import { createPlayable, createUploader } from "../../setup/create-model";
-import { createRawPlayable } from "../../setup/create-raw-info";
+import { createMedium, createUploader } from "../../setup/create-model";
+import { createRawMedium } from "../../setup/create-raw-info";
 
-describe("The toPlayable method in the RawInfoConverter", () => {
+describe("The toMedium method in the RawInfoConverter", () => {
   let converter: RawInfoConverter;
 
   beforeEach(() => {
@@ -14,171 +14,169 @@ describe("The toPlayable method in the RawInfoConverter", () => {
     jest.spyOn(converter, "preserveAllChapters").mockImplementation();
   });
 
-  it("convert a raw-playable into a playable", async () => {
-    const rawPlayable = createRawPlayable();
+  it("convert a raw-medium into a medium", async () => {
+    const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
 
-    expect(await Playable.count()).toEqual(1);
+    expect(await Medium.count()).toEqual(1);
 
-    const playable = await Playable.findOne();
+    const medium = await Medium.findOne();
 
-    expect(playable?.url).toEqual(rawPlayable.webpage_url);
-    expect(playable?.resourceId).toEqual(rawPlayable.id);
-    expect(playable?.domain).toEqual(rawPlayable.webpage_url_domain);
-    expect(playable?.title).toEqual(rawPlayable.title);
-    expect(playable?.duration).toEqual(rawPlayable.duration);
-    expect(playable?.description).toEqual(rawPlayable.description);
-    expect(playable?.thumbnail).toEqual(rawPlayable.thumbnail);
-    expect(playable?.ageLimit).toEqual(rawPlayable.age_limit);
-    expect(playable?.uploadDate).toEqual(
-      dayjs(rawPlayable.upload_date).toDate(),
-    );
+    expect(medium?.url).toEqual(rawMedium.webpage_url);
+    expect(medium?.resourceId).toEqual(rawMedium.id);
+    expect(medium?.domain).toEqual(rawMedium.webpage_url_domain);
+    expect(medium?.title).toEqual(rawMedium.title);
+    expect(medium?.duration).toEqual(rawMedium.duration);
+    expect(medium?.description).toEqual(rawMedium.description);
+    expect(medium?.thumbnail).toEqual(rawMedium.thumbnail);
+    expect(medium?.ageLimit).toEqual(rawMedium.age_limit);
+    expect(medium?.uploadDate).toEqual(dayjs(rawMedium.upload_date).toDate());
   });
 
-  it("does not create two identical playables when converting the raw-playable", async () => {
-    const rawPlayable = createRawPlayable();
+  it("does not create two identical media when converting the raw-medium", async () => {
+    const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawPlayable);
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
+    await converter.toPlayble(rawMedium);
 
-    expect(await Playable.count()).toEqual(1);
+    expect(await Medium.count()).toEqual(1);
   });
 
-  it("updates the duration of a playable when converting the raw-playable associated with it", async () => {
-    const playable = await createPlayable({ duration: 40 });
+  it("updates the duration of a medium when converting the raw-medium associated with it", async () => {
+    const medium = await createMedium({ duration: 40 });
 
-    const rawPlayable = createRawPlayable({
-      webpage_url: playable.url,
+    const rawMedium = createRawMedium({
+      webpage_url: medium.url,
       duration: 120,
     });
 
-    await converter.toPlayble(rawPlayable);
-    await playable.reload();
+    await converter.toPlayble(rawMedium);
+    await medium.reload();
 
-    expect(await Playable.count()).toEqual(1);
-    expect(playable.duration).toEqual(120);
+    expect(await Medium.count()).toEqual(1);
+    expect(medium.duration).toEqual(120);
   });
 
-  it("can overwrite some properties when converting the raw-playable", async () => {
-    const rawPlayable = createRawPlayable();
+  it("can overwrite some properties when converting the raw-medium", async () => {
+    const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawPlayable, {
+    await converter.toPlayble(rawMedium, {
       title: "New title",
       description: "New description",
       thumbnail: "https://foo.com/bar.jpg",
       ageLimit: 18,
     });
 
-    const playable = await Playable.findOne();
+    const medium = await Medium.findOne();
 
-    expect(playable?.title).toEqual("New title");
-    expect(playable?.description).toEqual("New description");
-    expect(playable?.thumbnail).toEqual("https://foo.com/bar.jpg");
-    expect(playable?.ageLimit).toEqual(18);
+    expect(medium?.title).toEqual("New title");
+    expect(medium?.description).toEqual("New description");
+    expect(medium?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(medium?.ageLimit).toEqual(18);
   });
 
-  it("can overwrite some properties even if the related playable already existed when converting the raw-playable", async () => {
-    const playable = await createPlayable();
+  it("can overwrite some properties even if the related medium already existed when converting the raw-medium", async () => {
+    const medium = await createMedium();
 
-    const rawPlayable = createRawPlayable({ webpage_url: playable.url });
+    const rawMedium = createRawMedium({ webpage_url: medium.url });
 
-    await converter.toPlayble(rawPlayable, {
+    await converter.toPlayble(rawMedium, {
       title: "New title",
       description: "New description",
       thumbnail: "https://foo.com/bar.jpg",
       ageLimit: 18,
     });
 
-    await playable.reload();
+    await medium.reload();
 
-    expect(playable?.title).toEqual("New title");
-    expect(playable?.description).toEqual("New description");
-    expect(playable?.thumbnail).toEqual("https://foo.com/bar.jpg");
-    expect(playable?.ageLimit).toEqual(18);
+    expect(medium?.title).toEqual("New title");
+    expect(medium?.description).toEqual("New description");
+    expect(medium?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(medium?.ageLimit).toEqual(18);
   });
 
-  it("can overwrite some properties with empty values when converting the raw-playable", async () => {
-    const rawPlayable = createRawPlayable({ age_limit: 18 });
+  it("can overwrite some properties with empty values when converting the raw-medium", async () => {
+    const rawMedium = createRawMedium({ age_limit: 18 });
 
-    await converter.toPlayble(rawPlayable, {
+    await converter.toPlayble(rawMedium, {
       title: "",
       description: "",
       thumbnail: "",
       ageLimit: "",
     });
 
-    const playable = await Playable.findOne();
+    const medium = await Medium.findOne();
 
-    expect(playable?.title).toEqual("");
-    expect(playable?.description).toEqual("");
-    expect(playable?.thumbnail).toEqual("");
-    expect(playable?.ageLimit).toEqual(0);
+    expect(medium?.title).toEqual("");
+    expect(medium?.description).toEqual("");
+    expect(medium?.thumbnail).toEqual("");
+    expect(medium?.ageLimit).toEqual(0);
   });
 
-  it("calls the preserveUploader method when converting a raw-playable into a playable", async () => {
+  it("calls the preserveUploader method when converting a raw-medium into a medium", async () => {
     const mockedPreserveUploader = jest
       .spyOn(converter, "preserveUploader")
       .mockImplementation();
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
 
-    expect(mockedPreserveUploader).toHaveBeenCalledWith(rawPlayable);
+    expect(mockedPreserveUploader).toHaveBeenCalledWith(rawMedium);
   });
 
-  it("establishes a relationship between the playable and the uploader when converting the raw-playable", async () => {
+  it("establishes a relationship between the medium and the uploader when converting the raw-medium", async () => {
     const uploader = await createUploader();
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     jest.spyOn(converter, "preserveUploader").mockResolvedValue(uploader);
 
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
 
-    const playable = await Playable.findOne();
+    const medium = await Medium.findOne();
 
-    expect(playable?.uploaderId).toEqual(uploader?.id);
+    expect(medium?.uploaderId).toEqual(uploader?.id);
   });
 
-  it("establishes a relationship between the playable and the uploader, even if the playable already exists", async () => {
+  it("establishes a relationship between the medium and the uploader, even if the medium already exists", async () => {
     const uploader = await createUploader();
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({ webpage_url: playable.url });
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({ webpage_url: medium.url });
 
     jest.spyOn(converter, "preserveUploader").mockResolvedValue(uploader);
 
-    expect(playable.uploaderId).toBeUndefined();
+    expect(medium.uploaderId).toBeUndefined();
 
-    await converter.toPlayble(rawPlayable);
-    await playable.reload();
+    await converter.toPlayble(rawMedium);
+    await medium.reload();
 
-    expect(playable.uploaderId).toEqual(uploader.id);
+    expect(medium.uploaderId).toEqual(uploader.id);
   });
 
-  it("calls the preserveAllChapters method when converting a raw-playable into a playable", async () => {
+  it("calls the preserveAllChapters method when converting a raw-medium into a medium", async () => {
     const mockedPreserveAllChapters = jest
       .spyOn(converter, "preserveAllChapters")
       .mockImplementation();
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
 
-    const playable = await Playable.findOne();
+    const medium = await Medium.findOne();
 
     expect(mockedPreserveAllChapters).toHaveBeenCalledWith(
-      rawPlayable,
-      playable?.id,
+      rawMedium,
+      medium?.id,
     );
   });
 
-  it("calls the preserveAllTags method when converting a raw-playable into a playable", async () => {
+  it("calls the preserveAllTags method when converting a raw-medium into a medium", async () => {
     const mockedPreserveAllTags = jest
       .spyOn(converter, "preserveAllTags")
       .mockImplementation();
 
-    const rawPlayable = createRawPlayable({ tags: ["foo", "bar"] });
+    const rawMedium = createRawMedium({ tags: ["foo", "bar"] });
 
-    await converter.toPlayble(rawPlayable);
+    await converter.toPlayble(rawMedium);
 
     expect(mockedPreserveAllTags).toHaveBeenCalled();
   });

@@ -1,8 +1,8 @@
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlayable } from "../../setup/create-model";
-import { createRawPlayable } from "../../setup/create-raw-info";
+import { createMedium } from "../../setup/create-model";
+import { createRawMedium } from "../../setup/create-raw-info";
 
 describe("The preserveAllTags method in the RawInfoConverter", () => {
   let converter: RawInfoConverter;
@@ -11,14 +11,14 @@ describe("The preserveAllTags method in the RawInfoConverter", () => {
     converter = new RawInfoConverter();
   });
 
-  it("preserves the tags of the playable by providing a raw-playable with tags and a playable id", async () => {
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({
-      webpage_url: playable.url,
+  it("preserves the tags of the medium by providing a raw-medium with tags and a medium id", async () => {
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({
+      webpage_url: medium.url,
       tags: ["foo"],
     });
 
-    await converter.preserveAllTags(rawPlayable, playable);
+    await converter.preserveAllTags(rawMedium, medium);
 
     expect(await Tag.count()).toEqual(1);
 
@@ -28,33 +28,33 @@ describe("The preserveAllTags method in the RawInfoConverter", () => {
   });
 
   it("does not create two identical tags when preserving all the tags", async () => {
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({
-      webpage_url: playable.url,
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({
+      webpage_url: medium.url,
       tags: ["foo"],
     });
 
-    await converter.preserveAllTags(rawPlayable, playable);
-    await converter.preserveAllTags(rawPlayable, playable);
+    await converter.preserveAllTags(rawMedium, medium);
+    await converter.preserveAllTags(rawMedium, medium);
 
     expect(await Tag.count()).toEqual(1);
   });
 
-  it("establishes a relationship between the playable and the tags when preserving all the tags", async () => {
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({
-      webpage_url: playable.url,
+  it("establishes a relationship between the medium and the tags when preserving all the tags", async () => {
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({
+      webpage_url: medium.url,
       tags: ["foo"],
     });
 
-    await converter.preserveAllTags(rawPlayable, playable);
+    await converter.preserveAllTags(rawMedium, medium);
 
     expect(await Taggable.count()).toEqual(1);
 
     const tag = await Tag.findOne();
     const belongsToMany = await Taggable.findOne();
 
-    expect(belongsToMany?.taggableId).toEqual(playable.id);
+    expect(belongsToMany?.taggableId).toEqual(medium.id);
     expect(belongsToMany?.tagId).toEqual(tag?.id);
   });
 });

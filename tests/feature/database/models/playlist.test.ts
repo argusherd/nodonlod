@@ -1,7 +1,7 @@
 import Playlist from "@/database/models/playlist";
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
-import { createPlayable, createPlaylist } from "../../setup/create-model";
+import { createMedium, createPlaylist } from "../../setup/create-model";
 
 describe("The playlist model", () => {
   it("can persist one record to the database", async () => {
@@ -21,15 +21,15 @@ describe("The playlist model", () => {
     expect(playlist.description).toEqual("The playlist description");
   });
 
-  it("can belongs to many playables", async () => {
+  it("can belongs to many media", async () => {
     const playlist = await createPlaylist();
-    const playable = await createPlayable();
+    const medium = await createMedium();
 
-    await playlist.$add("playable", playable);
-    const belongsToMany = await playlist.$get("playables");
+    await playlist.$add("medium", medium);
+    const belongsToMany = await playlist.$get("media");
 
     expect(belongsToMany).toHaveLength(1);
-    expect(belongsToMany.at(0)?.id).toEqual(playable.id);
+    expect(belongsToMany.at(0)?.id).toEqual(medium.id);
   });
 
   it("can belong to many tags", async () => {

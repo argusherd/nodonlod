@@ -12,11 +12,11 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
-import Playable from "./playable";
+import Medium from "./medium";
 
 interface OptionalChapterCreationAttributes {
   id: string;
-  playableId: string;
+  mediumId: string;
   startTime: number;
   endTime: number;
   createdAt: Date;
@@ -43,9 +43,9 @@ export default class Chapter extends Model<
   @Column
   id: string;
 
-  @ForeignKey(() => Playable)
+  @ForeignKey(() => Medium)
   @Column
-  playableId: string;
+  mediumId: string;
 
   @AllowNull(false)
   @Column
@@ -63,6 +63,6 @@ export default class Chapter extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsTo(() => Playable)
-  playable: Playable;
+  @BelongsTo(() => Medium)
+  medium: Medium;
 }

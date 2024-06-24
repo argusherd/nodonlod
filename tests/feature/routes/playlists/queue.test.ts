@@ -4,21 +4,21 @@ import express from "@/routes";
 import supertest from "supertest";
 import {
   createChapter,
-  createPlayable,
+  createMedium,
   createPlaylist,
 } from "../../setup/create-model";
 
 describe("The queue playlist route", () => {
   it("adds all the playlist items to the play queue", async () => {
     const playlist = await createPlaylist();
-    const playable = await createPlayable();
+    const medium = await createMedium();
     const chapter = await createChapter();
 
     await PlaylistItem.bulkCreate([
-      { playlistId: playlist.id, playableId: playable.id },
+      { playlistId: playlist.id, mediumId: medium.id },
       {
         playlistId: playlist.id,
-        playableId: chapter.playableId,
+        mediumId: chapter.mediumId,
         chapterId: chapter.id,
       },
     ]);
@@ -29,25 +29,25 @@ describe("The queue playlist route", () => {
 
     expect(await PlayQueue.count()).toEqual(2);
 
-    const hasPlayable = await PlayQueue.count({
-      where: { playableId: playable.id },
+    const hasMedium = await PlayQueue.count({
+      where: { mediumId: medium.id },
     });
     const hasChapter = await PlayQueue.count({
-      where: { playableId: chapter.playableId, chapterId: chapter.id },
+      where: { mediumId: chapter.mediumId, chapterId: chapter.id },
     });
 
-    expect(hasPlayable).toBeTruthy();
+    expect(hasMedium).toBeTruthy();
     expect(hasChapter).toBeTruthy();
   });
 
   it("keeps the relative order of the playlist items", async () => {
     const playlist = await createPlaylist();
-    const playable1 = await createPlayable();
-    const playable2 = await createPlayable();
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
 
     await PlaylistItem.bulkCreate([
-      { playlistId: playlist.id, playableId: playable1.id, order: 15 },
-      { playlistId: playlist.id, playableId: playable2.id, order: 14 },
+      { playlistId: playlist.id, mediumId: medium1.id, order: 15 },
+      { playlistId: playlist.id, mediumId: medium2.id, order: 14 },
     ]);
 
     await supertest(express)

@@ -1,6 +1,6 @@
 import RawInfoConverter from "@/src/raw-info-converter";
 import {
-  createRawPlayable,
+  createRawMedium,
   createRawPlaylist,
 } from "../../setup/create-raw-info";
 
@@ -22,14 +22,14 @@ describe("The convertAll method in the RawInfoConverter", () => {
     expect(mockedFromRawPlaylistAndEntries).toHaveBeenCalledWith(rawPlaylist);
   });
 
-  it("calls the toPlayble method when providing a raw-playable", async () => {
+  it("calls the toPlayble method when providing a raw-medium", async () => {
     const mockedToPlable = jest
       .spyOn(converter, "toPlayble")
       .mockImplementation();
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
-    await converter.convertAll(rawPlayable);
+    await converter.convertAll(rawMedium);
 
-    expect(mockedToPlable).toHaveBeenCalledWith(rawPlayable);
+    expect(mockedToPlable).toHaveBeenCalledWith(rawMedium);
   });
 });

@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import Chapter from "../database/models/chapter";
-import Playable from "../database/models/playable";
+import Medium from "../database/models/medium";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
 import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
-import { RawPlayable, RawPlaylist, SubRawPlayable } from "./raw-info-extractor";
+import { RawMedium, RawPlaylist, SubRawMedium } from "./raw-info-extractor";
 
 export interface Overwritable {
   title: string;
@@ -15,7 +15,7 @@ export interface Overwritable {
 }
 
 export default class RawInfoConverter {
-  async convertAll(rawInfo: RawPlayable | RawPlaylist) {
+  async convertAll(rawInfo: RawMedium | RawPlaylist) {
     if (rawInfo._type === "playlist") {
       await this.fromRawPlaylistAndEntries(rawInfo);
     }
@@ -37,14 +37,14 @@ export default class RawInfoConverter {
       return;
     }
 
-    const playables: Playable[] = [];
+    const media: Medium[] = [];
 
-    for (const subRawPlayable of rawPlaylist.entries)
-      playables.push(await this.toPlayble(subRawPlayable as SubRawPlayable));
+    for (const subRawMedium of rawPlaylist.entries)
+      media.push(await this.toPlayble(subRawMedium as SubRawMedium));
 
     await this.createAssociation(
       playlist,
-      playables,
+      media,
       rawPlaylist.requested_entries,
     );
   }
@@ -74,61 +74,60 @@ export default class RawInfoConverter {
   }
 
   async toPlayble(
-    rawPlayable: RawPlayable | SubRawPlayable,
+    rawMedium: RawMedium | SubRawMedium,
     { title, description, thumbnail, ageLimit }: Partial<Overwritable> = {},
   ) {
-    let playable = await Playable.findOne({
-      where: { url: rawPlayable.webpage_url },
+    let medium = await Medium.findOne({
+      where: { url: rawMedium.webpage_url },
     });
 
-    const uploader = await this.preserveUploader(rawPlayable);
+    const uploader = await this.preserveUploader(rawMedium);
 
     const overwritable = {
-      title: title ?? rawPlayable.title,
-      description: description ?? rawPlayable.description,
-      thumbnail: thumbnail ?? rawPlayable.thumbnail,
-      ageLimit:
-        ageLimit !== undefined ? Number(ageLimit) : rawPlayable.age_limit,
+      title: title ?? rawMedium.title,
+      description: description ?? rawMedium.description,
+      thumbnail: thumbnail ?? rawMedium.thumbnail,
+      ageLimit: ageLimit !== undefined ? Number(ageLimit) : rawMedium.age_limit,
     };
 
-    if (playable) {
-      await playable.update({
+    if (medium) {
+      await medium.update({
         uploaderId: uploader?.id,
-        duration: rawPlayable.duration,
+        duration: rawMedium.duration,
         ...overwritable,
       });
     } else {
-      playable = await Playable.create({
+      medium = await Medium.create({
         uploaderId: uploader?.id,
-        url: rawPlayable.webpage_url,
-        resourceId: rawPlayable.id,
-        domain: rawPlayable.webpage_url_domain,
-        duration: rawPlayable.duration,
-        uploadDate: rawPlayable.upload_date
-          ? dayjs(rawPlayable.upload_date).toDate()
+        url: rawMedium.webpage_url,
+        resourceId: rawMedium.id,
+        domain: rawMedium.webpage_url_domain,
+        duration: rawMedium.duration,
+        uploadDate: rawMedium.upload_date
+          ? dayjs(rawMedium.upload_date).toDate()
           : undefined,
         ...overwritable,
       });
     }
 
-    await this.preserveAllChapters(rawPlayable, playable.id);
-    await this.preserveAllTags(rawPlayable, playable);
+    await this.preserveAllChapters(rawMedium, medium.id);
+    await this.preserveAllTags(rawMedium, medium);
 
-    return playable;
+    return medium;
   }
 
   async createAssociation(
     playlist: Playlist,
-    playables: Playable[],
+    media: Medium[],
     orders: number[] = [],
   ) {
     let idx = 0;
 
-    for (const playable of playables) {
+    for (const medium of media) {
       const playlistItem = await PlaylistItem.findOne({
         where: {
           playlistId: playlist.id,
-          playableId: playable.id,
+          mediumId: medium.id,
           chapterId: null,
         },
       });
@@ -140,13 +139,13 @@ export default class RawInfoConverter {
 
       await PlaylistItem.create({
         playlistId: playlist.id,
-        playableId: playable.id,
+        mediumId: medium.id,
         order: orders.at(idx++),
       });
     }
   }
 
-  async preserveUploader(rawInfo: RawPlayable | SubRawPlayable) {
+  async preserveUploader(rawInfo: RawMedium | SubRawMedium) {
     const url = rawInfo.channel_url ?? rawInfo.uploader_url;
     const name = rawInfo.channel ?? rawInfo.uploader ?? "";
 
@@ -162,21 +161,21 @@ export default class RawInfoConverter {
   }
 
   async preserveAllChapters(
-    rawPlayable: RawPlayable | SubRawPlayable,
-    playableId: string,
+    rawMedium: RawMedium | SubRawMedium,
+    mediumId: string,
   ) {
     for (const {
       start_time: startTime,
       end_time: endTime,
       title,
-    } of rawPlayable.chapters ?? []) {
+    } of rawMedium.chapters ?? []) {
       const chapter = await Chapter.findOne({
-        where: { playableId, startTime, endTime },
+        where: { mediumId, startTime, endTime },
       });
 
       if (!chapter)
         await Chapter.create({
-          playableId,
+          mediumId,
           startTime,
           endTime,
           title,
@@ -184,16 +183,13 @@ export default class RawInfoConverter {
     }
   }
 
-  async preserveAllTags(
-    rawPlayable: RawPlayable | SubRawPlayable,
-    playable: Playable,
-  ) {
-    for (const name of rawPlayable.tags ?? []) {
+  async preserveAllTags(rawMedium: RawMedium | SubRawMedium, medium: Medium) {
+    for (const name of rawMedium.tags ?? []) {
       let tag = await Tag.findOne({ where: { name } });
 
       if (!tag) tag = await Tag.create({ name });
 
-      await playable.$add("tag", tag);
+      await medium.$add("tag", tag);
     }
   }
 }

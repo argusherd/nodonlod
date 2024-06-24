@@ -1,14 +1,10 @@
-import {
-  RawPlayable,
-  RawPlaylist,
-  SubRawPlayable,
-} from "@/src/raw-info-extractor";
+import { RawMedium, RawPlaylist, SubRawMedium } from "@/src/raw-info-extractor";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
 
-export const createRawPlayable = (
-  overwrite: Partial<RawPlayable> = {},
-): RawPlayable => ({
+export const createRawMedium = (
+  overwrite: Partial<RawMedium> = {},
+): RawMedium => ({
   _type: "video",
   age_limit: 0,
   channel: faker.person.fullName(),
@@ -33,10 +29,10 @@ export const createRawPlayable = (
   ...overwrite,
 });
 
-export const createSubRawPlayable = (
-  overwrite: Partial<SubRawPlayable> = {},
-): SubRawPlayable => {
-  const { _type: _, ...rest } = createRawPlayable(overwrite);
+export const createSubRawMedium = (
+  overwrite: Partial<SubRawMedium> = {},
+): SubRawMedium => {
+  const { _type: _, ...rest } = createRawMedium(overwrite);
 
   return rest;
 };

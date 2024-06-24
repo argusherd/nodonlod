@@ -3,9 +3,9 @@ import express from "@/routes";
 import RawInfoConverter from "@/src/raw-info-converter";
 import supertest from "supertest";
 import {
-  createRawPlayable,
+  createRawMedium,
   createRawPlaylist,
-  createSubRawPlayable,
+  createSubRawMedium,
 } from "../../setup/create-raw-info";
 
 describe("The convert extraction raw info route", () => {
@@ -20,11 +20,11 @@ describe("The convert extraction raw info route", () => {
   };
 
   it("requires a resource id to locate specific raw info for conversion", async () => {
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
@@ -34,25 +34,25 @@ describe("The convert extraction raw info route", () => {
       .expect(422);
   });
 
-  it("calls the toPlayble method in the RawInfoConverter if a raw-playable is found", async () => {
-    const mockedToPlayable = jest
+  it("calls the toPlayble method in the RawInfoConverter if a raw-medium is found", async () => {
+    const mockedToMedium = jest
       .spyOn(RawInfoConverter.prototype, "toPlayble")
       .mockImplementation();
 
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
-      .send({ resourceId: rawPlayable.id })
+      .send({ resourceId: rawMedium.id })
       .expect(201);
 
-    expect(mockedToPlayable).toHaveBeenCalledWith(rawPlayable, overwritable);
+    expect(mockedToMedium).toHaveBeenCalledWith(rawMedium, overwritable);
   });
 
   it("calls the toPlaylist method in the RawInfoConverter if a raw-playlist is found", async () => {
@@ -77,12 +77,12 @@ describe("The convert extraction raw info route", () => {
   });
 
   it("can find the raw-info deeply nested in the raw-playlist", async () => {
-    const mockedToPlayable = jest
+    const mockedToMedium = jest
       .spyOn(RawInfoConverter.prototype, "toPlayble")
       .mockImplementation();
 
-    const subRawPlayable = createSubRawPlayable();
-    const childRawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
+    const subRawMedium = createSubRawMedium();
+    const childRawPlaylist = createRawPlaylist({ entries: [subRawMedium] });
     const rawPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
 
     const extraction = await Extraction.create({
@@ -93,14 +93,14 @@ describe("The convert extraction raw info route", () => {
     await supertest(express)
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
-      .send({ resourceId: subRawPlayable.id })
+      .send({ resourceId: subRawMedium.id })
       .expect(201);
 
-    expect(mockedToPlayable).toHaveBeenCalledWith(subRawPlayable, overwritable);
+    expect(mockedToMedium).toHaveBeenCalledWith(subRawMedium, overwritable);
   });
 
   it("returns a 404 response if the raw info with the provided id is not found", async () => {
-    const mockedToPlayable = jest
+    const mockedToMedium = jest
       .spyOn(RawInfoConverter.prototype, "toPlayble")
       .mockImplementation();
 
@@ -108,11 +108,11 @@ describe("The convert extraction raw info route", () => {
       .spyOn(RawInfoConverter.prototype, "toPlaylist")
       .mockImplementation();
 
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
@@ -121,27 +121,27 @@ describe("The convert extraction raw info route", () => {
       .send({ resourceId: "NOT_EXISTS" })
       .expect(404);
 
-    expect(mockedToPlayable).not.toHaveBeenCalled();
+    expect(mockedToMedium).not.toHaveBeenCalled();
     expect(mockedToPlaylist).not.toHaveBeenCalled();
   });
 
-  it("can overwrite some properties of the raw-playable", async () => {
-    const mockedToPlayable = jest
+  it("can overwrite some properties of the raw-medium", async () => {
+    const mockedToMedium = jest
       .spyOn(RawInfoConverter.prototype, "toPlayble")
       .mockImplementation();
 
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
       url: playlistURL,
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     await supertest(express)
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
       .send({
-        resourceId: rawPlayable.id,
+        resourceId: rawMedium.id,
         title: "New title",
         description: "New description",
         thumbnail: "https://foo.com/bar.jpg",
@@ -149,7 +149,7 @@ describe("The convert extraction raw info route", () => {
       })
       .expect(201);
 
-    expect(mockedToPlayable).toHaveBeenCalledWith(rawPlayable, {
+    expect(mockedToMedium).toHaveBeenCalledWith(rawMedium, {
       title: "New title",
       description: "New description",
       thumbnail: "https://foo.com/bar.jpg",

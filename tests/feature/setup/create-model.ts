@@ -1,7 +1,5 @@
 import Chapter, { ChapterCreationAttributes } from "@/database/models/chapter";
-import Playable, {
-  PlayableCreationAttributes,
-} from "@/database/models/playable";
+import Medium, { MediumCreationAttributes } from "@/database/models/medium";
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
@@ -11,10 +9,10 @@ import Uploader, {
 } from "@/database/models/uploader";
 import { faker } from "@faker-js/faker";
 
-export const createPlayable = async (
-  overwrite?: Partial<PlayableCreationAttributes>,
+export const createMedium = async (
+  overwrite?: Partial<MediumCreationAttributes>,
 ) =>
-  await Playable.create({
+  await Medium.create({
     url: faker.internet.url(),
     resourceId: faker.string.uuid(),
     domain: faker.internet.domainName(),
@@ -50,7 +48,7 @@ export const createChapter = async (
   overwrite?: Partial<ChapterCreationAttributes>,
 ) =>
   await Chapter.create({
-    playableId: overwrite?.playableId || (await createPlayable()).id,
+    mediumId: overwrite?.mediumId || (await createMedium()).id,
     title: faker.lorem.slug(),
     ...overwrite,
   });

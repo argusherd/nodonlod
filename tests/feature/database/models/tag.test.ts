@@ -1,24 +1,22 @@
 import Tag from "@/database/models/tag";
 import Taggable from "@/database/models/taggable";
-import { createPlayable, createPlaylist } from "../../setup/create-model";
+import { createMedium, createPlaylist } from "../../setup/create-model";
 
 describe("The tag model", () => {
-  it("can belong to many playables", async () => {
+  it("can belong to many media", async () => {
     const tag = await Tag.create({ name: "foo" });
-    const playable1 = await createPlayable();
-    const playable2 = await createPlayable();
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
 
-    await tag.$add("playable", [playable1, playable2]);
+    await tag.$add("medium", [medium1, medium2]);
 
-    const playableIds = (await tag.$get("playables")).map(
-      (playable) => playable.id,
-    );
+    const mediumIds = (await tag.$get("media")).map((medium) => medium.id);
     const taggable = await Taggable.findOne();
 
-    expect(playableIds).toHaveLength(2);
-    expect(playableIds).toContain(playable1.id);
-    expect(playableIds).toContain(playable2.id);
-    expect(taggable?.taggableType).toEqual("playable");
+    expect(mediumIds).toHaveLength(2);
+    expect(mediumIds).toContain(medium1.id);
+    expect(mediumIds).toContain(medium2.id);
+    expect(taggable?.taggableType).toEqual("medium");
   });
 
   it("can belong to many playlists", async () => {

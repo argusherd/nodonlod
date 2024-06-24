@@ -10,7 +10,7 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
-import Playable from "./playable";
+import Medium from "./medium";
 import Playlist from "./playlist";
 import Taggable from "./taggable";
 
@@ -43,11 +43,11 @@ export default class Tag extends Model<TagAttributes, TagCreationAttributes> {
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsToMany(() => Playable, {
-    through: { model: () => Taggable, scope: { taggableType: "playable" } },
+  @BelongsToMany(() => Medium, {
+    through: { model: () => Taggable, scope: { taggableType: "medium" } },
     foreignKey: "tagId",
   })
-  playables: Playable[];
+  media: Medium[];
 
   @BelongsToMany(() => Playlist, {
     through: { model: () => Taggable, scope: { taggableType: "playlist" } },

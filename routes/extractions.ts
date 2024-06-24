@@ -3,9 +3,9 @@ import { body, validationResult } from "express-validator";
 import Extraction from "../database/models/extraction";
 import RawInfoConverter, { Overwritable } from "../src/raw-info-converter";
 import {
-  RawPlayable,
+  RawMedium,
   RawPlaylist,
-  SubRawPlayable,
+  SubRawMedium,
 } from "../src/raw-info-extractor";
 
 interface ExtractionRequest extends Request {
@@ -110,9 +110,9 @@ router.delete("/:extraction", async (req: ExtractionRequest, res) => {
 });
 
 function findRawInfoById(
-  rawInfo: RawPlayable | RawPlaylist | SubRawPlayable | null,
+  rawInfo: RawMedium | RawPlaylist | SubRawMedium | null,
   id: string,
-): RawPlayable | RawPlaylist | SubRawPlayable | null {
+): RawMedium | RawPlaylist | SubRawMedium | null {
   if (!rawInfo || rawInfo.id === id) return rawInfo;
 
   for (const childRawInfo of "entries" in rawInfo ? rawInfo.entries : []) {

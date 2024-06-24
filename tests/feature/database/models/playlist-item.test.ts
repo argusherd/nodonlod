@@ -1,19 +1,19 @@
 import PlaylistItem from "@/database/models/playlist-item";
 import {
   createChapter,
-  createPlayable,
+  createMedium,
   createPlaylist,
 } from "../../setup/create-model";
 
-describe("The pivot between playable and playlist", () => {
+describe("The pivot between medium and playlist", () => {
   it("removes the relationship once one of them has been deleted", async () => {
-    const playable = await createPlayable();
+    const medium = await createMedium();
     const playlist = await createPlaylist();
 
-    await playable.$add("playlist", playlist);
+    await medium.$add("playlist", playlist);
     expect(await PlaylistItem.findOne()).not.toBeNull();
 
-    await playable.destroy();
+    await medium.destroy();
     expect(await PlaylistItem.findOne()).toBeNull();
   });
 
@@ -22,7 +22,7 @@ describe("The pivot between playable and playlist", () => {
     const playlist = await createPlaylist();
 
     const playlistItem = await PlaylistItem.create({
-      playableId: chapter.playableId,
+      mediumId: chapter.mediumId,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
@@ -32,20 +32,20 @@ describe("The pivot between playable and playlist", () => {
     expect(belongsTo?.id).toEqual(chapter.id);
   });
 
-  it("treats the playableId, playlistId, and chapterId as an unique set", async () => {
-    const playable = await createPlayable();
-    const chapter = await createChapter({ playableId: playable.id });
+  it("treats the mediumId, playlistId, and chapterId as an unique set", async () => {
+    const medium = await createMedium();
+    const chapter = await createChapter({ mediumId: medium.id });
     const playlist = await createPlaylist();
 
     await PlaylistItem.create({
-      playableId: playable.id,
+      mediumId: medium.id,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
 
     await expect(
       PlaylistItem.create({
-        playableId: playable.id,
+        mediumId: medium.id,
         playlistId: playlist.id,
         chapterId: chapter.id,
       }),

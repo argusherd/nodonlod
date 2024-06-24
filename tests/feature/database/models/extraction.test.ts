@@ -1,6 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import {
-  createRawPlayable,
+  createRawMedium,
   createRawPlaylist,
 } from "../../setup/create-raw-info";
 
@@ -13,13 +13,13 @@ describe("The extraction model", () => {
     expect(await Extraction.count()).toEqual(1);
   });
 
-  it("casts the content string to a RawPlayable or RawPlaylist", async () => {
-    const rawPlayable = createRawPlayable();
+  it("casts the content string to a RawMedium or RawPlaylist", async () => {
+    const rawMedium = createRawMedium();
     const rawPlaylist = createRawPlaylist();
 
-    const withRawPlayable = await Extraction.create({
+    const withRawMedium = await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      content: JSON.stringify(rawPlayable),
+      content: JSON.stringify(rawMedium),
     });
 
     const withRawPlaylist = await Extraction.create({
@@ -27,7 +27,7 @@ describe("The extraction model", () => {
       content: JSON.stringify(rawPlaylist),
     });
 
-    expect(withRawPlayable.content).toEqual(rawPlayable);
+    expect(withRawMedium.content).toEqual(rawMedium);
     expect(withRawPlaylist.content).toEqual(rawPlaylist);
   });
 });

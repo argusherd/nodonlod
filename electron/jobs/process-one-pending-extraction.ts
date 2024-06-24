@@ -3,7 +3,7 @@ import { Op } from "sequelize";
 import { Worker } from "worker_threads";
 import Extraction from "../../database/models/extraction";
 import RawInfoConverter from "../../src/raw-info-converter";
-import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
+import { RawMedium, RawPlaylist } from "../../src/raw-info-extractor";
 
 export default async function processOnePendingExtraction() {
   if (await isStillProcessing()) return;
@@ -22,7 +22,7 @@ export default async function processOnePendingExtraction() {
     workerData: { url: extraction.url, startAt, stopAt },
   });
 
-  worker.on("message", async (rawInfo: RawPlayable | RawPlaylist) => {
+  worker.on("message", async (rawInfo: RawMedium | RawPlaylist) => {
     const converter = new RawInfoConverter();
 
     if (extraction.isConvertible) await converter.convertAll(rawInfo);
@@ -71,7 +71,7 @@ async function dispatchAnotherOne(extraction: Extraction) {
   });
 }
 
-function stillHasItems(rawInfo: RawPlayable | RawPlaylist): boolean {
+function stillHasItems(rawInfo: RawMedium | RawPlaylist): boolean {
   if (rawInfo._type === "video") return false;
 
   const firstItem = rawInfo.entries.at(0);

@@ -4,9 +4,9 @@ import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import chapterRouter from "./chapters";
 import extractionRouter from "./extractions";
+import mediumRouter from "./media";
 import i18nMiddleware from "./middlewares/i18n";
 import playQueueRouter from "./play-queues";
-import playableRouter from "./playables";
 import playerRouter from "./player";
 import playlistRouter from "./playlists";
 
@@ -27,7 +27,7 @@ express.get("/", async (_req, res) => {
 });
 
 express.use("/extractions", extractionRouter);
-express.use("/playables", playableRouter);
+express.use("/media", mediumRouter);
 express.use("/playlists", playlistRouter);
 express.use("/chapters", chapterRouter);
 express.use("/play-queues", playQueueRouter);

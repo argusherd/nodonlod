@@ -1,7 +1,7 @@
 import Chapter from "@/database/models/chapter";
 import RawInfoConverter from "@/src/raw-info-converter";
-import { createPlayable } from "../../setup/create-model";
-import { createRawPlayable } from "../../setup/create-raw-info";
+import { createMedium } from "../../setup/create-model";
+import { createRawMedium } from "../../setup/create-raw-info";
 
 describe("The preserveAllChapters method in the RawInfoConverter", () => {
   let converter: RawInfoConverter;
@@ -10,13 +10,13 @@ describe("The preserveAllChapters method in the RawInfoConverter", () => {
     converter = new RawInfoConverter();
   });
 
-  it("preserves the chapters of the playable by providing a raw-playable with chapters and a playable id", async () => {
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({
+  it("preserves the chapters of the medium by providing a raw-medium with chapters and a medium id", async () => {
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({
       chapters: [{ start_time: 40, end_time: 120, title: "ep1" }],
     });
 
-    await converter.preserveAllChapters(rawPlayable, playable.id);
+    await converter.preserveAllChapters(rawMedium, medium.id);
 
     expect(await Chapter.count()).toEqual(1);
 
@@ -25,17 +25,17 @@ describe("The preserveAllChapters method in the RawInfoConverter", () => {
     expect(chapter?.startTime).toEqual(40);
     expect(chapter?.endTime).toEqual(120);
     expect(chapter?.title).toEqual("ep1");
-    expect(chapter?.playableId).toEqual(playable.id);
+    expect(chapter?.mediumId).toEqual(medium.id);
   });
 
   it("does not create two identical chapters when preserving all the chapters", async () => {
-    const playable = await createPlayable();
-    const rawPlayable = createRawPlayable({
+    const medium = await createMedium();
+    const rawMedium = createRawMedium({
       chapters: [{ start_time: 40, end_time: 120, title: "ep1" }],
     });
 
-    await converter.preserveAllChapters(rawPlayable, playable.id);
-    await converter.preserveAllChapters(rawPlayable, playable.id);
+    await converter.preserveAllChapters(rawMedium, medium.id);
+    await converter.preserveAllChapters(rawMedium, medium.id);
 
     expect(await Chapter.count()).toEqual(1);
   });

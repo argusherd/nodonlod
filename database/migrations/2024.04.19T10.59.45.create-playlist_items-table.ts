@@ -14,12 +14,12 @@ export const up: Migration = async ({ context: queryInterface }) => {
         },
         onDelete: "CASCADE",
       },
-      playable_id: {
+      medium_id: {
         type: DataType.UUID,
         allowNull: false,
         references: {
           key: "id",
-          model: "playables",
+          model: "media",
         },
         onDelete: "CASCADE",
       },
@@ -43,8 +43,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playlist_playable_chapter: {
-          fields: ["playlist_id", "playable_id", "chapter_id"],
+        unique_playlist_medium_chapter: {
+          fields: ["playlist_id", "medium_id", "chapter_id"],
         },
       },
     },

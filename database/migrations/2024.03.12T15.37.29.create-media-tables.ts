@@ -3,7 +3,7 @@ import { Migration } from "../migrator";
 
 export const up: Migration = async ({ context: queryInterface }) => {
   await queryInterface.createTable(
-    "playables",
+    "media",
     {
       id: {
         type: DataType.UUID,
@@ -20,7 +20,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
       url: {
         type: DataType.TEXT,
         allowNull: false,
-        unique: "unique_playables_url",
+        unique: "unique_media_url",
       },
       resource_id: {
         type: DataType.TEXT,
@@ -60,7 +60,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_playables_url: {
+        unique_media_url: {
           fields: ["url"],
         },
       },
@@ -69,5 +69,5 @@ export const up: Migration = async ({ context: queryInterface }) => {
 };
 
 export const down: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.dropTable("playables");
+  await queryInterface.dropTable("media");
 };

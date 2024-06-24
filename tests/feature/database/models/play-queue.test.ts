@@ -1,20 +1,20 @@
 import PlayQueue from "@/database/models/play-queue";
-import { createChapter, createPlayable } from "../../setup/create-model";
+import { createChapter, createMedium } from "../../setup/create-model";
 
-describe("The queued playable model", () => {
-  it("belongs to a playable", async () => {
-    const playable = await createPlayable();
-    const playQueue = await PlayQueue.create({ playableId: playable.id });
+describe("The queued medium model", () => {
+  it("belongs to a medium", async () => {
+    const medium = await createMedium();
+    const playQueue = await PlayQueue.create({ mediumId: medium.id });
 
-    const belongsTo = await playQueue.$get("playable");
+    const belongsTo = await playQueue.$get("medium");
 
-    expect(belongsTo?.id).toEqual(playable.id);
+    expect(belongsTo?.id).toEqual(medium.id);
   });
 
   it("can belongs to a chapter", async () => {
     const chapter = await createChapter();
     const playQueue = await PlayQueue.create({
-      playableId: chapter.playableId,
+      mediumId: chapter.mediumId,
       chapterId: chapter.id,
     });
 

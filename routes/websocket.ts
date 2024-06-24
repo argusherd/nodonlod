@@ -5,8 +5,8 @@ import { renderFile } from "pug";
 import internal from "stream";
 import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
+import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import Playable from "../database/models/playable";
 import neatDuration from "../src/neat-duration";
 import { i18n } from "./middlewares/i18n";
 
@@ -60,15 +60,15 @@ const render = (filename: string, params?: object) =>
     __: i18n.__,
   });
 
-function playChapter(playable: Playable, chapter: Chapter) {
-  const mediaInfo: MediaInfo = { title: playable.title };
+function playChapter(medium: Medium, chapter: Chapter) {
+  const mediaInfo: MediaInfo = { title: medium.title };
   const { title: chTitle, startTime, endTime } = chapter;
 
   mediaInfo.chapter = chTitle;
   mediaInfo.startTime = startTime;
   mediaInfo.endTime = endTime;
 
-  wsServer.emit("play-next", playable.url, startTime, endTime);
+  wsServer.emit("play-next", medium.url, startTime, endTime);
   wss.nowPlaying(mediaInfo);
 }
 
@@ -100,27 +100,27 @@ const wss: WSS = {
     wsServer.clients.forEach((ws) => ws.send(render("player/_replay.pug"))),
   playNext: async () => {
     const playQueue = await PlayQueue.findOne({
-      include: [Playable, Chapter],
+      include: [Medium, Chapter],
       order: [["order", "ASC"]],
     });
 
     if (!playQueue) return;
 
-    const { playable, chapter } = playQueue;
+    const { medium, chapter } = playQueue;
 
     await playQueue.destroy();
 
-    if (chapter) playChapter(playable, chapter);
+    if (chapter) playChapter(medium, chapter);
     else {
-      wsServer.emit("play-next", playable.url);
-      wss.nowPlaying({ title: playable.title });
+      wsServer.emit("play-next", medium.url);
+      wss.nowPlaying({ title: medium.title });
     }
   },
   currentTime: (currentTime) =>
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ currentTime }))),
   latestPlayQueue: async () => {
     const items = await PlayQueue.findAll({
-      include: [Playable, Chapter],
+      include: [Medium, Chapter],
       order: [["order", "ASC"]],
     });
 

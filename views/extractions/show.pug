@@ -8,8 +8,8 @@ mixin raw-info(rawInfo)
       each entry in rawPlaylist.entries
         +raw-info(entry)
   else
-    - var rawPlayable = rawInfo;
-    include _raw-playable.pug
+    - var rawMedium = rawInfo;
+    include _raw-medium.pug
 
 block body
   h3 #{ extraction.url }

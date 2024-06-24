@@ -25,7 +25,7 @@ import Tag from "./tag";
 import Taggable from "./taggable";
 import Uploader from "./uploader";
 
-interface OptionalPlayableCreationAttributes {
+interface OptionalMediumCreationAttributes {
   id: string;
   uploaderId: string;
   description: string;
@@ -36,7 +36,7 @@ interface OptionalPlayableCreationAttributes {
   updatedAt: Date;
 }
 
-interface PlayableAttributes extends OptionalPlayableCreationAttributes {
+interface MediumAttributes extends OptionalMediumCreationAttributes {
   url: string;
   resourceId: string;
   domain: string;
@@ -44,16 +44,13 @@ interface PlayableAttributes extends OptionalPlayableCreationAttributes {
   duration: number;
 }
 
-export interface PlayableCreationAttributes
-  extends Optional<
-    PlayableAttributes,
-    keyof OptionalPlayableCreationAttributes
-  > {}
+export interface MediumCreationAttributes
+  extends Optional<MediumAttributes, keyof OptionalMediumCreationAttributes> {}
 
 @Table({ underscored: true })
-export default class Playable extends Model<
-  PlayableAttributes,
-  PlayableCreationAttributes
+export default class Medium extends Model<
+  MediumAttributes,
+  MediumCreationAttributes
 > {
   @PrimaryKey
   @IsUUID(4)
@@ -120,7 +117,7 @@ export default class Playable extends Model<
   chapters: Chapter[];
 
   @BelongsToMany(() => Tag, {
-    through: { model: () => Taggable, scope: { taggableType: "playable" } },
+    through: { model: () => Taggable, scope: { taggableType: "medium" } },
     foreignKey: "taggableId",
   })
   tags: Tag[];

@@ -1,14 +1,14 @@
-import { createPlayable, createUploader } from "../../setup/create-model";
+import { createMedium, createUploader } from "../../setup/create-model";
 
 describe("The uploader model", () => {
-  it("can has many playables", async () => {
+  it("can has many media", async () => {
     const uploader = await createUploader();
 
-    const playable = await createPlayable({ uploaderId: uploader.id });
+    const medium = await createMedium({ uploaderId: uploader.id });
 
-    const hasMany = await uploader.$get("playables");
+    const hasMany = await uploader.$get("media");
 
     expect(hasMany).toHaveLength(1);
-    expect(hasMany.at(0)?.id).toEqual(playable.id);
+    expect(hasMany.at(0)?.id).toEqual(medium.id);
   });
 });

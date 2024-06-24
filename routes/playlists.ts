@@ -1,7 +1,7 @@
 import { Request, Router } from "express";
 import Chapter from "../database/models/chapter";
+import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import Playable from "../database/models/playable";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
 
@@ -33,7 +33,7 @@ router.get("/:playlist", async (req: PlaylistRequest, res) => {
     playlist: req.playlist,
     items: await PlaylistItem.findAll({
       where: { playlistId: req.playlist.id },
-      include: [Playable, Chapter],
+      include: [Medium, Chapter],
       order: [["order", "ASC"]],
     }),
   });
@@ -48,7 +48,7 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
 
   for (const item of playlistItems) {
     await PlayQueue.create({
-      playableId: item.playableId,
+      mediumId: item.mediumId,
       chapterId: item.chapterId,
       order: order++,
     });

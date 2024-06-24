@@ -6,7 +6,7 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
-import Playable from "./playable";
+import Medium from "./medium";
 import Playlist from "./playlist";
 import Tag from "./tag";
 
@@ -16,7 +16,7 @@ export default class Taggable extends Model {
   @Column
   tagId: string;
 
-  @ForeignKey(() => Playable)
+  @ForeignKey(() => Medium)
   @ForeignKey(() => Playlist)
   @Column
   taggableId: string;

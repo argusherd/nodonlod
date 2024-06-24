@@ -8,10 +8,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    playable_id: {
+    medium_id: {
       type: DataType.UUID,
       allowNull: false,
-      references: { key: "id", model: "playables" },
+      references: { key: "id", model: "media" },
       onDelete: "CASCADE",
     },
     chapter_id: {

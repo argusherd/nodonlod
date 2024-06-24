@@ -79,7 +79,7 @@ describe("The extraction store route", () => {
     expect(extraction?.page).toEqual(1);
   });
 
-  it("can create an extraction that does not convert the raw info content into playables/playlists", async () => {
+  it("can create an extraction that does not convert the raw info content into media/playlists", async () => {
     await supertest(express)
       .post("/extractions")
       .type("form")

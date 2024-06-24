@@ -4,9 +4,9 @@ import RawInfoConverter from "@/src/raw-info-converter";
 import { resolve } from "path";
 import { Worker } from "worker_threads";
 import {
-  createRawPlayable,
+  createRawMedium,
   createRawPlaylist,
-  createSubRawPlayable,
+  createSubRawMedium,
 } from "../../setup/create-raw-info";
 
 jest.mock("worker_threads");
@@ -40,7 +40,7 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("uses the URL from the extraction and preserves the raw info", async () => {
-    const rawInfo = createRawPlayable();
+    const rawInfo = createRawMedium();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
@@ -79,7 +79,7 @@ describe("The job involves processing a pending extraction", () => {
   it("does not reprocess extractions that have already been processed", async () => {
     await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(createRawPlayable()),
+      content: JSON.stringify(createRawMedium()),
     });
 
     await Extraction.create({
@@ -92,12 +92,12 @@ describe("The job involves processing a pending extraction", () => {
     expect(Worker).not.toHaveBeenCalled();
   });
 
-  it("calls the function to convert the raw info to playables/playlists", async () => {
+  it("calls the function to convert the raw info to media/playlists", async () => {
     const mockedConvertAll = jest
       .spyOn(RawInfoConverter.prototype, "convertAll")
       .mockImplementation();
 
-    const rawInfo = createRawPlayable();
+    const rawInfo = createRawMedium();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
@@ -113,8 +113,8 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("dispatches another job if it's a continuous extraction", async () => {
-    const subRawPlayable = createSubRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
+    const subRawMedium = createSubRawMedium();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawMedium] });
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
@@ -140,8 +140,8 @@ describe("The job involves processing a pending extraction", () => {
   });
 
   it("increases the page number by 1 based on the extraction when dispatching a new job", async () => {
-    const subRawPlayable = createSubRawPlayable();
-    const rawPlaylist = createRawPlaylist({ entries: [subRawPlayable] });
+    const subRawMedium = createSubRawMedium();
+    const rawPlaylist = createRawPlaylist({ entries: [subRawMedium] });
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
@@ -206,12 +206,12 @@ describe("The job involves processing a pending extraction", () => {
     expect(await Extraction.count()).toEqual(1);
   });
 
-  it("does not dispatch a new extraction based on a raw-playable content", async () => {
-    const rawPlayable = createRawPlayable();
+  it("does not dispatch a new extraction based on a raw-medium content", async () => {
+    const rawMedium = createRawMedium();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
-        if (event === "message") listener(rawPlayable);
+        if (event === "message") listener(rawMedium);
       }),
     );
 
@@ -223,16 +223,16 @@ describe("The job involves processing a pending extraction", () => {
     expect(await Extraction.count()).toEqual(1);
   });
 
-  it("can disable the raw info to playables/playlists conversion", async () => {
+  it("can disable the raw info to media/playlists conversion", async () => {
     const mockedConvertAll = jest
       .spyOn(RawInfoConverter.prototype, "convertAll")
       .mockImplementation();
 
-    const rawPlayable = createRawPlayable();
+    const rawMedium = createRawMedium();
 
     jest.mocked(Worker.prototype).on.mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
-        if (event === "message") listener(rawPlayable);
+        if (event === "message") listener(rawMedium);
       }),
     );
 

@@ -33,7 +33,7 @@ export default function extractRawInfoFrom({
   url: string;
   startAt: number;
   stopAt: number;
-}): RawPlayable | RawPlaylist {
+}): RawMedium | RawPlaylist {
   const urlStat = statSync(url, { throwIfNoEntry: false });
   const extension = extname(url);
   const fileUrl = url;
@@ -50,12 +50,10 @@ export default function extractRawInfoFrom({
     throw new Error(String(response.stderr));
   }
 
-  const rawInfo: RawPlayable | RawPlaylist = JSON.parse(
-    String(response.stdout),
-  );
+  const rawInfo: RawMedium | RawPlaylist = JSON.parse(String(response.stdout));
 
   if (urlStat && rawInfo._type === "video")
-    updateFileRawPlayable(rawInfo, extension, fileUrl);
+    updateFileRawMedium(rawInfo, extension, fileUrl);
 
   return rawInfo;
 }
@@ -78,7 +76,7 @@ function getRawPlaylistFromDir(dir: string) {
         stopAt: 1,
       });
 
-      return subRawPlayble as SubRawPlayable;
+      return subRawPlayble as SubRawMedium;
     });
 
   const rawPlaylist: RawPlaylist = {
@@ -92,8 +90,8 @@ function getRawPlaylistFromDir(dir: string) {
   return rawPlaylist;
 }
 
-function updateFileRawPlayable(
-  rawPlayable: RawPlayable,
+function updateFileRawMedium(
+  rawMedium: RawMedium,
   extension: string,
   ffprobeInput: string,
 ) {
@@ -110,15 +108,14 @@ function updateFileRawPlayable(
 
   const ffprobeOutput = JSON.parse(String(response.stdout));
 
-  rawPlayable.id += extension;
-  rawPlayable.title =
-    rawPlayable.title.split("/").pop()?.replace(extension, "") ||
-    rawPlayable.title;
-  rawPlayable.duration = Number(ffprobeOutput.format.duration);
-  rawPlayable.webpage_url_domain = "file";
+  rawMedium.id += extension;
+  rawMedium.title =
+    rawMedium.title.split("/").pop()?.replace(extension, "") || rawMedium.title;
+  rawMedium.duration = Number(ffprobeOutput.format.duration);
+  rawMedium.webpage_url_domain = "file";
 }
 
-export interface RawPlayable {
+export interface RawMedium {
   _type: "video";
   age_limit?: number;
   channel?: string | null;
@@ -140,12 +137,12 @@ export interface RawPlayable {
   webpage_url_domain: string;
 }
 
-export interface SubRawPlayable extends Omit<RawPlayable, "_type"> {}
+export interface SubRawMedium extends Omit<RawMedium, "_type"> {}
 
 export interface RawPlaylist {
   _type: "playlist";
   description?: string;
-  entries: SubRawPlayable[] | RawPlaylist[];
+  entries: SubRawMedium[] | RawPlaylist[];
   id: string;
   requested_entries?: number[];
   thumbnails?: thumbnails;

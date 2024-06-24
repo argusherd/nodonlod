@@ -1,9 +1,9 @@
+import Medium from "@/database/models/medium";
 import PlayQueue from "@/database/models/play-queue";
-import Playable from "@/database/models/playable";
 import wss from "@/routes/websocket";
 import { createServer } from "http";
 import { WebSocket } from "ws";
-import { createChapter, createPlayable } from "../setup/create-model";
+import { createChapter, createMedium } from "../setup/create-model";
 
 describe("The websocket server", () => {
   const httpServer = createServer().on("upgrade", wss.handleUpgrade);
@@ -90,11 +90,11 @@ describe("The websocket server", () => {
       expect(data.toString()).toContain("Together forever");
     });
 
-    const playable = await createPlayable({
+    const medium = await createMedium({
       title: "Together forever",
     });
 
-    await PlayQueue.create({ playableId: playable.id });
+    await PlayQueue.create({ mediumId: medium.id });
 
     await wss.playNext();
   });
@@ -104,19 +104,19 @@ describe("The websocket server", () => {
       expect(url).toEqual("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     });
 
-    const playable = await createPlayable({
+    const medium = await createMedium({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     });
 
-    await PlayQueue.create({ playableId: playable.id });
+    await PlayQueue.create({ mediumId: medium.id });
 
     await wss.playNext();
   });
 
   it("removes the front item of the play queue when instructing the server to play the next item", async () => {
-    const playable = await createPlayable();
+    const medium = await createMedium();
 
-    await PlayQueue.create({ playableId: playable.id });
+    await PlayQueue.create({ mediumId: medium.id });
 
     await wss.playNext();
 
@@ -124,15 +124,15 @@ describe("The websocket server", () => {
   });
 
   it("plays the next items in the play queue based on their order", async () => {
-    const goFirst = await createPlayable();
-    const goSecond = await createPlayable();
+    const goFirst = await createMedium();
+    const goSecond = await createMedium();
 
     client.on("message", (data) => {
       expect(data.toString()).toContain(goFirst.title);
     });
 
-    await PlayQueue.create({ playableId: goSecond.id, order: 15 });
-    await PlayQueue.create({ playableId: goFirst.id, order: 14 });
+    await PlayQueue.create({ mediumId: goSecond.id, order: 15 });
+    await PlayQueue.create({ mediumId: goFirst.id, order: 14 });
 
     await wss.playNext();
   });
@@ -146,18 +146,18 @@ describe("The websocket server", () => {
       expect(res).toContain("777");
     });
 
-    const playable = await createPlayable({
+    const medium = await createMedium({
       title: "Rick Astley - Never Gonna Give You Up",
     });
 
     const chapter = await createChapter({
-      playableId: playable.id,
+      mediumId: medium.id,
       startTime: 666,
       endTime: 777,
       title: "foo",
     });
 
-    await PlayQueue.create({ playableId: playable.id, chapterId: chapter.id });
+    await PlayQueue.create({ mediumId: medium.id, chapterId: chapter.id });
 
     await wss.playNext();
   });
@@ -169,18 +169,18 @@ describe("The websocket server", () => {
       expect(endTime).toEqual(30);
     });
 
-    const playable = await createPlayable({
+    const medium = await createMedium({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     });
 
     const chapter = await createChapter({
-      playableId: playable.id,
+      mediumId: medium.id,
       startTime: 10,
       endTime: 30,
       title: "foo",
     });
 
-    await PlayQueue.create({ playableId: playable.id, chapterId: chapter.id });
+    await PlayQueue.create({ mediumId: medium.id, chapterId: chapter.id });
 
     await wss.playNext();
   });
@@ -195,32 +195,30 @@ describe("The websocket server", () => {
 
   it("can broadcast the latest play queue", async () => {
     const chapter = await createChapter();
-    const playable = (await chapter.$get("playable")) as Playable;
+    const medium = (await chapter.$get("medium")) as Medium;
 
     client.on("message", (data) => {
-      expect(data.toString()).toContain(playable.title);
+      expect(data.toString()).toContain(medium.title);
       expect(data.toString()).toContain(chapter.title);
     });
 
-    await PlayQueue.create({ playableId: playable.id, chapterId: chapter.id });
+    await PlayQueue.create({ mediumId: medium.id, chapterId: chapter.id });
 
     await wss.latestPlayQueue();
   });
 
   it("broadcasts the latest play queue items based on their order", async () => {
-    const playable1 = await createPlayable();
-    const playable2 = await createPlayable();
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
 
     client.on("message", (data) => {
-      const displayOrder = new RegExp(
-        `.*${playable2.title}.*${playable1.title}.*`,
-      );
+      const displayOrder = new RegExp(`.*${medium2.title}.*${medium1.title}.*`);
 
       expect(data.toString().match(displayOrder)).not.toBeNull();
     });
 
-    await PlayQueue.create({ playableId: playable1.id, order: 15 });
-    await PlayQueue.create({ playableId: playable2.id, order: 14 });
+    await PlayQueue.create({ mediumId: medium1.id, order: 15 });
+    await PlayQueue.create({ mediumId: medium2.id, order: 14 });
 
     await wss.latestPlayQueue();
   });

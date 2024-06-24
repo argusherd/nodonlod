@@ -9,7 +9,7 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import Chapter from "./chapter";
-import Playable from "./playable";
+import Medium from "./medium";
 import Playlist from "./playlist";
 
 interface OptionalPlaylistItemCreationAttributes {
@@ -22,7 +22,7 @@ interface OptionalPlaylistItemCreationAttributes {
 interface PlaylistItemAttributes
   extends OptionalPlaylistItemCreationAttributes {
   playlistId: string;
-  playableId: string;
+  mediumId: string;
 }
 
 interface PlaylistItemCreationAttributes
@@ -40,9 +40,9 @@ export default class PlaylistItem extends Model<
   @Column
   playlistId: string;
 
-  @ForeignKey(() => Playable)
+  @ForeignKey(() => Medium)
   @Column
-  playableId: string;
+  mediumId: string;
 
   @ForeignKey(() => Chapter)
   @Column
@@ -57,8 +57,8 @@ export default class PlaylistItem extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsTo(() => Playable)
-  playable: Playable;
+  @BelongsTo(() => Medium)
+  medium: Medium;
 
   @BelongsTo(() => Chapter)
   chapter: Chapter;

@@ -10,7 +10,7 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
-import { RawPlayable, RawPlaylist } from "../../src/raw-info-extractor";
+import { RawMedium, RawPlaylist } from "../../src/raw-info-extractor";
 
 interface OptionalExtractionCreationAttributes {
   id: number;
@@ -49,7 +49,7 @@ export default class Extraction extends Model<
   url: string;
 
   @Column
-  get content(): RawPlayable | RawPlaylist | null {
+  get content(): RawMedium | RawPlaylist | null {
     if (!this.getDataValue("content")) return null;
 
     return JSON.parse(this.getDataValue("content") as string);

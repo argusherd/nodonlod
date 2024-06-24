@@ -1,41 +1,41 @@
 import Chapter from "@/database/models/chapter";
-import { createPlayable } from "../../setup/create-model";
+import { createMedium } from "../../setup/create-model";
 
 describe("The chapter model", () => {
-  it("belongs to a playable", async () => {
-    const playable = await createPlayable();
+  it("belongs to a medium", async () => {
+    const medium = await createMedium();
 
     const chapter = await Chapter.create({
-      playableId: playable.id,
+      mediumId: medium.id,
       title: "ep1",
       startTime: 20,
       endTime: 120,
     });
 
-    const belongsTo = await chapter.$get("playable");
+    const belongsTo = await chapter.$get("medium");
 
-    expect(belongsTo?.id).toEqual(playable.id);
+    expect(belongsTo?.id).toEqual(medium.id);
   });
 
-  it("treats the playableId, startTime, and endTime columns as an unique set", async () => {
-    const playable1 = await createPlayable();
-    const playable2 = await createPlayable();
+  it("treats the mediumId, startTime, and endTime columns as an unique set", async () => {
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
 
     await Chapter.create({
-      playableId: playable1.id,
+      mediumId: medium1.id,
       title: "ep1",
       startTime: 20,
       endTime: 120,
     });
 
     await Chapter.create({
-      playableId: playable1.id,
+      mediumId: medium1.id,
       title: "ep1",
       endTime: 120,
     });
 
     await Chapter.create({
-      playableId: playable2.id,
+      mediumId: medium2.id,
       title: "ep1",
       startTime: 20,
       endTime: 120,
@@ -43,7 +43,7 @@ describe("The chapter model", () => {
 
     await expect(
       Chapter.create({
-        playableId: playable1.id,
+        mediumId: medium1.id,
         title: "ep1",
         startTime: 20,
         endTime: 120,

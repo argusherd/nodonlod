@@ -1,5 +1,5 @@
 import extractRawInfoFrom, {
-  RawPlayable,
+  RawMedium,
   RawPlaylist,
 } from "@/src/raw-info-extractor";
 import { existsSync } from "fs";
@@ -22,28 +22,28 @@ describe("The raw info extractor module", () => {
   });
 
   it("can extract information from local media files", () => {
-    const rawPlayable = extractRawInfoFrom({
+    const rawMedium = extractRawInfoFrom({
       url: samplePath,
       startAt: 1,
       stopAt: 1,
-    }) as RawPlayable;
+    }) as RawMedium;
 
-    expect(rawPlayable._type).toEqual("video");
-    expect(rawPlayable.id).toContain("sample.mp3");
-    expect(rawPlayable.duration).toBeGreaterThan(0);
-    expect(rawPlayable.title).toEqual("sample");
-    expect(rawPlayable.webpage_url_domain).toEqual("file");
-    expect(rawPlayable.upload_date).not.toBeUndefined();
+    expect(rawMedium._type).toEqual("video");
+    expect(rawMedium.id).toContain("sample.mp3");
+    expect(rawMedium.duration).toBeGreaterThan(0);
+    expect(rawMedium.title).toEqual("sample");
+    expect(rawMedium.webpage_url_domain).toEqual("file");
+    expect(rawMedium.upload_date).not.toBeUndefined();
   });
 
-  it("does not yield any encoded backslashes in the raw-playable webpage_url_domain property when extracting a file", () => {
-    const rawPlayable = extractRawInfoFrom({
+  it("does not yield any encoded backslashes in the raw-medium webpage_url_domain property when extracting a file", () => {
+    const rawMedium = extractRawInfoFrom({
       url: samplePath,
       startAt: 1,
       stopAt: 1,
-    }) as RawPlayable;
+    }) as RawMedium;
 
-    expect(rawPlayable.webpage_url).not.toContain("%5C");
+    expect(rawMedium.webpage_url).not.toContain("%5C");
   });
 
   it("can extract information from local directories", () => {

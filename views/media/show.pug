@@ -1,14 +1,14 @@
 extends ../_layout.pug
 
 block body
-  h2 #{ playable.title }
-  a(href=playable.url) url
-  p #{ playable.description }
-  span #{ dayjs.duration(playable.duration, "seconds").format("HH:mm:ss") }
-  span #{ playable.uploadDate ? dayjs(playable.uploadDate).format("YYYY-MM-DD") : "" }
-  span #{ dayjs(playable.createdAt).format("YYYY-MM-DD HH:mm:ss") }
-  span #{ dayjs(playable.updatedAt).format("YYYY-MM-DD HH:mm:ss") }
-  img(src=playable.thumbnail)
+  h2 #{ medium.title }
+  a(href=medium.url) url
+  p #{ medium.description }
+  span #{ dayjs.duration(medium.duration, "seconds").format("HH:mm:ss") }
+  span #{ medium.uploadDate ? dayjs(medium.uploadDate).format("YYYY-MM-DD") : "" }
+  span #{ dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss") }
+  span #{ dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss") }
+  img(src=medium.thumbnail)
   if uploader
     a(href=uploader.url) #{ uploader.name }
 

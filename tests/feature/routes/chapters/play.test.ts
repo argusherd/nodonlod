@@ -2,13 +2,13 @@ import express from "@/routes";
 import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
-import { createChapter, createPlayable } from "../../setup/create-model";
+import { createChapter, createMedium } from "../../setup/create-model";
 
 describe("The chapter play route", () => {
   it("instructs the media player to play the chapter", async () => {
-    const playable = await createPlayable();
+    const medium = await createMedium();
     const chapter = await createChapter({
-      playableId: playable.id,
+      mediumId: medium.id,
       startTime: 10,
       endTime: 30,
     });
@@ -16,13 +16,13 @@ describe("The chapter play route", () => {
 
     await supertest(express).get(`/chapters/${chapter.id}/play`).expect(202);
 
-    expect(mockedPlay).toHaveBeenCalledWith(playable.url, 10, 30);
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 30);
   });
 
-  it("also instruct the websocket to send out the playable information", async () => {
-    const playable = await createPlayable();
+  it("also instruct the websocket to send out the medium information", async () => {
+    const medium = await createMedium();
     const chapter = await createChapter({
-      playableId: playable.id,
+      mediumId: medium.id,
       startTime: 10,
       endTime: 30,
     });
@@ -31,7 +31,7 @@ describe("The chapter play route", () => {
     await supertest(express).get(`/chapters/${chapter.id}/play`).expect(202);
 
     expect(mockedNowPlaying).toHaveBeenCalledWith({
-      title: playable.title,
+      title: medium.title,
       chapter: chapter.title,
       startTime: 10,
       endTime: 30,
