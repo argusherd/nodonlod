@@ -1,5 +1,10 @@
 i#play-btn.cursor-pointer.text-2xl(
   class="icon-[material-symbols--pause]",
   hx-put="/player/pause",
-  hx-swap="outerHTML"
+  hx-swap-oob="true"
+)
+i#minimized-play-btn.cursor-pointer.text-2xl(
+  class="icon-[material-symbols--pause]",
+  hx-put="/player/pause",
+  hx-swap-oob="true"
 )
