@@ -248,11 +248,53 @@ describe("The media player module", () => {
     );
 
     const seek = commandPrompt(["seek", 30, "absolute"]);
+    let currentTime = 0;
 
+    mediaPlayer.on("current-time", (time) => (currentTime = time));
     mediaPlayer.launch();
     mediaPlayer.seek(30);
 
     expect(mockedWrite).toHaveBeenCalledWith(seek);
+    expect(currentTime).toEqual(30);
+  });
+
+  it("resumes the player when instructed to seek to a specific time and it has reached the end of the media previously", () => {
+    const mockedWrite = jest.fn();
+
+    const durationMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "duration",
+        data: 123,
+      }) + "\n";
+
+    const currentTimeMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 123,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") {
+          listener(Buffer.from(durationMessage));
+          listener(Buffer.from(currentTimeMessage));
+        }
+      }),
+    );
+
+    const resumeMedia = commandPrompt(["set_property", "pause", false]);
+    let playerRestarted = false;
+
+    mediaPlayer.on("start", () => (playerRestarted = true));
+    mediaPlayer.launch();
+    mediaPlayer.seek(30);
+
+    expect(mockedWrite).toHaveBeenCalledWith(resumeMedia);
+    expect(playerRestarted).toBeTruthy();
   });
 
   it("can instruct the player to start at a specific time by passing the startTime param", () => {
@@ -485,9 +527,27 @@ describe("The media player module", () => {
     mediaPlayer.launch();
     mediaPlayer.stop();
 
-    const stop = commandPrompt(["stop"]);
+    const pause = commandPrompt(["set_property", "pause", true]);
 
-    expect(mockedWrite).toHaveBeenCalledWith(stop);
+    expect(mockedWrite).toHaveBeenCalledWith(pause);
+  });
+
+  it("resets the starting time when the player is instructed to stop", () => {
+    const mockedWrite = jest.fn();
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+      }),
+    );
+
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 30);
+    mediaPlayer.stop();
+
+    const reset = commandPrompt(["seek", 30, "absolute"]);
+
+    expect(mockedWrite).toHaveBeenCalledWith(reset);
   });
 
   it("omits the player stop event if received a end-file message", () => {

@@ -54,6 +54,7 @@ let ipcClient: Socket;
 let mpvPlayer: ChildProcess;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
+let endOfPlay = false;
 let duration = Number.MAX_VALUE;
 let startAt = 0;
 let endAt = 0;
@@ -109,7 +110,7 @@ const socketOnData = (data: Buffer) => {
     if ("data" in message === false) return;
 
     if (message.name === "duration" || message.request_id === durationId) {
-      duration = message.data - 0.01;
+      duration = message.data - 0.1;
       playerObserver.emit("start", message.data);
 
       if (startAt) mediaPlayer.seek(startAt);
@@ -141,6 +142,7 @@ const mediaPlayer: MediaPlayer = {
     startAt = startTime;
     endAt = endTime;
     duration = Number.MAX_VALUE;
+    endOfPlay = false;
 
     if (isConnected) {
       ipcClient.write(commandPrompt(["stop"]));
@@ -158,12 +160,28 @@ const mediaPlayer: MediaPlayer = {
   pause: () => ipcClient.write(commandPrompt(["set_property", "pause", true])),
   resume: () =>
     ipcClient.write(commandPrompt(["set_property", "pause", false])),
-  seek: (time: number) =>
-    ipcClient.write(commandPrompt(["seek", time, "absolute"])),
-  stop: () => ipcClient.write(commandPrompt(["stop"])),
+  seek: (time: number) => {
+    playerObserver.emit("current-time", time);
+    ipcClient.write(commandPrompt(["seek", time, "absolute"]));
+
+    if (endOfPlay) {
+      mediaPlayer.resume();
+      playerObserver.emit("start", duration);
+      endOfPlay = false;
+    }
+  },
+  stop: () => {
+    ipcClient.write(commandPrompt(["set_property", "pause", true]));
+    ipcClient.write(commandPrompt(["seek", startAt, "absolute"]));
+    playerObserver.emit("current-time", startAt);
+    playerObserver.emit("stop");
+    endOfPlay = true;
+  },
   on: (event, listener) => {
     playerObserver.on(event, listener);
   },
 };
+
+playerObserver.on("end", () => (endOfPlay = true));
 
 export default mediaPlayer;

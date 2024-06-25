@@ -73,7 +73,10 @@ function setUpMediaEvent() {
   });
 
   mediaPlayer.on("start", (duration) => wss.mediaStart(duration));
-  mediaPlayer.on("end", () => wss.playNext());
+  mediaPlayer.on("end", () => {
+    wss.mediaStop();
+    wss.playNext();
+  });
   mediaPlayer.on("stop", () => wss.mediaStop());
   mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
 }
