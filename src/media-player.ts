@@ -164,7 +164,7 @@ const mediaPlayer: MediaPlayer = {
     playerObserver.emit("current-time", time);
     ipcClient.write(commandPrompt(["seek", time, "absolute"]));
 
-    if (endOfPlay) {
+    if (isConnected && endOfPlay) {
       mediaPlayer.resume();
       playerObserver.emit("start", duration);
       endOfPlay = false;

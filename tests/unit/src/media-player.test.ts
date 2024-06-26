@@ -297,6 +297,50 @@ describe("The media player module", () => {
     expect(playerRestarted).toBeTruthy();
   });
 
+  it("does not resume the player when seeking to a specific time if it has been disconnected and reached the end of the media", async () => {
+    const durationMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "duration",
+        data: 123,
+      }) + "\n";
+
+    const currentTimeMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 123,
+      }) + "\n";
+
+    let disconnect: Function;
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation(async (event, listener) => {
+        if (event === "close") disconnect = listener;
+        if (event === "connect") {
+          listener();
+          await new Promise(process.nextTick);
+          disconnect();
+        }
+        if (event === "data") {
+          listener(Buffer.from(durationMessage));
+          listener(Buffer.from(currentTimeMessage));
+        }
+      }),
+    );
+
+    let playerRestarted = false;
+
+    mediaPlayer.launch();
+
+    await new Promise(process.nextTick);
+
+    mediaPlayer.on("start", () => (playerRestarted = true));
+    mediaPlayer.seek(30);
+
+    expect(playerRestarted).toBeFalsy();
+  });
+
   it("can instruct the player to start at a specific time by passing the startTime param", () => {
     const mockedWrite = jest.fn();
 
