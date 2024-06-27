@@ -50,4 +50,12 @@ describe("The media player hook route", () => {
 
     expect(mockedSeek).toHaveBeenCalledWith(10);
   });
+
+  it("can instruct the player to replay the media", async () => {
+    const mockedReplay = jest.spyOn(mediaPlayer, "replay").mockImplementation();
+
+    await supertest(express).put("/player/replay").expect(204);
+
+    expect(mockedReplay).toHaveBeenCalled();
+  });
 });

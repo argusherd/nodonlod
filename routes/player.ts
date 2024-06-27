@@ -23,4 +23,9 @@ router.put("/seek", (req, res) => {
   res.sendStatus(204);
 });
 
+router.put("/replay", (_req, res) => {
+  mediaPlayer.replay();
+  res.sendStatus(204);
+});
+
 export default router;

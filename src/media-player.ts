@@ -38,6 +38,7 @@ export interface MediaPlayer {
   resume: () => void;
   seek: (time: number) => void;
   stop: () => void;
+  replay: () => void;
   on: Pick<PlayerObserver, "on">["on"];
 }
 
@@ -182,6 +183,16 @@ const mediaPlayer: MediaPlayer = {
     playerObserver.emit("current-time", mediaInfo.startTime);
     playerObserver.emit("stop");
     mediaInfo.ended = true;
+  },
+  replay: () => {
+    if (!isConnected) {
+      mediaPlayer.play(mediaInfo.url, mediaInfo.startTime, mediaInfo.endTime);
+      return;
+    }
+
+    ipcClient.write(commandPrompt(["seek", mediaInfo.startTime, "absolute"]));
+    mediaPlayer.resume();
+    playerObserver.emit("start", mediaInfo.duration);
   },
   on: (event, listener) => {
     playerObserver.on(event, listener);
