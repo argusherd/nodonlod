@@ -31,7 +31,14 @@ const config = {
     {
       ...general,
       displayName: "unit",
+      modulePathIgnorePatterns: ["<rootDir>/tests/unit/src/media-player/"],
       roots: ["<rootDir>/tests/unit"],
+    },
+    {
+      ...general,
+      displayName: "media-player",
+      roots: ["<rootDir>/tests/unit/src/media-player"],
+      setupFilesAfterEnv: ["<rootDir>/tests/unit/src/media-player/setup.ts"],
     },
   ],
 };
