@@ -54,10 +54,13 @@ let ipcClient: Socket;
 let mpvPlayer: ChildProcess;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
-let endOfPlay = false;
-let duration = Number.MAX_VALUE;
-let startAt = 0;
-let endAt = 0;
+let mediaInfo = {
+  url: "",
+  duration: Number.MAX_VALUE,
+  startTime: 0,
+  endTime: 0,
+  ended: false,
+};
 
 const commandPrompt = (command: any[], request_id = 0): string =>
   JSON.stringify({ command, request_id }) + "\n";
@@ -110,10 +113,10 @@ const socketOnData = (data: Buffer) => {
     if ("data" in message === false) return;
 
     if (message.name === "duration" || message.request_id === durationId) {
-      duration = message.data - 0.1;
+      mediaInfo.duration = message.data - 0.1;
       playerObserver.emit("start", message.data);
 
-      if (startAt) mediaPlayer.seek(startAt);
+      if (mediaInfo.startTime) mediaPlayer.seek(mediaInfo.startTime);
 
       mediaPlayer.resume();
     }
@@ -121,17 +124,17 @@ const socketOnData = (data: Buffer) => {
     if (message.name === "time-pos") {
       playerObserver.emit("current-time", message.data);
 
-      if (endAt && message.data >= endAt) {
+      if (mediaInfo.endTime && message.data >= mediaInfo.endTime) {
         ipcClient.write(commandPrompt(["set_property", "pause", true]));
         playerObserver.emit("end");
       }
 
-      if (duration == Number.MAX_VALUE)
+      if (mediaInfo.duration == Number.MAX_VALUE)
         ipcClient.write(
           commandPrompt(["get_property", "duration"], durationId),
         );
 
-      if (message.data >= duration) playerObserver.emit("end");
+      if (message.data >= mediaInfo.duration) playerObserver.emit("end");
     }
   }
 };
@@ -139,21 +142,24 @@ const socketOnData = (data: Buffer) => {
 const mediaPlayer: MediaPlayer = {
   launch: launchPlayer,
   play: (url: string, startTime = 0, endTime = 0) => {
-    startAt = startTime;
-    endAt = endTime;
-    duration = Number.MAX_VALUE;
-    endOfPlay = false;
+    mediaInfo = {
+      url,
+      duration: Number.MAX_VALUE,
+      startTime,
+      endTime,
+      ended: false,
+    };
 
     if (isConnected) {
       ipcClient.write(commandPrompt(["stop"]));
       ipcClient.write(commandPrompt(["loadfile", url]));
-      if (startAt) mediaPlayer.pause();
+      if (mediaInfo.startTime) mediaPlayer.pause();
       else mediaPlayer.resume();
       return;
     }
 
     commandQueue.push(commandPrompt(["loadfile", url]));
-    if (startAt)
+    if (mediaInfo.startTime)
       commandQueue.push(commandPrompt(["set_property", "pause", true]));
     launchPlayer();
   },
@@ -164,24 +170,24 @@ const mediaPlayer: MediaPlayer = {
     playerObserver.emit("current-time", time);
     ipcClient.write(commandPrompt(["seek", time, "absolute"]));
 
-    if (isConnected && endOfPlay) {
+    if (isConnected && mediaInfo.ended) {
       mediaPlayer.resume();
-      playerObserver.emit("start", duration);
-      endOfPlay = false;
+      playerObserver.emit("start", mediaInfo.duration);
+      mediaInfo.ended = false;
     }
   },
   stop: () => {
     ipcClient.write(commandPrompt(["set_property", "pause", true]));
-    ipcClient.write(commandPrompt(["seek", startAt, "absolute"]));
-    playerObserver.emit("current-time", startAt);
+    ipcClient.write(commandPrompt(["seek", mediaInfo.startTime, "absolute"]));
+    playerObserver.emit("current-time", mediaInfo.startTime);
     playerObserver.emit("stop");
-    endOfPlay = true;
+    mediaInfo.ended = true;
   },
   on: (event, listener) => {
     playerObserver.on(event, listener);
   },
 };
 
-playerObserver.on("end", () => (endOfPlay = true));
+playerObserver.on("end", () => (mediaInfo.ended = true));
 
 export default mediaPlayer;
