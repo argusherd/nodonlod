@@ -8,9 +8,10 @@ html(lang=`${getLocale()}`)
     script(defer, src="/js/app.js")
 
   body(hx-boost="true", hx-ext="ws", ws-connect="/")
-    nav.fixed.left-0.top-0.z-10.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
+    nav#nav.fixed.left-0.top-0.z-10.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
       @mouseenter="show = true",
       @mouseleave="show = false",
+      hx-preserve,
       x-data="{ show: false }"
     )
       .flex.flex-col.gap-2
