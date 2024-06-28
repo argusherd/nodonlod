@@ -19,9 +19,14 @@
     class="top-1/2 -translate-y-1/2",
     x-show="!isNaN(endTime)"
   )
+  #seek-anchor.absolute.hidden.-translate-y-8.bg-gray-700.px-1.text-sm.text-white(
+    @set-anchor.window="$el.style.left = $event.detail * 100 + '%'; $el.innerText = dayjs.neatDuration(Math.round($event.detail * duration))",
+    class="-translate-x-1/2 group-hover:inline-block"
+  )
   input.w-full.cursor-pointer.appearance-none.bg-transparent(
     :value="!seek && currentTime",
     @mousedown="seek = true",
+    @mousemove="$dispatch('set-anchor', ($event.clientX - rect.left) / (rect.right - rect.left))",
     @mouseup.debounce="seek = false",
     class="[&::-webkit-slider-runnable-track]:h-2 [&::-webkit-slider-thumb]:h-px [&::-webkit-slider-thumb]:w-px [&::-webkit-slider-thumb]:appearance-none",
     hx-include="[name='seek']",
@@ -31,5 +36,8 @@
     name="seek",
     step="0.01",
     type="range",
-    x-data="{ seek: false }"
+    x-data=`{
+      seek: false,
+      get rect() { return $el.getBoundingClientRect() }
+    }`
   )
