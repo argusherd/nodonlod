@@ -6,6 +6,7 @@ configDotenv({ path: [".env.test", ".env"] });
 const general = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
+    "^electron$": "<rootDir>/tests/mocked-electron.ts",
   },
   testEnvironment: "node",
   testMatch: ["**/*.test.*"],

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import chapterRouter from "./chapters";
+import electronRouter from "./electron";
 import extractionRouter from "./extractions";
 import mediumRouter from "./media";
 import i18nMiddleware from "./middlewares/i18n";
@@ -32,5 +33,6 @@ express.use("/playlists", playlistRouter);
 express.use("/chapters", chapterRouter);
 express.use("/play-queues", playQueueRouter);
 express.use("/player", playerRouter);
+express.use("/electron", electronRouter);
 
 export default express;
