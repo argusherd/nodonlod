@@ -1,0 +1,56 @@
+label.cursor-pointer.font-bold(for="input-url") #{ __("Create media by extracting information from a URL") }
+
+form.mb-2.flex.flex-col.gap-2(
+  action="/extractions",
+  method="post",
+  x-data="{ show: false }"
+)
+  .flex.flex-wrap.gap-2
+    include _input-url.pug
+    button.flex.items-center.gap-1.rounded.border.border-gray-400.px-1(
+      type="submit"
+    )
+      i.text-2xl(class="icon-[system-uicons--box-open]")
+      span #{ __("Extract") }
+    .flex.items-center.gap-2.text-2xl
+      button(
+        class="icon-[ph--file-audio]",
+        hx-get="/electron/file",
+        hx-swap="outerHTML",
+        hx-target="#input-url",
+        title=__("Select a file as a extraction target"),
+        type="button"
+      )
+      button(
+        class="icon-[clarity--directory-line]",
+        hx-get="/electron/directory",
+        hx-swap="outerHTML",
+        hx-target="#input-url",
+        title=__("Select a directory as a playlist"),
+        type="button"
+      )
+      button.text-gray-600(
+        @click="show = !show",
+        class="icon-[uil--setting]",
+        title=__("Extraction details"),
+        type="button"
+      )
+
+  .flex.flex-col.gap-2.text-sm(x-show="show")
+    .flex.gap-1
+      input#isConvertible(checked, name="isConvertible", type="checkbox")
+      label.cursor-pointer(for="isConvertible") #{ __("Convert extracted infomation to playable media") }
+    .flex.items-center.gap-1
+      input#isContinuous(name="isContinuous", type="checkbox")
+      label.cursor-pointer(for="isContinuous") #{ __("Extract whole playlist") }
+      i.cursor-pointer.text-lg(
+        class="icon-[heroicons--exclaimation-triangle]",
+        title=__("Be aware of very long playlists or channels")
+      )
+    .flex.gap-1
+      label(for="page") #{ __("Extract playlist from page") }:
+      input#page.w-14.rounded.border.border-gray-400.px-1(
+        name="page",
+        type="number",
+        value="1"
+      )
