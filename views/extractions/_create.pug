@@ -1,7 +1,10 @@
 label.cursor-pointer.font-bold(for="input-url") #{ __("Create media by extracting information from a URL") }
 
-form.mb-2.flex.flex-col.gap-2(
+form.mb-4.flex.flex-col.gap-2(
   action="/extractions",
+  hx-on::after-request="document.querySelector('#input-url').value = ''",
+  hx-swap="outerHTML show:none",
+  hx-target="#extractions",
   method="post",
   x-data="{ show: false }"
 )
@@ -47,10 +50,14 @@ form.mb-2.flex.flex-col.gap-2(
         class="icon-[heroicons--exclaimation-triangle]",
         title=__("Be aware of very long playlists or channels")
       )
-    .flex.gap-1
+    .flex.items-center.gap-1
       label(for="page") #{ __("Extract playlist from page") }:
       input#page.w-14.rounded.border.border-gray-400.px-1(
         name="page",
         type="number",
         value="1"
+      )
+      i.cursor-pointer.text-lg(
+        class="icon-[ph--question]",
+        title=__("Extract 10 items per page")
       )

@@ -3,6 +3,4 @@ extends ../_layout.pug
 block body
   include _create.pug
 
-  each extraction in extractions
-    div
-      a(href="/extractions/" + extraction.id) #{ extraction.url }
+  include _list.pug

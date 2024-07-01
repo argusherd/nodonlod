@@ -27,7 +27,7 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
 
 router.get("/", async (_req, res) => {
   res.render("extractions/index", {
-    extractions: await Extraction.findAll(),
+    extractions: await Extraction.findAll({ order: [["createdAt", "DESC"]] }),
   });
 });
 
@@ -50,7 +50,9 @@ router.post(
       page: req.body.page || undefined,
     });
 
-    res.set("HX-Location", "/extractions").sendStatus(201);
+    res.status(201).render("extractions/_list", {
+      extractions: await Extraction.findAll({ order: [["createdAt", "DESC"]] }),
+    });
   },
 );
 

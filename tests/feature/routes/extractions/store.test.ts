@@ -19,14 +19,6 @@ describe("The extraction store route", () => {
     expect(extraction?.url).toEqual(videoURL);
   });
 
-  it("tells htmx to redirect to the index page after successfully creating an extraction", async () => {
-    await supertest(express)
-      .post("/extractions")
-      .type("form")
-      .send({ url: videoURL })
-      .expect("HX-Location", "/extractions");
-  });
-
   it("must not provide a empty URL", async () => {
     await supertest(express)
       .post("/extractions")
@@ -97,5 +89,16 @@ describe("The extraction store route", () => {
 
     expect(isConvertible?.isConvertible).toBeTruthy();
     expect(isNotConvertible?.isConvertible).toBeFalsy();
+  });
+
+  it("returns the latest extraction you just created", async () => {
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: videoURL })
+      .expect(201)
+      .expect((res) => {
+        expect(res.text).toContain(videoURL);
+      });
   });
 });

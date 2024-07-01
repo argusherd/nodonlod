@@ -1,5 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
+import dayjs from "dayjs";
 import supertest from "supertest";
 
 describe("The extraction index page", () => {
@@ -32,6 +33,26 @@ describe("The extraction index page", () => {
         expect(res.text).toContain(extraction2.url);
         expect(res.text).toContain(`href="/extractions/${extraction1.id}"`);
         expect(res.text).toContain(`href="/extractions/${extraction2.id}"`);
+      });
+  });
+
+  it("lists all extractions in descending order based on the createdAt column", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      createdAt: dayjs().subtract(1, "hour").toDate(),
+    });
+
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+    });
+
+    const displayOrder = new RegExp(`.*wePCOoU7bSs.*dQw4w9WgXcQ.*`);
+
+    await supertest(express)
+      .get("/extractions")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text.match(displayOrder)).not.toBeNull();
       });
   });
 });
