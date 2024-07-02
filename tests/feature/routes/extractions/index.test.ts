@@ -16,7 +16,7 @@ describe("The extraction index page", () => {
       });
   });
 
-  it("lists all extractions and provides a link for each extraction", async () => {
+  it("lists extractions and provides a link for each extraction", async () => {
     const extraction1 = await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     });
@@ -36,7 +36,7 @@ describe("The extraction index page", () => {
       });
   });
 
-  it("lists all extractions in descending order based on the createdAt column", async () => {
+  it("lists extractions in descending order based on the createdAt column", async () => {
     await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       createdAt: dayjs().subtract(1, "hour").toDate(),
@@ -53,6 +53,34 @@ describe("The extraction index page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text.match(displayOrder)).not.toBeNull();
+      });
+  });
+
+  it("lists 10 extractions per page", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      createdAt: dayjs().subtract(1, "hour").toDate(),
+    });
+
+    for (let i = 0; i < 10; i++)
+      await Extraction.create({
+        url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+      });
+
+    await supertest(express)
+      .get("/extractions")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("wePCOoU7bSs");
+        expect(res.text).not.toContain("dQw4w9WgXcQ");
+      });
+
+    await supertest(express)
+      .get("/extractions?page=2")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("dQw4w9WgXcQ");
+        expect(res.text).not.toContain("wePCOoU7bSs");
       });
   });
 });

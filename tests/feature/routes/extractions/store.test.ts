@@ -1,5 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
+import dayjs from "dayjs";
 import supertest from "supertest";
 
 describe("The extraction store route", () => {
@@ -99,6 +100,28 @@ describe("The extraction store route", () => {
       .expect(201)
       .expect((res) => {
         expect(res.text).toContain(videoURL);
+      });
+  });
+
+  it("returns the latest 10 extractions", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      createdAt: dayjs().subtract(1, "hour").toDate(),
+    });
+
+    for (let i = 0; i < 9; i++)
+      await Extraction.create({
+        url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+      });
+
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: "https://www.youtube.com/watch?v=wePCOoU7bSs" })
+      .expect(201)
+      .expect((res) => {
+        expect(res.text).toContain("wePCOoU7bSs");
+        expect(res.text).not.toContain("dQw4w9WgXcQ");
       });
   });
 });

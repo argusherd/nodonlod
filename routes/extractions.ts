@@ -25,9 +25,11 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
   }
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req, res) => {
+  const { rows: extractions } = await paginated(req.query.page);
+
   res.render("extractions/index", {
-    extractions: await Extraction.findAll({ order: [["createdAt", "DESC"]] }),
+    extractions,
   });
 });
 
@@ -50,8 +52,10 @@ router.post(
       page: req.body.page || undefined,
     });
 
+    const { rows: extractions } = await paginated(1);
+
     res.status(201).render("extractions/_list", {
-      extractions: await Extraction.findAll({ order: [["createdAt", "DESC"]] }),
+      extractions,
     });
   },
 );
@@ -124,6 +128,18 @@ function findRawInfoById(
   }
 
   return null;
+}
+
+async function paginated(page: any) {
+  const limit = 10;
+
+  page = isNaN(page) ? 1 : Number(page);
+
+  return await Extraction.findAndCountAll({
+    offset: Math.max(page - 1, 0) * limit,
+    limit,
+    order: [["createdAt", "DESC"]],
+  });
 }
 
 export default router;
