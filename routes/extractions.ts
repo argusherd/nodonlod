@@ -25,11 +25,12 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
   }
 });
 
-router.get("/", async (req, res) => {
-  const { rows: extractions } = await paginated(req.query.page);
+router.get("/", async (req: Request, res) => {
+  const { rows: extractions, count } = await paginated(req.currentPage);
 
   res.render("extractions/index", {
     extractions,
+    count,
   });
 });
 
@@ -52,10 +53,11 @@ router.post(
       page: req.body.page || undefined,
     });
 
-    const { rows: extractions } = await paginated(1);
+    const { rows: extractions, count } = await paginated(1);
 
     res.status(201).render("extractions/_list", {
       extractions,
+      count,
     });
   },
 );
@@ -130,10 +132,8 @@ function findRawInfoById(
   return null;
 }
 
-async function paginated(page: any) {
+async function paginated(page: number) {
   const limit = 10;
-
-  page = isNaN(page) ? 1 : Number(page);
 
   return await Extraction.findAndCountAll({
     offset: Math.max(page - 1, 0) * limit,

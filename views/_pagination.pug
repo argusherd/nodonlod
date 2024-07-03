@@ -1,0 +1,41 @@
+- var eachSide = 2;
+- var limit = 10;
+- var totalPage = Math.ceil((count ?? 0) / limit);
+
+mixin link(page)
+  a.px-2.py-1(
+    class={ "bg-gray-500 text-white": page == currentPage },
+    class="hover:bg-gray-500 hover:text-white",
+    href=`?page=${page}`
+  ) #{ page }
+
+.flex.w-fit.items-center.gap-1
+  .flex.w-fit.divide-x.overflow-hidden.rounded.border
+    +link(1)
+
+    if currentPage > eachSide + 2
+      span.px-2.py-1 ...
+
+    - var i = Math.max(1, currentPage - eachSide);
+    while i < currentPage
+      if i != 1
+        +link(i++)
+      else
+        - i++;
+
+    if currentPage != 1 && currentPage != totalPage
+      +link(currentPage)
+
+    - var i = Math.min(totalPage, currentPage + 1);
+    while i != totalPage && i <= currentPage + eachSide
+      +link(i++)
+
+    if currentPage < totalPage - eachSide - 1
+      span.px-2.py-1 ...
+
+    if totalPage > 1
+      +link(totalPage)
+
+  form.divide-x.overflow-hidden.rounded.border(action="./", method="get")
+    input.px-2.py-1(max=totalPage, min="1", name="page", type="number")
+    button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }

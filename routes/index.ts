@@ -7,6 +7,7 @@ import electronRouter from "./electron";
 import extractionRouter from "./extractions";
 import mediumRouter from "./media";
 import i18nMiddleware from "./middlewares/i18n";
+import pagination from "./middlewares/pagination";
 import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
 import playlistRouter from "./playlists";
@@ -20,6 +21,7 @@ express.use(coreExpress.static("public"));
 express.use(coreExpress.urlencoded({ extended: true }));
 express.use(cookieParser());
 express.use(i18nMiddleware);
+express.use(pagination);
 
 express.locals.dayjs = dayjs;
 
