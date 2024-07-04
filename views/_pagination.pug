@@ -6,7 +6,7 @@ mixin link(page)
   a.px-2.py-1(
     class={ "bg-gray-500 text-white": page == currentPage },
     class="hover:bg-gray-500 hover:text-white",
-    href=`?page=${page}`
+    href=paginator(page)
   ) #{ page }
 
 .flex.w-fit.items-center.gap-1
@@ -36,6 +36,10 @@ mixin link(page)
     if totalPage > 1
       +link(totalPage)
 
-  form.divide-x.overflow-hidden.rounded.border(action="./", method="get")
+  form.divide-x.overflow-hidden.rounded.border(
+    method="get",
+    x-data=`{ url: new URL('${paginator(currentPage)}', window.location.origin) }`,
+    x-init="url.searchParams.delete('page'); $el.action = url.pathname + url.search;"
+  )
     input.px-2.py-1(max=totalPage, min="1", name="page", type="number")
     button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
