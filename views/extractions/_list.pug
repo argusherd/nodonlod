@@ -1,18 +1,25 @@
 #extractions.flex.flex-col.gap-1
   each extraction, index in extractions
-    a.flex.items-center.justify-between.rounded.border.p-2(
-      class="hover:bg-gray-100",
-      href=`/extractions/${extraction.id}`
-    )
-      div
-        if extraction.error
-          span.mr-1.rounded.border.border-red-500.px-1.text-red-500 #{ __("Error") }
-        else if extraction.content && extraction.content._type == "playlist"
-          span.mr-1.rounded.border.border-blue-600.px-1.text-blue-600 #{ __("Playlist") }
+    .group.flex.items-center.rounded.border(class="hover:bg-gray-100")
+      a.flex.grow.flex-wrap.items-center.justify-between.gap-1.overflow-hidden.p-2(
+        href=`/extractions/${extraction.id}`
+      )
+        p
+          if extraction.error
+            span.mr-1.rounded.border.border-red-500.px-1.text-red-500 #{ __("Error") }
+          else if extraction.content && extraction.content._type == "playlist"
+            span.mr-1.rounded.border.border-blue-600.px-1.text-blue-600 #{ __("Playlist") }
 
-        span #{ extraction.url }
+          span #{ extraction.url }
 
-      if extraction.page > 1
-        span.text-nowrap.rounded.border.border-gray-300.bg-gray-100.px-1.text-sm #{ __("Page") }: #{ extraction.page }
+        if extraction.page > 1
+          span.text-nowrap.rounded.border.border-gray-300.bg-gray-100.px-1.text-sm #{ __("Page") }: #{ extraction.page }
+
+      button.m-2.hidden.shrink-0.text-xl(
+        class="icon-[material-symbols--delete-outline] group-hover:block",
+        hx-delete=`/extractions/${extraction.id}`,
+        hx-swap="outerHTML show:none",
+        hx-target="closest .group"
+      )
 
   include ../_pagination.pug

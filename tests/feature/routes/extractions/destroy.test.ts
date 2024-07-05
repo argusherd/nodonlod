@@ -10,7 +10,7 @@ describe("The destroy extraction route", () => {
 
     await supertest(express)
       .delete(`/extractions/${extraction.id}`)
-      .expect(204);
+      .expect(205);
 
     expect(await Extraction.count()).toEqual(0);
   });
@@ -23,5 +23,16 @@ describe("The destroy extraction route", () => {
     await supertest(express).delete("/extractions").expect(204);
 
     expect(await Extraction.count()).toEqual(0);
+  });
+
+  it("instructs htmx to redirect to the index page if the request is from the show page", async () => {
+    const extraction = await Extraction.create({
+      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    });
+
+    await supertest(express)
+      .delete(`/extractions/${extraction.id}`)
+      .set("HX-Current-URL", `/extractions/${extraction.id}`)
+      .expect("HX-Redirect", "/extractions");
   });
 });

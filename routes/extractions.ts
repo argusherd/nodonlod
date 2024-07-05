@@ -114,7 +114,12 @@ router.post(
 router.delete("/:extraction", async (req: ExtractionRequest, res) => {
   await req.extraction.destroy();
 
-  res.sendStatus(204);
+  const currentURL = req.header("HX-Current-URL");
+  const isShowPage = currentURL?.includes(req.extraction.id.toString());
+
+  if (isShowPage) res.set("HX-Redirect", "/extractions");
+
+  res.sendStatus(205);
 });
 
 function findRawInfoById(

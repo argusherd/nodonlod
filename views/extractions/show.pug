@@ -12,10 +12,15 @@ mixin raw-info(rawInfo)
     include _raw-medium.pug
 
 block body
-  h3 #{ extraction.url }
+  .mb-2.flex.items-center.justify-between.gap-2.rounded.border-2.p-2
+    h3.font-bold #{ extraction.url }
+    button.flex-shrink-0.text-2xl(
+      class="icon-[material-symbols--delete-outline]",
+      hx-delete=`/extractions/${extraction.id}`
+    )
 
   if extraction.error
-    | error: #{ extraction.error }
+    p.rounded.bg-red-50.p-1.text-red-600 #{ extraction.error }
 
   if extraction.content
     +raw-info(extraction.content)
