@@ -1,5 +1,6 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
+import dayjs from "dayjs";
 import supertest from "supertest";
 
 describe("The destroy extraction route", () => {
@@ -10,7 +11,8 @@ describe("The destroy extraction route", () => {
 
     await supertest(express)
       .delete(`/extractions/${extraction.id}`)
-      .expect(205);
+      .expect(204)
+      .expect("HX-Redirect", "/extractions");
 
     expect(await Extraction.count()).toEqual(0);
   });
@@ -25,14 +27,30 @@ describe("The destroy extraction route", () => {
     expect(await Extraction.count()).toEqual(0);
   });
 
-  it("instructs htmx to redirect to the index page if the request is from the show page", async () => {
+  it("responds with the current page of the extractions when asked for", async () => {
+    for (let i = 0; i < 10; i++)
+      await Extraction.create({
+        url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      });
+
+    const showInPage2 = dayjs().subtract(1, "hour").toDate();
+
     const extraction = await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      createdAt: showInPage2,
+    });
+
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+      createdAt: showInPage2,
     });
 
     await supertest(express)
-      .delete(`/extractions/${extraction.id}`)
-      .set("HX-Current-URL", `/extractions/${extraction.id}`)
-      .expect("HX-Redirect", "/extractions");
+      .delete(`/extractions/${extraction.id}?page=2&_list`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("wePCOoU7bSs");
+        expect(res.text).not.toContain("dQw4w9WgXcQ");
+      });
   });
 });

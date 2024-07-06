@@ -114,12 +114,18 @@ router.post(
 router.delete("/:extraction", async (req: ExtractionRequest, res) => {
   await req.extraction.destroy();
 
-  const currentURL = req.header("HX-Current-URL");
-  const isShowPage = currentURL?.includes(req.extraction.id.toString());
+  const _list = req.query._list;
 
-  if (isShowPage) res.set("HX-Redirect", "/extractions");
+  if (_list === undefined) {
+    res.set("HX-Redirect", "/extractions").sendStatus(204);
+  } else {
+    const { rows: extractions, count } = await paginated(req.currentPage);
 
-  res.sendStatus(205);
+    res.render("extractions/_list", {
+      extractions,
+      count,
+    });
+  }
 });
 
 function findRawInfoById(
