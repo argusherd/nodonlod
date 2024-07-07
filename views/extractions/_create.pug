@@ -1,8 +1,8 @@
 label.cursor-pointer.font-bold(for="input-url") #{ __("Create media by extracting information from a URL") }
 
 form.mb-4.flex.flex-col.gap-2(
+  @submit="$nextTick(() => ($refs.url.value = ''))",
   action="/extractions",
-  hx-on::after-request="document.querySelector('#input-url').value = ''",
   hx-swap="outerHTML show:none",
   hx-target="#extractions",
   method="post",
