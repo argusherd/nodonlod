@@ -12,8 +12,10 @@ mixin raw-info(rawInfo)
     include _raw-medium.pug
 
 block body
-  .mb-2.flex.items-center.justify-between.gap-2.rounded.border-2.p-2
-    h3.font-bold #{ extraction.url }
+  h1.w-fit.bg-green-200.px-2.text-lg #{ __("Extraction") }
+
+  .mb-2.flex.flex-wrap.items-center.justify-between.gap-2.py-2
+    h3.break-all.font-bold #{ extraction.url }
     button.flex-shrink-0.text-2xl(
       class="icon-[material-symbols--delete-outline]",
       hx-delete=`/extractions/${extraction.id}`

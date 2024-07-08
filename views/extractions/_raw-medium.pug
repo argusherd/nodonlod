@@ -1,21 +1,84 @@
-form(action=`/extractions/${extraction.id}/convert`, method="post")
-  input(name="ageLimit", type="number", value=rawMedium.age_limit)
-  textarea(name="description") #{ rawMedium.description }
-  input(name="duration", type="hidden", value=rawMedium.duration)
-  span #{ dayjs.duration(rawMedium.duration, "seconds").format("HH:mm:ss") }
+form.flex.flex-col.gap-2.border-l-4.border-green-200.px-2.pr-0(
+  action=`/extractions/${extraction.id}/convert`,
+  method="post"
+)
   input(name="resourceId", type="hidden", value=rawMedium.id)
-  input(name="thumbnail", type="url", value=rawMedium.thumbnail)
-  - var thumbnails = rawMedium.thumbnails ? rawMedium.thumbnails : [];
-  each thumbnail in thumbnails
-    span #{ thumbnail.url }
-  input(name="title", type="text", value=rawMedium.title)
-  input(name="uploadDate", type="hidden", value=rawMedium.upload_date)
-  input(name="url", type="text", value=rawMedium.webpage_url)
-  input(name="domain", type="text", value=rawMedium.webpage_url_domain)
+
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full.cursor-pointer(class="sm:w-2/12", for="title") #{ __("Title") }
+    input#title.max-w-full.grow.rounded.border.border-gray-400.px-2.py-1(
+      name="title",
+      type="text",
+      value=rawMedium.title
+    )
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full.cursor-pointer(class="sm:w-2/12", for="age-limit") #{ __("Age limit") }
+    input#age-limit.w-16.rounded.border.border-gray-400.px-2.py-1(
+      min="0",
+      name="ageLimit",
+      type="number",
+      value=rawMedium.age_limit
+    )
+  .flex.flex-wrap.gap-1
+    label.w-full.cursor-pointer.pt-1(class="sm:w-2/12", for="description") #{ __("Description") }
+    textarea#description.grow.rounded.border.border-gray-400.p-2(
+      name="description"
+    ) #{ rawMedium.description }
+  .flex.flex-wrap.items-center.gap-1
+    label(class="sm:w-2/12") #{ __("Duration") }
+    span #{ dayjs.neatDuration(rawMedium.duration) }
+  .flex.flex-wrap.items-center.gap-1
+    label(class="sm:w-2/12") #{ __("Upload Date") }
+    span #{ dayjs(rawMedium.upload_date).format("YYYY-MM-DD") }
+  .flex.flex-wrap.items-center.gap-1
+    label(class="sm:w-2/12") #{ __("URL") }
+    span.break-all #{ rawMedium.webpage_url }
+  .flex.flex-wrap.items-center.gap-1
+    label(class="sm:w-2/12") #{ __("Domain") }
+    span #{ rawMedium.webpage_url_domain }
+
   - var uploader = rawMedium.channel ?? rawMedium.uploader;
-  input(name="uploader", type="text", value=uploader)
-  - var uploader_id = rawMedium.channel_id ?? rawMedium.uploader_id;
-  input(name="uploaderId", type="text", value=uploader_id)
-  - var uploader_url = rawMedium.channel_url ?? rawMedium.uploader_url;
-  input(name="uploaderUrl", type="text", value=uploader_url)
-  button(type="submit") Save
+  - var uploaderUrl = rawMedium.channel_url ?? rawMedium.uploader_url;
+  if uploader
+    .flex.flex-wrap.items-center.gap-1
+      label(class="sm:w-2/12") #{ __("Uploader") }
+      .flex.items-center.gap-1
+        a.text-blue-400.underline(href=uploaderUrl) #{ uploader }
+        i.cursor-pointer.text-lg.text-gray-800(
+          :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'",
+          @click="copy = true; navigator.clipboard.writeText(url); setTimeout(() => (copy = false), 1000)",
+          x-data=`{ copy: false, url: '${uploaderUrl}' }`
+        )
+
+  .flex.flex-wrap.items-center.gap-1(
+    x-data=`{ thumbnail: "${rawMedium.thumbnail || ''}", show: true }`
+  )
+    label.w-full.cursor-pointer(class="sm:w-2/12", for="thumbnail") #{ __("Thumbnail") }
+    .flex.grow.items-center.rounded.border.border-gray-400
+      input#thumbnail.w-full.rounded.px-2.py-1(
+        name="thumbnail",
+        type="url",
+        x-model="thumbnail"
+      )
+      button.shrink-0.text-3xl(
+        @click="show = !show",
+        class="icon-[material-symbols--preview]",
+        title=__("Preview"),
+        type="button"
+      )
+    if rawMedium.thumbnail
+      div(x-show="show")
+        img.m-auto(:src="thumbnail", alt="preview")
+        .flex.flex-wrap.justify-center
+          each thumbnail in rawMedium.thumbnails
+            div(class="w-4/12 sm:w-1/12")
+              img.h-full.w-full.cursor-pointer.object-cover(
+                @click=`thumbnail = '${thumbnail.url}'`,
+                alt="candidate",
+                src=thumbnail.url
+              )
+
+  button.ml-auto.w-fit.rounded.border.border-gray-400.px-2.py-1(
+    title=__("Convert extracted infomation to playable media"),
+    type="submit"
+  ) #{ __("Convert") }

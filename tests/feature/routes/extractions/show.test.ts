@@ -1,6 +1,8 @@
 import Extraction from "@/database/models/extraction";
 import express from "@/routes";
+import { formatSeconds } from "@/src/neat-duration";
 import { RawMedium, RawPlaylist, thumbnails } from "@/src/raw-info-extractor";
+import dayjs from "dayjs";
 import supertest from "supertest";
 import {
   createRawMedium,
@@ -30,19 +32,21 @@ describe("The extraction show page", () => {
       .expect((res) => {
         expect(res.text).toContain(`value="0"`); // age_limit
         expect(res.text).toContain(rawMedium.description);
-        expect(res.text).toContain(rawMedium.duration.toString());
+        expect(res.text).toContain(formatSeconds(rawMedium.duration));
         expect(res.text).toContain(rawMedium.id);
+        expect(res.text).toContain(rawMedium.title);
         expect(res.text).toContain(rawMedium.thumbnail);
+        expect(res.text).toContain(rawMedium.webpage_url);
+        expect(res.text).toContain(rawMedium.webpage_url_domain);
         expect(res.text).toContain(
           (rawMedium.thumbnails as thumbnails)[0]?.url,
         );
         expect(res.text).toContain(
           (rawMedium.thumbnails as thumbnails)[1]?.url,
         );
-        expect(res.text).toContain(rawMedium.title);
-        expect(res.text).toContain(rawMedium.upload_date);
-        expect(res.text).toContain(rawMedium.webpage_url);
-        expect(res.text).toContain(rawMedium.webpage_url_domain);
+        expect(res.text).toContain(
+          dayjs(rawMedium.upload_date).format("YYYY-MM-DD"),
+        );
       });
   });
 
@@ -59,7 +63,7 @@ describe("The extraction show page", () => {
     await supertest(express)
       .get(`/extractions/${extraction.id}`)
       .expect((res) => {
-        expect(res.text).toContain("00:02:03");
+        expect(res.text).toContain("2:03");
       });
   });
 
@@ -228,22 +232,26 @@ describe("The extraction show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(rawMedium1.description);
-        expect(res.text).toContain(rawMedium1.duration.toString());
+        expect(res.text).toContain(formatSeconds(rawMedium1.duration));
         expect(res.text).toContain(rawMedium1.id);
         expect(res.text).toContain(rawMedium1.thumbnail);
         expect(res.text).toContain(rawMedium1.title);
-        expect(res.text).toContain(rawMedium1.upload_date);
         expect(res.text).toContain(rawMedium1.webpage_url);
         expect(res.text).toContain(rawMedium1.webpage_url_domain);
+        expect(res.text).toContain(
+          dayjs(rawMedium1.upload_date).format("YYYY-MM-DD"),
+        );
 
         expect(res.text).toContain(rawMedium2.description);
-        expect(res.text).toContain(rawMedium2.duration.toString());
+        expect(res.text).toContain(formatSeconds(rawMedium2.duration));
         expect(res.text).toContain(rawMedium2.id);
         expect(res.text).toContain(rawMedium2.thumbnail);
         expect(res.text).toContain(rawMedium2.title);
-        expect(res.text).toContain(rawMedium2.upload_date);
         expect(res.text).toContain(rawMedium2.webpage_url);
         expect(res.text).toContain(rawMedium2.webpage_url_domain);
+        expect(res.text).toContain(
+          dayjs(rawMedium2.upload_date).format("YYYY-MM-DD"),
+        );
       });
   });
 
