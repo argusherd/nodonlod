@@ -184,7 +184,6 @@ describe("The extraction show page", () => {
         );
         expect(res.text).toContain(rawPlaylist.title);
         expect(res.text).toContain(rawPlaylist.webpage_url);
-        expect(res.text).toContain(rawPlaylist.webpage_url_domain);
       });
   });
 

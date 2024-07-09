@@ -2,11 +2,12 @@ extends ../_layout.pug
 
 mixin raw-info(rawInfo)
   if rawInfo._type === 'playlist'
-    - var rawPlaylist = rawInfo;
-    include _raw-playlist.pug
-    if rawPlaylist.entries
-      each entry in rawPlaylist.entries
-        +raw-info(entry)
+    .flex.flex-col.gap-4.border-l-4.border-blue-400.p-2.pr-0
+      - var rawPlaylist = rawInfo;
+      include _raw-playlist.pug
+      if rawPlaylist.entries
+        each entry in rawPlaylist.entries
+          +raw-info(entry)
   else
     - var rawMedium = rawInfo;
     include _raw-medium.pug

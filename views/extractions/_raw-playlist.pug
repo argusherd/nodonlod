@@ -1,12 +1,64 @@
-form(action=`/extractions/${extraction.id}/convert`, method="post")
-  textarea(name="description") #{ rawPlaylist.description }
-  input(type="hidden", name="resourceId", value=rawPlaylist.id)
-  - var thumbnail = rawPlaylist.thumbnails ? rawPlaylist.thumbnails[0]?.url : "";
-  input(type="url", name="thumbnail", value=thumbnail)
-  - var thumbnails = rawPlaylist.thumbnails ? rawPlaylist.thumbnails : [];
-  each thumbnail in thumbnails
-    span #{ thumbnail.url }
-  input(type="text", name="title", value=rawPlaylist.title)
-  input(type="text", name="url", value=rawPlaylist.webpage_url)
-  input(type="text", name="domain", value=rawPlaylist.webpage_url_domain)
-  button(type="submit") Save
+form.flex.flex-col.gap-2(
+  action=`/extractions/${extraction.id}/convert`,
+  method="post"
+)
+  input(name="resourceId", type="hidden", value=rawPlaylist.id)
+
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full(class="sm:w-2/12") #{ __("Type") }
+    span.break-all.rounded.border.border-blue-400.px-1.text-blue-500 #{ __("Playlist") }
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full(class="sm:w-2/12") #{ __("URL") }
+    span.break-all #{ rawPlaylist.webpage_url }
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full.cursor-pointer(class="sm:w-2/12", for=`title-${rawPlaylist.id}`) #{ __("Title") }
+    input.max-w-full.grow.rounded.border.border-gray-400.px-2.py-1(
+      id=`title-${rawPlaylist.id}`,
+      name="title",
+      type="text",
+      value=rawPlaylist.title
+    )
+  .flex.flex-wrap.gap-1
+    label.w-full.cursor-pointer.pt-1(
+      class="sm:w-2/12",
+      for=`description-${rawPlaylist.id}`
+    ) #{ __("Description") }
+    textarea.grow.rounded.border.border-gray-400.p-2(
+      id=`description-${rawPlaylist.id}`,
+      name="description"
+    ) #{ rawPlaylist.description }
+
+  .flex.flex-wrap.items-center.gap-1(
+    x-data=`{ thumbnail: "${rawPlaylist.thumbnails ? rawPlaylist.thumbnails.at(0).url : ''}", show: false }`
+  )
+    label.w-full.cursor-pointer(class="sm:w-2/12", for=`thumbnail-${rawPlaylist.id}`) #{ __("Thumbnail") }
+    .flex.grow.items-center.rounded.border.border-gray-400
+      input.w-full.rounded.px-2.py-1(
+        id=`thumbnail-${rawPlaylist.id}`,
+        name="thumbnail",
+        type="url",
+        x-model="thumbnail"
+      )
+      if rawPlaylist.thumbnails
+        button.shrink-0.text-3xl(
+          @click="show = !show",
+          class="icon-[material-symbols--preview]",
+          title=__("Preview"),
+          type="button"
+        )
+    if rawPlaylist.thumbnails
+      div(x-show="show")
+        img.m-auto(:src="thumbnail", alt="preview")
+        .flex.flex-wrap.justify-center
+          each thumbnail in rawPlaylist.thumbnails
+            div(class="w-4/12 sm:w-1/12")
+              img.h-full.w-full.cursor-pointer.object-cover(
+                @click=`thumbnail = '${thumbnail.url}'`,
+                alt="candidate",
+                src=thumbnail.url
+              )
+
+  button.ml-auto.w-fit.rounded.border.border-gray-400.px-2.py-1(
+    title=__("Save the extracted playlist information"),
+    type="submit"
+  ) #{ __("Save") }

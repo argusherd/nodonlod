@@ -1,47 +1,56 @@
-form.flex.flex-col.gap-2.border-l-4.border-green-200.px-2.pr-0(
+form.flex.flex-col.gap-2.border-l-4.border-green-200.p-2.pr-0(
   action=`/extractions/${extraction.id}/convert`,
   method="post"
 )
   input(name="resourceId", type="hidden", value=rawMedium.id)
 
   .flex.flex-wrap.items-center.gap-1
-    label.w-full.cursor-pointer(class="sm:w-2/12", for="title") #{ __("Title") }
-    input#title.max-w-full.grow.rounded.border.border-gray-400.px-2.py-1(
+    label.w-full(class="sm:w-2/12") #{ __("Type") }
+    span.break-all.rounded.border.border-green-400.px-1.text-green-500 #{ __("Medium") }
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full(class="sm:w-2/12") #{ __("URL") }
+    span.break-all #{ rawMedium.webpage_url }
+  .flex.flex-wrap.items-center.gap-1
+    label.w-full.cursor-pointer(class="sm:w-2/12", for=`title-${rawMedium.id}`) #{ __("Title") }
+    input.max-w-full.grow.rounded.border.border-gray-400.px-2.py-1(
+      id=`title-${rawMedium.id}`,
       name="title",
       type="text",
       value=rawMedium.title
     )
   .flex.flex-wrap.items-center.gap-1
-    label.w-full.cursor-pointer(class="sm:w-2/12", for="age-limit") #{ __("Age limit") }
-    input#age-limit.w-16.rounded.border.border-gray-400.px-2.py-1(
+    label.w-full.cursor-pointer(class="sm:w-2/12", for=`age-limit-${rawMedium.id}`) #{ __("Age limit") }
+    input.w-16.rounded.border.border-gray-400.px-2.py-1(
+      id=`age-limit-${rawMedium.id}`,
       min="0",
       name="ageLimit",
       type="number",
       value=rawMedium.age_limit
     )
   .flex.flex-wrap.gap-1
-    label.w-full.cursor-pointer.pt-1(class="sm:w-2/12", for="description") #{ __("Description") }
-    textarea#description.grow.rounded.border.border-gray-400.p-2(
+    label.w-full.cursor-pointer.pt-1(
+      class="sm:w-2/12",
+      for=`description-${rawMedium.id}`
+    ) #{ __("Description") }
+    textarea.grow.rounded.border.border-gray-400.p-2(
+      id=`description-${rawMedium.id}`,
       name="description"
     ) #{ rawMedium.description }
   .flex.flex-wrap.items-center.gap-1
-    label(class="sm:w-2/12") #{ __("Duration") }
+    label.w-full(class="sm:w-2/12") #{ __("Duration") }
     span #{ dayjs.neatDuration(rawMedium.duration) }
   .flex.flex-wrap.items-center.gap-1
-    label(class="sm:w-2/12") #{ __("Upload Date") }
+    label.w-full(class="sm:w-2/12") #{ __("Upload Date") }
     span #{ dayjs(rawMedium.upload_date).format("YYYY-MM-DD") }
   .flex.flex-wrap.items-center.gap-1
-    label(class="sm:w-2/12") #{ __("URL") }
-    span.break-all #{ rawMedium.webpage_url }
-  .flex.flex-wrap.items-center.gap-1
-    label(class="sm:w-2/12") #{ __("Domain") }
+    label.w-full(class="sm:w-2/12") #{ __("Domain") }
     span #{ rawMedium.webpage_url_domain }
 
   - var uploader = rawMedium.channel ?? rawMedium.uploader;
   - var uploaderUrl = rawMedium.channel_url ?? rawMedium.uploader_url;
   if uploader
     .flex.flex-wrap.items-center.gap-1
-      label(class="sm:w-2/12") #{ __("Uploader") }
+      label.w-full(class="sm:w-2/12") #{ __("Uploader") }
       .flex.items-center.gap-1
         a.text-blue-400.underline(href=uploaderUrl) #{ uploader }
         i.cursor-pointer.text-lg.text-gray-800(
@@ -51,21 +60,23 @@ form.flex.flex-col.gap-2.border-l-4.border-green-200.px-2.pr-0(
         )
 
   .flex.flex-wrap.items-center.gap-1(
-    x-data=`{ thumbnail: "${rawMedium.thumbnail || ''}", show: true }`
+    x-data=`{ thumbnail: "${rawMedium.thumbnail || ''}", show: false }`
   )
-    label.w-full.cursor-pointer(class="sm:w-2/12", for="thumbnail") #{ __("Thumbnail") }
+    label.w-full.cursor-pointer(class="sm:w-2/12", for=`thumbnail-${rawMedium.id}`) #{ __("Thumbnail") }
     .flex.grow.items-center.rounded.border.border-gray-400
-      input#thumbnail.w-full.rounded.px-2.py-1(
+      input.w-full.rounded.px-2.py-1(
+        id=`thumbnail-${rawMedium.id}`,
         name="thumbnail",
         type="url",
         x-model="thumbnail"
       )
-      button.shrink-0.text-3xl(
-        @click="show = !show",
-        class="icon-[material-symbols--preview]",
-        title=__("Preview"),
-        type="button"
-      )
+      if rawMedium.thumbnails
+        button.shrink-0.text-3xl(
+          @click="show = !show",
+          class="icon-[material-symbols--preview]",
+          title=__("Preview"),
+          type="button"
+        )
     if rawMedium.thumbnail
       div(x-show="show")
         img.m-auto(:src="thumbnail", alt="preview")
