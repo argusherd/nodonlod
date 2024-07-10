@@ -48,7 +48,7 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
     const mockedToMedium = jest
-      .spyOn(converter, "toPlayble")
+      .spyOn(converter, "toMedium")
       .mockImplementation();
     jest.spyOn(converter, "createAssociation").mockImplementation();
 
@@ -75,7 +75,7 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
     const mockedToMedium = jest
-      .spyOn(converter, "toPlayble")
+      .spyOn(converter, "toMedium")
       .mockImplementation();
     jest.spyOn(converter, "createAssociation").mockImplementation();
 
@@ -94,7 +94,7 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
     const medium = new Medium();
 
     jest.spyOn(converter, "toPlaylist").mockResolvedValue(playlist);
-    jest.spyOn(converter, "toPlayble").mockResolvedValue(medium);
+    jest.spyOn(converter, "toMedium").mockResolvedValue(medium);
     const mockedCreateAssociation = jest
       .spyOn(converter, "createAssociation")
       .mockImplementation();

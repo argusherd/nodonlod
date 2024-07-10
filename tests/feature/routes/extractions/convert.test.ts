@@ -34,9 +34,9 @@ describe("The convert extraction raw info route", () => {
       .expect(422);
   });
 
-  it("calls the toPlayble method in the RawInfoConverter if a raw-medium is found", async () => {
+  it("calls the toMedium method in the RawInfoConverter if a raw-medium is found", async () => {
     const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toPlayble")
+      .spyOn(RawInfoConverter.prototype, "toMedium")
       .mockImplementation();
 
     const rawMedium = createRawMedium();
@@ -78,7 +78,7 @@ describe("The convert extraction raw info route", () => {
 
   it("can find the raw-info deeply nested in the raw-playlist", async () => {
     const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toPlayble")
+      .spyOn(RawInfoConverter.prototype, "toMedium")
       .mockImplementation();
 
     const subRawMedium = createSubRawMedium();
@@ -101,7 +101,7 @@ describe("The convert extraction raw info route", () => {
 
   it("returns a 404 response if the raw info with the provided id is not found", async () => {
     const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toPlayble")
+      .spyOn(RawInfoConverter.prototype, "toMedium")
       .mockImplementation();
 
     const mockedToPlaylist = jest
@@ -127,7 +127,7 @@ describe("The convert extraction raw info route", () => {
 
   it("can overwrite some properties of the raw-medium", async () => {
     const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toPlayble")
+      .spyOn(RawInfoConverter.prototype, "toMedium")
       .mockImplementation();
 
     const rawMedium = createRawMedium();

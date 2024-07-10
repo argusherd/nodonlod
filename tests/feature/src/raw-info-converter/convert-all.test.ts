@@ -22,9 +22,9 @@ describe("The convertAll method in the RawInfoConverter", () => {
     expect(mockedFromRawPlaylistAndEntries).toHaveBeenCalledWith(rawPlaylist);
   });
 
-  it("calls the toPlayble method when providing a raw-medium", async () => {
+  it("calls the toMedium method when providing a raw-medium", async () => {
     const mockedToPlable = jest
-      .spyOn(converter, "toPlayble")
+      .spyOn(converter, "toMedium")
       .mockImplementation();
     const rawMedium = createRawMedium();
 

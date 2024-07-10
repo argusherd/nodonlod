@@ -17,7 +17,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
   it("convert a raw-medium into a medium", async () => {
     const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
 
     expect(await Medium.count()).toEqual(1);
 
@@ -37,8 +37,8 @@ describe("The toMedium method in the RawInfoConverter", () => {
   it("does not create two identical media when converting the raw-medium", async () => {
     const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawMedium);
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
+    await converter.toMedium(rawMedium);
 
     expect(await Medium.count()).toEqual(1);
   });
@@ -51,7 +51,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
       duration: 120,
     });
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
     await medium.reload();
 
     expect(await Medium.count()).toEqual(1);
@@ -61,7 +61,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
   it("can overwrite some properties when converting the raw-medium", async () => {
     const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawMedium, {
+    await converter.toMedium(rawMedium, {
       title: "New title",
       description: "New description",
       thumbnail: "https://foo.com/bar.jpg",
@@ -81,7 +81,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
 
     const rawMedium = createRawMedium({ webpage_url: medium.url });
 
-    await converter.toPlayble(rawMedium, {
+    await converter.toMedium(rawMedium, {
       title: "New title",
       description: "New description",
       thumbnail: "https://foo.com/bar.jpg",
@@ -99,7 +99,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
   it("can overwrite some properties with empty values when converting the raw-medium", async () => {
     const rawMedium = createRawMedium({ age_limit: 18 });
 
-    await converter.toPlayble(rawMedium, {
+    await converter.toMedium(rawMedium, {
       title: "",
       description: "",
       thumbnail: "",
@@ -120,7 +120,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
       .mockImplementation();
     const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
 
     expect(mockedPreserveUploader).toHaveBeenCalledWith(rawMedium);
   });
@@ -131,7 +131,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
 
     jest.spyOn(converter, "preserveUploader").mockResolvedValue(uploader);
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
 
     const medium = await Medium.findOne();
 
@@ -147,7 +147,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
 
     expect(medium.uploaderId).toBeUndefined();
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
     await medium.reload();
 
     expect(medium.uploaderId).toEqual(uploader.id);
@@ -159,7 +159,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
       .mockImplementation();
     const rawMedium = createRawMedium();
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
 
     const medium = await Medium.findOne();
 
@@ -176,7 +176,7 @@ describe("The toMedium method in the RawInfoConverter", () => {
 
     const rawMedium = createRawMedium({ tags: ["foo", "bar"] });
 
-    await converter.toPlayble(rawMedium);
+    await converter.toMedium(rawMedium);
 
     expect(mockedPreserveAllTags).toHaveBeenCalled();
   });

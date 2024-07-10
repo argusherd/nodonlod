@@ -21,7 +21,7 @@ export default class RawInfoConverter {
     }
 
     if (rawInfo._type === "video") {
-      await this.toPlayble(rawInfo);
+      await this.toMedium(rawInfo);
     }
   }
 
@@ -40,7 +40,7 @@ export default class RawInfoConverter {
     const media: Medium[] = [];
 
     for (const subRawMedium of rawPlaylist.entries)
-      media.push(await this.toPlayble(subRawMedium as SubRawMedium));
+      media.push(await this.toMedium(subRawMedium as SubRawMedium));
 
     await this.createAssociation(
       playlist,
@@ -73,7 +73,7 @@ export default class RawInfoConverter {
     });
   }
 
-  async toPlayble(
+  async toMedium(
     rawMedium: RawMedium | SubRawMedium,
     { title, description, thumbnail, ageLimit }: Partial<Overwritable> = {},
   ) {

@@ -97,7 +97,7 @@ router.post(
     const { title, description, thumbnail, ageLimit }: Overwritable = req.body;
 
     if ("_type" in rawInfo === false || rawInfo._type === "video") {
-      await converter.toPlayble(rawInfo, {
+      await converter.toMedium(rawInfo, {
         title,
         description,
         thumbnail,
