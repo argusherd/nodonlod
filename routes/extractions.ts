@@ -95,19 +95,28 @@ router.post(
 
     const converter = new RawInfoConverter();
     const { title, description, thumbnail, ageLimit }: Overwritable = req.body;
+    let url = "";
 
     if ("_type" in rawInfo === false || rawInfo._type === "video") {
-      await converter.toMedium(rawInfo, {
+      const medium = await converter.toMedium(rawInfo, {
         title,
         description,
         thumbnail,
         ageLimit,
       });
+
+      url = `/media/${medium?.id}`;
     } else {
-      await converter.toPlaylist(rawInfo, { title, description, thumbnail });
+      const playlist = await converter.toPlaylist(rawInfo, {
+        title,
+        description,
+        thumbnail,
+      });
+
+      url = `/playlists/${playlist?.id}`;
     }
 
-    res.sendStatus(201);
+    res.render("extractions/_converted", { url });
   },
 );
 

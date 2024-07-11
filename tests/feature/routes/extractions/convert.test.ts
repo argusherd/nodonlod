@@ -1,6 +1,7 @@
 import Extraction from "@/database/models/extraction";
+import Medium from "@/database/models/medium";
+import Playlist from "@/database/models/playlist";
 import express from "@/routes";
-import RawInfoConverter from "@/src/raw-info-converter";
 import supertest from "supertest";
 import {
   createRawMedium,
@@ -12,12 +13,6 @@ describe("The convert extraction raw info route", () => {
   const videoURL = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
   const playlistURL =
     "https://www.youtube.com/playlist?list=OLAK5uy_l4pFyLY9N1YSGpxT0EEq8Whc8OyhpWsm8";
-  const overwritable = {
-    title: undefined,
-    description: undefined,
-    thumbnail: undefined,
-    ageLimit: undefined,
-  };
 
   it("requires a resource id to locate specific raw info for conversion", async () => {
     const rawMedium = createRawMedium();
@@ -34,11 +29,7 @@ describe("The convert extraction raw info route", () => {
       .expect(422);
   });
 
-  it("calls the toMedium method in the RawInfoConverter if a raw-medium is found", async () => {
-    const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toMedium")
-      .mockImplementation();
-
+  it("converts a raw-medium to a medium", async () => {
     const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
@@ -50,16 +41,16 @@ describe("The convert extraction raw info route", () => {
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
       .send({ resourceId: rawMedium.id })
-      .expect(201);
+      .expect(200);
 
-    expect(mockedToMedium).toHaveBeenCalledWith(rawMedium, overwritable);
+    expect(await Medium.count()).toEqual(1);
+
+    const medium = await Medium.findOne();
+
+    expect(medium?.resourceId).toEqual(rawMedium.id);
   });
 
-  it("calls the toPlaylist method in the RawInfoConverter if a raw-playlist is found", async () => {
-    const mockedToPlaylist = jest
-      .spyOn(RawInfoConverter.prototype, "toPlaylist")
-      .mockImplementation();
-
+  it("converts a raw-playlist to a playlist", async () => {
     const rawPlaylist = createRawPlaylist();
 
     const extraction = await Extraction.create({
@@ -71,16 +62,16 @@ describe("The convert extraction raw info route", () => {
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
       .send({ resourceId: rawPlaylist.id })
-      .expect(201);
+      .expect(200);
 
-    expect(mockedToPlaylist).toHaveBeenCalledWith(rawPlaylist, overwritable);
+    expect(await Playlist.count()).toEqual(1);
+
+    const playlist = await Playlist.findOne();
+
+    expect(playlist?.resourceId).toEqual(rawPlaylist.id);
   });
 
   it("can find the raw-info deeply nested in the raw-playlist", async () => {
-    const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toMedium")
-      .mockImplementation();
-
     const subRawMedium = createSubRawMedium();
     const childRawPlaylist = createRawPlaylist({ entries: [subRawMedium] });
     const rawPlaylist = createRawPlaylist({ entries: [childRawPlaylist] });
@@ -94,20 +85,16 @@ describe("The convert extraction raw info route", () => {
       .post(`/extractions/${extraction.id}/convert`)
       .type("form")
       .send({ resourceId: subRawMedium.id })
-      .expect(201);
+      .expect(200);
 
-    expect(mockedToMedium).toHaveBeenCalledWith(subRawMedium, overwritable);
+    expect(await Medium.count()).toEqual(1);
+
+    const medium = await Medium.findOne();
+
+    expect(medium?.resourceId).toEqual(subRawMedium.id);
   });
 
   it("returns a 404 response if the raw info with the provided id is not found", async () => {
-    const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toMedium")
-      .mockImplementation();
-
-    const mockedToPlaylist = jest
-      .spyOn(RawInfoConverter.prototype, "toPlaylist")
-      .mockImplementation();
-
     const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
@@ -120,16 +107,9 @@ describe("The convert extraction raw info route", () => {
       .type("form")
       .send({ resourceId: "NOT_EXISTS" })
       .expect(404);
-
-    expect(mockedToMedium).not.toHaveBeenCalled();
-    expect(mockedToPlaylist).not.toHaveBeenCalled();
   });
 
   it("can overwrite some properties of the raw-medium", async () => {
-    const mockedToMedium = jest
-      .spyOn(RawInfoConverter.prototype, "toMedium")
-      .mockImplementation();
-
     const rawMedium = createRawMedium();
 
     const extraction = await Extraction.create({
@@ -147,21 +127,17 @@ describe("The convert extraction raw info route", () => {
         thumbnail: "https://foo.com/bar.jpg",
         ageLimit: 18,
       })
-      .expect(201);
+      .expect(200);
 
-    expect(mockedToMedium).toHaveBeenCalledWith(rawMedium, {
-      title: "New title",
-      description: "New description",
-      thumbnail: "https://foo.com/bar.jpg",
-      ageLimit: "18",
-    });
+    const medium = await Medium.findOne();
+
+    expect(medium?.title).toEqual("New title");
+    expect(medium?.description).toEqual("New description");
+    expect(medium?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(medium?.ageLimit).toEqual(18);
   });
 
   it("can overwrite some properties of the raw-playlist", async () => {
-    const mockedToPlaylist = jest
-      .spyOn(RawInfoConverter.prototype, "toPlaylist")
-      .mockImplementation();
-
     const rawPlaylist = createRawPlaylist();
 
     const extraction = await Extraction.create({
@@ -178,12 +154,56 @@ describe("The convert extraction raw info route", () => {
         description: "New description",
         thumbnail: "https://foo.com/bar.jpg",
       })
-      .expect(201);
+      .expect(200);
 
-    expect(mockedToPlaylist).toHaveBeenCalledWith(rawPlaylist, {
-      title: "New title",
-      description: "New description",
-      thumbnail: "https://foo.com/bar.jpg",
+    const playlist = await Playlist.findOne();
+
+    expect(playlist?.title).toEqual("New title");
+    expect(playlist?.description).toEqual("New description");
+    expect(playlist?.thumbnail).toEqual("https://foo.com/bar.jpg");
+  });
+
+  it("returns the converted medium link in the response", async () => {
+    const rawMedium = createRawMedium();
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      content: JSON.stringify(rawMedium),
     });
+
+    let resText = "";
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/convert`)
+      .type("form")
+      .send({ resourceId: rawMedium.id })
+      .expect(200)
+      .expect((res) => (resText = res.text));
+
+    const medium = await Medium.findOne();
+
+    expect(resText).toContain(`/media/${medium?.id}`);
+  });
+
+  it("returns the converted playlist link in the response", async () => {
+    const rawPlaylist = createRawPlaylist();
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      content: JSON.stringify(rawPlaylist),
+    });
+
+    let resText = "";
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/convert`)
+      .type("form")
+      .send({ resourceId: rawPlaylist.id })
+      .expect(200)
+      .expect((res) => (resText = res.text));
+
+    const playlist = await Playlist.findOne();
+
+    expect(resText).toContain(`/playlists/${playlist?.id}`);
   });
 });

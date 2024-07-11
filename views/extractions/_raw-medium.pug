@@ -1,5 +1,7 @@
 form.flex.flex-col.gap-2.border-l-4.border-green-200.p-2.pr-0(
   action=`/extractions/${extraction.id}/convert`,
+  hx-swap="outerHTML show:none",
+  hx-target="find [type='submit']",
   method="post"
 )
   input(name="resourceId", type="hidden", value=rawMedium.id)
@@ -89,7 +91,7 @@ form.flex.flex-col.gap-2.border-l-4.border-green-200.p-2.pr-0(
                 src=thumbnail.url
               )
 
-  button.ml-auto.w-fit.rounded.border.border-gray-400.px-2.py-1(
+  button.ml-auto.rounded.border.border-gray-400.px-2.py-1(
     title=__("Convert extracted infomation to playable media"),
     type="submit"
   ) #{ __("Convert") }
