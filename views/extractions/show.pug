@@ -29,6 +29,9 @@ block body
       hx-delete=`/extractions/${extraction.id}`
     )
 
+  if extraction.isProcessing
+    p.rounded.bg-yellow-100.p-1.text-yellow-700 #{ __("Processing") }
+
   if extraction.error
     p.rounded.bg-red-50.p-1.text-red-600 #{ extraction.error }
 

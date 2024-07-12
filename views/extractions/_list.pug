@@ -17,6 +17,9 @@
         href=`/extractions/${extraction.id}`
       )
         p
+          if extraction.isProcessing
+            span.mr-1.rounded.border.border-yellow-500.px-1.text-yellow-500 #{ __("Processing") }
+
           if extraction.error
             span.mr-1.rounded.border.border-red-500.px-1.text-red-500 #{ __("Error") }
           else if extraction.content && extraction.content._type == "playlist"

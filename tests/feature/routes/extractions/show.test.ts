@@ -313,4 +313,21 @@ describe("The extraction show page", () => {
 
     await supertest(express).get(`/extractions/${extraction.id}`).expect(200);
   });
+
+  it("displays a processing message to indicate that the extraction is currently in progress", async () => {
+    const rawMedium = createRawMedium();
+
+    const extraction = await Extraction.create({
+      url: videoURL,
+      content: JSON.stringify(rawMedium),
+      isProcessing: true,
+    });
+
+    await supertest(express)
+      .get(`/extractions/${extraction.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("Processing");
+      });
+  });
 });

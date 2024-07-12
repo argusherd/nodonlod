@@ -36,27 +36,7 @@ describe("The extraction index page", () => {
       });
   });
 
-  it("lists extractions in descending order based on the createdAt column", async () => {
-    await Extraction.create({
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-      createdAt: dayjs().subtract(1, "hour").toDate(),
-    });
-
-    await Extraction.create({
-      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
-    });
-
-    const displayOrder = new RegExp(`.*wePCOoU7bSs.*dQw4w9WgXcQ.*`);
-
-    await supertest(express)
-      .get("/extractions")
-      .expect(200)
-      .expect((res) => {
-        expect(res.text.match(displayOrder)).not.toBeNull();
-      });
-  });
-
-  it("lists 10 extractions per page", async () => {
+  it("lists 10 extractions based on the createdAt column in descending order per page", async () => {
     await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
       createdAt: dayjs().subtract(1, "hour").toDate(),
@@ -81,6 +61,34 @@ describe("The extraction index page", () => {
       .expect((res) => {
         expect(res.text).toContain("dQw4w9WgXcQ");
         expect(res.text).not.toContain("wePCOoU7bSs");
+      });
+  });
+
+  it("displays a tag to indicate that the extraction has an error", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+      error: "Unsupported",
+    });
+
+    await supertest(express)
+      .get("/extractions")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("Error");
+      });
+  });
+
+  it("displays a tag to indicate that the extraction is currently processing", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+      isProcessing: true,
+    });
+
+    await supertest(express)
+      .get("/extractions")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("Processing");
       });
   });
 });
