@@ -35,5 +35,13 @@
         hx-target="#extractions"
       )
 
-  - var path = "/extractions";
-  include ../_pagination.pug
+  .flex.justify-between
+    - var path = "/extractions";
+    include ../_pagination.pug
+
+    button.rounded.border.border-red-200.bg-red-100.px-2.py-1(
+      hx-confirm=__("Are you sure you want to delete all extractions?"),
+      hx-delete="/extractions",
+      hx-swap="delete",
+      hx-target="#extractions"
+    ) #{ __("Delete all") }
