@@ -1,5 +1,5 @@
 #extractions.flex.flex-col.gap-1
-  each extraction, index in extractions
+  each extraction, index in extractions || []
     .group.flex.items-center.rounded.border(
       :class="show || 'pointer-events-none'",
       class="hover:bg-gray-100",
@@ -45,6 +45,6 @@
     button.rounded.border.border-red-200.bg-red-100.px-2.py-1(
       hx-confirm=__("Are you sure you want to delete all extractions?"),
       hx-delete="/extractions",
-      hx-swap="delete",
+      hx-swap="outerHTML",
       hx-target="#extractions"
     ) #{ __("Delete all") }

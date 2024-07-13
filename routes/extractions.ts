@@ -65,7 +65,7 @@ router.post(
 router.delete("/", async (_req, res) => {
   await Extraction.truncate();
 
-  res.sendStatus(204);
+  res.render("extractions/_list");
 });
 
 router.get("/:extraction", async (req: ExtractionRequest, res) => {

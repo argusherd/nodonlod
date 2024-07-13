@@ -22,7 +22,7 @@ describe("The destroy extraction route", () => {
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     });
 
-    await supertest(express).delete("/extractions").expect(204);
+    await supertest(express).delete("/extractions").expect(200);
 
     expect(await Extraction.count()).toEqual(0);
   });
