@@ -33,14 +33,13 @@
       button.m-2.hidden.shrink-0.text-xl(
         @click="show = false",
         class="icon-[material-symbols--delete-outline] group-hover:block",
-        hx-delete=`/extractions/${extraction.id}?page=${currentPage}&_list`,
+        hx-delete=`/extractions/${extraction.id}?${qs().set("_list", true).toString()}`,
         hx-swap="outerHTML show:none swap:200ms",
         hx-target="#extractions"
       )
 
   .flex.justify-between
-    - var path = "/extractions";
-    include ../_pagination.pug
+    != paginator({ path: "/extractions", qs: qs(), count })
 
     button.rounded.border.border-red-200.bg-red-100.px-2.py-1(
       hx-confirm=__("Are you sure you want to delete all extractions?"),

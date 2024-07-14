@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import Extraction from "../database/models/extraction";
 import RawInfoConverter, { Overwritable } from "../src/raw-info-converter";
@@ -7,8 +7,9 @@ import {
   RawPlaylist,
   SubRawMedium,
 } from "../src/raw-info-extractor";
+import { HasPageRequest } from "./middlewares/pagination";
 
-interface ExtractionRequest extends Request {
+interface ExtractionRequest extends HasPageRequest {
   extraction: Extraction;
 }
 
@@ -25,7 +26,7 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
   }
 });
 
-router.get("/", async (req: Request, res) => {
+router.get("/", async (req: HasPageRequest, res) => {
   const { rows: extractions, count } = await paginated(req.currentPage);
 
   res.render("extractions/index", {
