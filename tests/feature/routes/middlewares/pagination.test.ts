@@ -1,20 +1,27 @@
 import express from "@/routes";
-import { Request, Response } from "express";
+import {
+  HasPageRequest,
+  HasPageResponse,
+} from "@/routes/middlewares/pagination";
+import { HasQsResponse } from "@/routes/middlewares/query-string";
 import supertest from "supertest";
 
 describe("The pagination middleware", () => {
   beforeAll(() => {
-    express.get("/pagination", (req: Request, res: Response) => {
-      res.json({
-        req: req.currentPage,
-        res: res.locals.currentPage,
-        paginator: res.locals.paginator({
-          path: "/pagination",
-          qs: res.locals.qs(),
-          count: 100,
-        }),
-      });
-    });
+    express.get(
+      "/pagination",
+      (req: HasPageRequest, res: HasPageResponse & HasQsResponse) => {
+        res.json({
+          req: req.currentPage,
+          res: res.locals.currentPage,
+          paginator: res.locals.paginator({
+            path: "/pagination",
+            qs: res.locals.qs(),
+            count: 100,
+          }),
+        });
+      },
+    );
   });
 
   it("sets the current page number in the request and response payload", async () => {

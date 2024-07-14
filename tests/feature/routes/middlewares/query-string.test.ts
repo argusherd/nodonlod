@@ -1,11 +1,10 @@
 import express from "@/routes";
-import { ParsedQs } from "@/routes/middlewares/query-string";
-import { Response } from "express";
+import { HasQsResponse, ParsedQs } from "@/routes/middlewares/query-string";
 import supertest from "supertest";
 
 describe("The query string middleware", () => {
   beforeAll(() => {
-    express.get("/query-string", (_req, res: Response) => {
+    express.get("/query-string", (_req, res: HasQsResponse) => {
       res.json({
         qs: res.locals.qs().set("foo", "bar").omit("baz").toString(),
       });

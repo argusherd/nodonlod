@@ -1,6 +1,12 @@
 import { Response, Router } from "express";
 import { stringify } from "querystring";
 
+export interface HasQsResponse extends Response {
+  locals: {
+    qs: () => ParsedQs;
+  };
+}
+
 export class ParsedQs {
   query: Record<string, any>;
 
@@ -29,7 +35,7 @@ export class ParsedQs {
 
 const router = Router();
 
-router.use((req, res: Response, next) => {
+router.use((req, res: HasQsResponse, next) => {
   res.locals.qs = () => new ParsedQs(req.query);
 
   next();
