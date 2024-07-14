@@ -1,14 +1,10 @@
-import dayjs from "dayjs";
 import { IncomingMessage } from "http";
-import { join } from "path";
-import { renderFile } from "pug";
 import internal from "stream";
 import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import neatDuration from "../src/neat-duration";
-import { i18n } from "./middlewares/i18n";
+import render from "./pug";
 
 interface MediaInfo {
   title: string;
@@ -48,17 +44,7 @@ export interface WSS {
   removeAllListeners: (event: "play-next") => void;
 }
 
-dayjs.extend(neatDuration);
-
 const wsServer: WsServer = new WebSocketServer({ noServer: true });
-const relativePath =
-  process.env.NODE_ENV === "test" ? "../views" : "../../views";
-const render = (filename: string, params?: object) =>
-  renderFile(join(__dirname, relativePath, filename), {
-    ...params,
-    dayjs,
-    __: i18n.__,
-  });
 
 function playChapter(medium: Medium, chapter: Chapter) {
   const mediaInfo: MediaInfo = { title: medium.title };
