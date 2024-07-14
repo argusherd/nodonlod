@@ -1,14 +1,6 @@
 import { Response, Router } from "express";
 import { stringify } from "querystring";
 
-declare module "express" {
-  interface Response {
-    locals: {
-      qs: () => ParsedQs;
-    };
-  }
-}
-
 export class ParsedQs {
   query: Record<string, any>;
 
