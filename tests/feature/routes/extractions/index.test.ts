@@ -91,4 +91,18 @@ describe("The extraction index page", () => {
         expect(res.text).toContain("Processing");
       });
   });
+
+  it("can pass a _list property in the query string to render a partial list", async () => {
+    await Extraction.create({
+      url: "https://www.youtube.com/watch?v=wePCOoU7bSs",
+    });
+
+    await supertest(express)
+      .get("/extractions?_list")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text.startsWith("<div")).toBeTruthy();
+        expect(res.text).toContain('id="extractions"');
+      });
+  });
 });

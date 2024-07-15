@@ -29,7 +29,10 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: extractions, count } = await paginated(req.currentPage);
 
-  res.render("extractions/index", {
+  const template =
+    req.query._list != undefined ? "extractions/_list" : "extractions/index";
+
+  res.render(template, {
     extractions,
     count,
   });

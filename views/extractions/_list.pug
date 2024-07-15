@@ -1,4 +1,11 @@
 #extractions.flex.flex-col.gap-1
+  #refresh-extractions(
+    hx-get=`/extractions?${qs().set("_list", true).toString()}`,
+    hx-swap="outerHTML",
+    hx-target="#extractions",
+    hx-trigger="every 3s"
+  )
+
   each extraction, index in extractions || []
     .group.flex.items-center.rounded.border(
       :class="show || 'pointer-events-none'",
@@ -39,7 +46,7 @@
       )
 
   .flex.justify-between
-    != paginator({ path: "/extractions", qs: qs(), count })
+    != paginator({ path: "/extractions", qs: qs().omit("_list"), count })
 
     button.rounded.border.border-red-200.bg-red-100.px-2.py-1(
       hx-confirm=__("Are you sure you want to delete all extractions?"),
