@@ -69,7 +69,7 @@ router.post(
 router.delete("/", async (_req, res) => {
   await Extraction.truncate();
 
-  res.render("extractions/_list");
+  res.set("HX-Redirect", "/extractions").sendStatus(204);
 });
 
 router.get("/:extraction", async (req: ExtractionRequest, res) => {
@@ -127,9 +127,7 @@ router.post(
 router.delete("/:extraction", async (req: ExtractionRequest, res) => {
   await req.extraction.destroy();
 
-  const _list = req.query._list;
-
-  if (_list === undefined) {
+  if (req.query._list === undefined) {
     res.set("HX-Redirect", "/extractions").sendStatus(204);
   } else {
     const { rows: extractions, count } = await paginated(req.currentPage);

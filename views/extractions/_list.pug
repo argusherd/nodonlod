@@ -50,7 +50,5 @@
 
     button.rounded.border.border-red-200.bg-red-100.px-2.py-1(
       hx-confirm=__("Are you sure you want to delete all extractions?"),
-      hx-delete="/extractions",
-      hx-swap="outerHTML",
-      hx-target="#extractions"
+      hx-delete="/extractions"
     ) #{ __("Delete all") }
