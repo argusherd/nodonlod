@@ -40,5 +40,12 @@ mixin link(page)
     action=`${path}?${qs.omit("page").toString()}`,
     method="get"
   )
-    input.px-2.py-1(max=totalPage, min="1", name="page", type="number")
+    input.px-2.py-1.text-gray-300(
+      class="focus:text-black",
+      max=totalPage,
+      min="1",
+      name="page",
+      type="number",
+      value=currentPage
+    )
     button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
