@@ -1,7 +1,7 @@
 #extractions.flex.flex-col.gap-1
   #refresh-extractions(
     hx-get=`/extractions?${qs().set("_list", true).toString()}`,
-    hx-swap="outerHTML",
+    hx-swap="morph",
     hx-target="#extractions",
     hx-trigger="every 3s"
   )

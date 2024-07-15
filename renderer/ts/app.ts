@@ -1,8 +1,10 @@
 import htmx from "htmx.org";
 window.htmx = htmx;
 
+import morph from "@alpinejs/morph";
 import Alpine from "alpinejs";
 import dayjs from "dayjs";
+import "htmx.org/dist/ext/alpine-morph";
 import "htmx.org/dist/ext/ws";
 import neatDuration from "../../src/neat-duration";
 import currentTime from "./current-time";
@@ -12,6 +14,7 @@ dayjs.extend(neatDuration);
 
 window.dayjs = dayjs;
 window.Alpine = Alpine;
+Alpine.plugin(morph);
 Alpine.data("currentTime", currentTime);
 Alpine.start();
 
