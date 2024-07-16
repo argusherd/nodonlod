@@ -12,7 +12,7 @@ describe("The destroy extraction route", () => {
     await supertest(express)
       .delete(`/extractions/${extraction.id}`)
       .expect(204)
-      .expect("HX-Redirect", "/extractions");
+      .expect("HX-Location", "/extractions");
 
     expect(await Extraction.count()).toEqual(0);
   });
@@ -22,7 +22,10 @@ describe("The destroy extraction route", () => {
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     });
 
-    await supertest(express).delete("/extractions").expect(204);
+    await supertest(express)
+      .delete("/extractions")
+      .expect(204)
+      .expect("HX-Location", "/extractions");
 
     expect(await Extraction.count()).toEqual(0);
   });
