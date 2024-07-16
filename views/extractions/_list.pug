@@ -45,7 +45,7 @@
         hx-target="#extractions"
       )
 
-  .flex.justify-between
+  .flex.flex-wrap.justify-between.gap-2
     != paginator({ path: "/extractions", qs: qs().omit("_list"), count })
 
     button.rounded.border.border-red-200.bg-red-100.px-2.py-1(

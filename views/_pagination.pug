@@ -9,8 +9,8 @@ mixin link(page)
     href=`${path}?${qs.set('page', page).toString()}`
   ) #{ page }
 
-.flex.w-fit.items-center.gap-1
-  .flex.w-fit.divide-x.overflow-hidden.rounded.border
+.flex.w-fit.flex-wrap.items-center.gap-1
+  .flex.w-fit.flex-wrap.divide-x.overflow-hidden.rounded.border
     +link(1)
 
     if currentPage > eachSide + 2
