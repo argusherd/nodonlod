@@ -6,3 +6,5 @@ block body
       a(href=`/media/${medium.id}`) #{ medium.title }
       button(hx-get=`/media/${medium.id}/play`, hx-swap="none") Play
       button(hx-post=`/media/${medium.id}/queue`, hx-swap="none") Queue
+
+  != paginator({ path: "/media", qs: qs(), count })

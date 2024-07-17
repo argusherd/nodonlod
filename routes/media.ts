@@ -1,10 +1,11 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
+import { HasPageRequest } from "./middlewares/pagination";
 import wss from "./websocket";
 
-interface MediumRequest extends Request {
+interface MediumRequest extends HasPageRequest {
   medium: Medium;
 }
 
@@ -21,9 +22,18 @@ router.param("medium", async (req: MediumRequest, res, next) => {
   }
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req: HasPageRequest, res) => {
+  const limit = 10;
+
+  const { rows: media, count } = await Medium.findAndCountAll({
+    limit,
+    offset: Math.max(req.currentPage - 1, 0) * limit,
+    order: [["createdAt", "DESC"]],
+  });
+
   res.render("media/index", {
-    media: await Medium.findAll(),
+    media,
+    count,
   });
 });
 
