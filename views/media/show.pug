@@ -1,27 +1,90 @@
 extends ../_layout.pug
 
 block body
-  h2 #{ medium.title }
-  a(href=medium.url) url
-  p #{ medium.description }
-  span #{ dayjs.duration(medium.duration, "seconds").format("HH:mm:ss") }
-  span #{ medium.uploadDate ? dayjs(medium.uploadDate).format("YYYY-MM-DD") : "" }
-  span #{ dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss") }
-  span #{ dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss") }
-  img(src=medium.thumbnail)
-  if uploader
-    a(href=uploader.url) #{ uploader.name }
+  .flex.flex-wrap.gap-2.rounded.border.p-2
+    .flex.basis-full(class="sm:basis-1/3")
+      img.rounded(src=medium.thumbnail)
+    .flex.grow.flex-col.flex-wrap.justify-between
+      h2.break-words.text-xl #{ medium.title }
+      .flex.flex-wrap.justify-between.gap-2
+        .flex.flex-wrap.gap-2
+          button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold(
+            hx-get=`/media/${medium.id}/play`,
+            hx-swap="none"
+          )
+            i.shrink-0.text-2xl(class="icon-[mdi--play]")
+            span #{ __("Play") }
+          button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold(
+            hx-post=`/media/${medium.id}/queue`,
+            hx-swap="none"
+          )
+            i.shrink-0.text-2xl(class="icon-[ic--outline-watch-later]")
+            span #{ __("Watch later") }
+        button.flex.items-center.gap-1.px-2.font-bold.text-gray-500(
+          hx-post=`/media/${medium.id}/queue`,
+          hx-swap="none"
+        )
+          i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
+          span #{ __("Delete") }
 
-  each chapter in chapters
-    div
-      a(href=`/chapters/${chapter.id}/play`, hx-swap="none") #{ chapter.title }
-      - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
-      - var endAt = chapter.endTime ? dayjs.duration(chapter.endTime, "seconds").format("HH:mm:ss") : "";
-      span #{ startAt }
-      span #{ endAt }
+  .flex.flex-col.rounded.border(x-data="{ show: false }")
+    .flex.justify-between.p-2
+      h4 #{ __("Chapters") }
+      button.text-2xl(
+        :class="show ? 'icon-[ep--arrow-up]' : 'icon-[ep--arrow-down]'",
+        @click="show = !show"
+      )
+    .flex.flex-col.gap-2.border-t.p-2(x-show="show")
+      each chapter in chapters
+        .flex.flex-wrap.justify-between
+          a(href=`/chapters/${chapter.id}/play`, hx-swap="none") #{ chapter.title }
+          - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
+          - var endAt = chapter.endTime ? dayjs.duration(chapter.endTime, "seconds").format("HH:mm:ss") : "";
+          .flex.gap-1
+            if chapter.startTime
+              span #{ dayjs.neatDuration(chapter.startTime) }
+            if chapter.startTime && chapter.endTime
+              span -
+            if chapter.endTime
+              span #{ dayjs.neatDuration(chapter.endTime) }
 
-  each tag in tags
-    span #{ tag.name }
+  .flex.flex-col.gap-2.py-2
+    .flex.flex-wrap.gap-1
+      span.shrink-0(class="sm:basis-1/6") #{ __("URL") }
+      span.break-all #{ medium.url }
+    .flex.flex-wrap.gap-1
+      span.shrink-0(class="sm:basis-1/6") #{ __("Duration") }
+      span #{ dayjs.neatDuration(medium.duration) }
+    if uploader
+      .flex.flex-wrap.gap-1
+        span.shrink-0(class="sm:basis-1/6") #{ __("Uploader") }
+        span #{ uploader.name }
+    .flex.flex-wrap.gap-1
+      span.shrink-0(class="sm:basis-1/6") #{ __("Upload Date") }
+      span #{ medium.uploadDate ? dayjs(medium.uploadDate).format("YYYY-MM-DD") : "" }
+    .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
+      span.shrink-0(class="sm:basis-1/6") #{ __("Description") }
+      .w-full.grow.rounded.border(x-data="{ show: false }")
+        if medium.description
+          pre.overflow-hidden.whitespace-pre-wrap.break-all.p-2(
+            :class="show || 'h-16'"
+          )
+            | #{ medium.description }
+          button.flex.w-full.items-center.gap-2.bg-gray-100.p-1.text-left.text-sm(
+            @click="show = !show"
+          )
+            i(:class="show ? 'icon-[ep--arrow-up]' : 'icon-[ep--arrow-down]'")
+            span #{ __("Expand") }
+        else
+          span.px-2.text-gray-400 #{ __("No content") }
+    .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
+      span.shrink-0(class="sm:basis-1/6") #{ __("Tags") }
+      .flex.flex-wrap.gap-1
+        each tag in tags
+          span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ tag.name }
+    .flex.flex-wrap.gap-1
+      span.shrink-0(class="sm:basis-1/6") #{ __("Created At") }
+      span #{ dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss") }
 
   each playlist in playlists
     div
