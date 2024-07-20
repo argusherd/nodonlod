@@ -1,11 +1,12 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
+import { HasPageRequest } from "./middlewares/pagination";
 
-interface PlaylistRequest extends Request {
+interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
 }
 
@@ -22,9 +23,18 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
   }
 });
 
-router.get("/", async (_req, res) => {
+router.get("/", async (req: HasPageRequest, res) => {
+  const limit = 10;
+
+  const { rows: playlists, count } = await Playlist.findAndCountAll({
+    limit,
+    offset: (req.currentPage - 1) * limit,
+    order: [["createdAt", "DESC"]],
+  });
+
   res.render("playlists/index", {
-    playlists: await Playlist.findAll(),
+    playlists,
+    count,
   });
 });
 

@@ -5,7 +5,7 @@ import supertest from "supertest";
 import { createMedium } from "../../setup/create-model";
 
 describe("The medium index page", () => {
-  it("lists extractions and provides a link for each extraction", async () => {
+  it("lists media and provides a link for each medium", async () => {
     const medium1 = await createMedium();
     const medium2 = await createMedium();
 

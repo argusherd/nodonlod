@@ -4,3 +4,5 @@ block body
   each playlist in playlists
     div
       a(href=`/playlists/${playlist.id}`) #{ playlist.title }
+
+  != paginator({ path: "/playlists", qs: qs(), count })
