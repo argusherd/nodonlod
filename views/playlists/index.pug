@@ -1,8 +1,47 @@
 extends ../_layout.pug
 
 block body
-  each playlist in playlists
-    div
-      a(href=`/playlists/${playlist.id}`) #{ playlist.title }
+  .mb-2.flex.flex-col.gap-2
+    each playlist in playlists
+      .flex.gap-2.rounded.border.p-2
+        .group.relative.hidden.aspect-video.shrink-0.basis-36.overflow-hidden.rounded(
+          class="sm:block"
+        )
+          a.flex.h-full.w-full(href=`/playlists/${playlist.id}`)
+            if playlist.thumbnail
+              img.h-full.w-full.object-cover(
+                alt="thumbnail",
+                src=playlist.thumbnail
+              )
+            else
+              .h-full.w-full.bg-gray-800
+
+          button.absolute.flex.hidden.cursor-pointer.items-center.rounded-full.bg-gray-200.shadow-lg(
+            class="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 group-hover:flex",
+            hx-get=`/playlists/${playlist.id}/play`,
+            hx-swap="none"
+          )
+            i.text-5xl.text-gray-500(class="icon-[mdi--play]")
+
+          button.absolute.right-1.top-1.flex.hidden.items-center.rounded.bg-black.bg-gray-200.shadow(
+            class="p-0.5 group-hover:flex",
+            hx-post=`/playlists/${playlist.id}/queue`,
+            hx-swap="none"
+          )
+            i.text-xl.text-gray-500(class="icon-[ic--outline-watch-later]")
+
+        .group.flex.grow.justify-between.gap-2
+          a.grow.break-all(href=`/playlists/${playlist.id}`) #{ playlist.title }
+          .flex.items-center.gap-1(class="group-hover:flex sm:hidden")
+            button.text-2xl.text-gray-500(
+              class="icon-[mdi--play]",
+              hx-get=`/playlists/${playlist.id}/play`,
+              hx-swap="none"
+            )
+            button.text-2xl.text-gray-500(
+              class="icon-[ic--outline-watch-later]",
+              hx-post=`/playlists/${playlist.id}/queue`,
+              hx-swap="none"
+            )
 
   != paginator({ path: "/playlists", qs: qs(), count })

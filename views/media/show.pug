@@ -35,7 +35,7 @@ block body
         @click="show = !show"
       )
     .flex.flex-col.gap-2.border-t.p-2(x-show="show")
-      each chapter in chapters
+      each chapter in chapters || []
         .flex.flex-wrap.justify-between
           a(href=`/chapters/${chapter.id}/play`, hx-swap="none") #{ chapter.title }
           - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
@@ -80,12 +80,12 @@ block body
     .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
       span.shrink-0(class="sm:basis-1/6") #{ __("Tags") }
       .flex.flex-wrap.gap-1
-        each tag in tags
+        each tag in tags || []
           span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ tag.name }
     .flex.flex-wrap.gap-1
       span.shrink-0(class="sm:basis-1/6") #{ __("Created At") }
       span #{ dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss") }
 
-  each playlist in playlists
+  each playlist in playlists || []
     div
       a(href=`/playlists/${playlist.id}`) #{ playlist.title }
