@@ -1,7 +1,9 @@
 import { Router } from "express";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
-import PlayQueue from "../database/models/play-queue";
+import PlayQueue, {
+  PlayQueueCreationAttributes,
+} from "../database/models/play-queue";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
 import mediaPlayer from "../src/media-player";
@@ -67,32 +69,17 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
 
   play(firstItem);
 
-  let order = Number(await PlayQueue.max("order")) + 1;
-
-  for (const playlistItem of playlistItems.slice(1))
-    await PlayQueue.create({
-      mediumId: playlistItem.mediumId,
-      chapterId: playlistItem.chapterId,
-      order: order++,
-    });
+  await queue(playlistItems.slice(1));
 
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(202);
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
-  let order = Number(await PlayQueue.max("order")) + 1;
-
   const playlistItems = await PlaylistItem.findAll({
     where: { playlistId: req.playlist.id },
   });
 
-  for (const item of playlistItems) {
-    await PlayQueue.create({
-      mediumId: item.mediumId,
-      chapterId: item.chapterId,
-      order: order++,
-    });
-  }
+  await queue(playlistItems);
 
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
@@ -118,6 +105,20 @@ function play({ medium, chapter }: PlaylistItem) {
 
     wss.nowPlaying({ title: medium.title });
   }
+}
+
+async function queue(playlistItems: PlaylistItem[]) {
+  const data: PlayQueueCreationAttributes[] = [];
+  let order = Number(await PlayQueue.max("order")) + 1;
+
+  for (const playlistItem of playlistItems)
+    data.push({
+      mediumId: playlistItem.mediumId,
+      chapterId: playlistItem.chapterId,
+      order: order++,
+    });
+
+  await PlayQueue.bulkCreate(data);
 }
 
 export default router;

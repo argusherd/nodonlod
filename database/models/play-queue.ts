@@ -25,7 +25,7 @@ interface PlayQueueAttributes extends OptionalPlayQueueCreationAttributes {
   mediumId: string;
 }
 
-interface PlayQueueCreationAttributes
+export interface PlayQueueCreationAttributes
   extends Optional<
     PlayQueueAttributes,
     keyof OptionalPlayQueueCreationAttributes
