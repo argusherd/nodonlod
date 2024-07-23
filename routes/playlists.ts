@@ -76,7 +76,7 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
       order: order++,
     });
 
-  res.set("HX-Trigger", "play-queue").sendStatus(202);
+  res.set("HX-Trigger", "refresh-play-queues").sendStatus(202);
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
@@ -94,7 +94,7 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
     });
   }
 
-  res.set("HX-Trigger", "play-queue").sendStatus(201);
+  res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
 router.delete("/:playlist", async (req: PlaylistRequest, res) => {

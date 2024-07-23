@@ -51,7 +51,7 @@ describe("The playlist play route", () => {
     await supertest(express)
       .get(`/playlists/${playlist.id}/play`)
       .expect(202)
-      .expect("HX-Trigger", "play-queue");
+      .expect("HX-Trigger", "refresh-play-queues");
   });
 
   it("does nothing if there are no items in the playlist", async () => {

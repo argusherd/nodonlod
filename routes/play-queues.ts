@@ -14,4 +14,10 @@ router.get("/", async (_req, res) => {
   });
 });
 
+router.delete("/", async (_req, res) => {
+  await PlayQueue.truncate();
+
+  res.set("HX-Trigger", "refresh-play-queues").sendStatus(204);
+});
+
 export default router;

@@ -1,9 +1,9 @@
-#play-queue
+#play-queues
   .relative.p-2
-    button.absolute.right-2.top-2.text-2xl(
-      @click="show = false",
-      class="icon-[material-symbols-light--close]"
-    )
-    h3.mb-2.text-center.text-lg.font-semibold #{ __("Play Queue") }
+    .absolute.right-2.top-2.flex.gap-2.text-2xl
+      button(class="icon-[material-symbols--delete-outline]", hx-delete="/play-queues")
+      button(@click="show = false", class="icon-[material-symbols--close]")
+    h3.text-lg.font-semibold #{ __("Play Queue") }
+  .flex.flex-col.gap-1.p-2.pt-0
     each item in items
-      p #{ item.chapter ? item.chapter.title : "" } #{ item.medium.title }
+      p.break-words #{ item.chapter ? item.chapter.title : "" } #{ item.medium.title }

@@ -40,6 +40,6 @@ describe("The queue chapter route", () => {
 
     await supertest(express)
       .post(`/chapters/${chapter.id}/queue`)
-      .expect("HX-Trigger", "play-queue");
+      .expect("HX-Trigger", "refresh-play-queues");
   });
 });

@@ -66,6 +66,6 @@ describe("The queue playlist route", () => {
 
     await supertest(express)
       .post(`/playlists/${playlist.id}/queue`)
-      .expect("HX-Trigger", "play-queue");
+      .expect("HX-Trigger", "refresh-play-queues");
   });
 });

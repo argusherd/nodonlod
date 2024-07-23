@@ -61,7 +61,7 @@ router.post("/:medium/queue", async (req: MediumRequest, res) => {
     order: Number(await PlayQueue.max("order")) + 1,
   });
 
-  res.set("HX-Trigger", "play-queue").sendStatus(201);
+  res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
 router.delete("/:medium", async (req: MediumRequest, res) => {
