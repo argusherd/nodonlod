@@ -60,9 +60,10 @@ html(lang=`${getLocale()}`)
       class="w-4/12 shadow-[0_0_50px_10px_rgba(0,0,0,0.25)]",
       hx-get="/play-queues",
       hx-preserve,
+      hx-swap="outerHTML",
       hx-target="#play-queues",
       hx-trigger="load, refresh-play-queues from:body",
-      x-data="{ show: true }",
+      x-data="{ show: false }",
       x-show="show"
     )
       #play-queues

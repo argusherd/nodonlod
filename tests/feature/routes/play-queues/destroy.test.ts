@@ -16,4 +16,14 @@ describe("The play queue destroy route", () => {
 
     expect(await PlayQueue.count()).toEqual(0);
   });
+
+  it("can delete an item in the play queue", async () => {
+    const playQueue = await PlayQueue.create({
+      mediumId: (await createMedium()).id,
+    });
+
+    await supertest(express).delete(`/play-queues/${playQueue.id}`).expect(205);
+
+    expect(await PlayQueue.count()).toEqual(0);
+  });
 });

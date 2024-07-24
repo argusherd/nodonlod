@@ -2,8 +2,36 @@
   .relative.p-2
     .absolute.right-2.top-2.flex.gap-2.text-2xl
       button(class="icon-[material-symbols--delete-outline]", hx-delete="/play-queues")
-      button(@click="show = false", class="icon-[material-symbols--close]")
+      button(
+        @click="show = false",
+        class="icon-[material-symbols--close]",
+        title=__("Delete all")
+      )
     h3.text-lg.font-semibold #{ __("Play Queue") }
   .flex.flex-col.gap-1.p-2.pt-0
     each item in items
-      p.break-words #{ item.chapter ? item.chapter.title : "" } #{ item.medium.title }
+      .group.flex.items-center.justify-between.gap-1
+        button.overflow-hidden.text-ellipsis.text-nowrap(
+          hx-get=`/media/${item.medium.id}/play`,
+          hx-swap="none",
+          title=item.medium.title
+        )
+          if item.chapter
+            span.mr-1.rounded.bg-blue-300.px-1.text-white(class="py-0.5") #{ item.chapter.title }
+          span #{ item.medium.title }
+        .flex.hidden.shrink-0.flex-row.flex-nowrap.items-center.gap-1(
+          class="group-hover:flex"
+        )
+          a(
+            class="icon-[hugeicons--view]",
+            href=`/media/${item.medium.id}`,
+            hx-target="body",
+            title=__("View")
+          )
+          button(
+            class="icon-[material-symbols--delete-outline]",
+            hx-delete=`/play-queues/${item.id}`,
+            hx-swap="delete",
+            hx-target="closest .group",
+            title=__("Delete")
+          )
