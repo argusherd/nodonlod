@@ -61,5 +61,5 @@ export default class PlaylistItem extends Model<
   medium: Medium;
 
   @BelongsTo(() => Chapter)
-  chapter: Chapter;
+  chapter?: Chapter;
 }

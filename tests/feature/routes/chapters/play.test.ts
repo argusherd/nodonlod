@@ -1,3 +1,5 @@
+import Chapter from "@/database/models/chapter";
+import Medium from "@/database/models/medium";
 import express from "@/routes";
 import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
@@ -30,11 +32,9 @@ describe("The chapter play route", () => {
 
     await supertest(express).get(`/chapters/${chapter.id}/play`).expect(202);
 
-    expect(mockedNowPlaying).toHaveBeenCalledWith({
-      title: medium.title,
-      chapter: chapter.title,
-      startTime: 10,
-      endTime: 30,
-    });
+    expect(mockedNowPlaying).toHaveBeenCalledWith(
+      await Medium.findOne({ where: { id: medium.id } }),
+      await Chapter.findOne({ where: { id: chapter.id } }),
+    );
   });
 });

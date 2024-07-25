@@ -57,7 +57,6 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
   const playlistItems = await PlaylistItem.findAll({
     order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
-    include: [Medium, Chapter],
   });
 
   if (!playlistItems.length) {
@@ -65,9 +64,12 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
     return;
   }
 
-  const firstItem = playlistItems[0] as PlaylistItem;
+  const medium = (await playlistItems[0]?.$get("medium")) as Medium;
+  const chapter = (await playlistItems[0]?.$get("chapter")) ?? undefined;
+  const { startTime, endTime } = chapter || {};
 
-  play(firstItem);
+  mediaPlayer.play(medium.url, startTime, endTime);
+  wss.nowPlaying(medium, chapter);
 
   await queue(playlistItems.slice(1));
 
@@ -89,23 +91,6 @@ router.delete("/:playlist", async (req: PlaylistRequest, res) => {
 
   res.sendStatus(204);
 });
-
-function play({ medium, chapter }: PlaylistItem) {
-  if (chapter) {
-    mediaPlayer.play(medium.url, chapter.startTime, chapter.endTime);
-
-    wss.nowPlaying({
-      title: medium.title,
-      chapter: chapter.title,
-      startTime: chapter.startTime,
-      endTime: chapter.endTime,
-    });
-  } else {
-    mediaPlayer.play(medium.url);
-
-    wss.nowPlaying({ title: medium.title });
-  }
-}
 
 async function queue(playlistItems: PlaylistItem[]) {
   const data: PlayQueueCreationAttributes[] = [];

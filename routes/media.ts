@@ -50,7 +50,7 @@ router.get("/:medium", async (req: MediumRequest, res) => {
 router.get("/:medium/play", (req: MediumRequest, res) => {
   mediaPlayer.play(req.medium.url as string);
 
-  wss.nowPlaying({ title: req.medium.title });
+  wss.nowPlaying(req.medium);
 
   res.sendStatus(202);
 });

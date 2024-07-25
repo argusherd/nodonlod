@@ -24,11 +24,10 @@ router.param("chapter", async (req: ChapterRequest, res, next) => {
 
 router.get("/:chapter/play", async (req: ChapterRequest, res) => {
   const medium = (await req.chapter.$get("medium")) as Medium;
-  const { title: chapter, startTime, endTime } = req.chapter;
+  const { startTime, endTime } = req.chapter;
 
   mediaPlayer.play(medium.url, startTime, endTime);
-
-  wss.nowPlaying({ title: medium.title, chapter, startTime, endTime });
+  wss.nowPlaying(medium, req.chapter);
 
   res.sendStatus(202);
 });

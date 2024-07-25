@@ -20,31 +20,27 @@ describe("The websocket server", () => {
     httpServer.close();
   });
 
-  it("can broadcast the media information", () => {
+  it("can broadcast the media information", async () => {
+    const medium = await createMedium();
+
     client.on("message", (data) => {
-      expect(data.toString()).toContain(
-        "Rick Astley - Never Gonna Give You Up",
-      );
+      expect(data.toString()).toContain(medium.title);
     });
 
-    wss.nowPlaying({ title: "Rick Astley - Never Gonna Give You Up" });
+    wss.nowPlaying(medium);
   });
 
-  it("can broadcast the media information with chapter", () => {
+  it("can broadcast the media information with chapter", async () => {
+    const medium = await createMedium();
+    const chapter = await createChapter({ mediumId: medium.id });
+
     client.on("message", (data) => {
       const res = data.toString();
-      expect(res).toContain("Rick Astley - Never Gonna Give You Up");
-      expect(res).toContain("foo");
-      expect(res).toContain("666");
-      expect(res).toContain("777");
+      expect(res).toContain(medium.title);
+      expect(res).toContain(chapter.title);
     });
 
-    wss.nowPlaying({
-      title: "Rick Astley - Never Gonna Give You Up",
-      chapter: "foo",
-      startTime: 666,
-      endTime: 777,
-    });
+    wss.nowPlaying(medium, chapter);
   });
 
   it("can broadcast the media duration and display it in the progress bar and the duration tag", () => {
@@ -57,7 +53,14 @@ describe("The websocket server", () => {
     wss.mediaStart(123);
   });
 
-  it("caches the media info to broadcast the progress bar later", () => {
+  it("caches the media info to broadcast the progress bar later", async () => {
+    const medium = await createMedium();
+    const chapter = await createChapter({
+      mediumId: medium.id,
+      startTime: 50,
+      endTime: 90,
+    });
+
     client.on("message", (data) => {
       if (data.toString().includes('id="player"')) return;
 
@@ -66,13 +69,7 @@ describe("The websocket server", () => {
       expect(data.toString()).toContain("endTime: 90");
     });
 
-    wss.nowPlaying({
-      title: "Rick Astley - Never Gonna Give You Up",
-      chapter: "foo",
-      startTime: 50,
-      endTime: 90,
-    });
-
+    wss.nowPlaying(medium, chapter);
     wss.mediaStart(212);
   });
 
@@ -113,14 +110,26 @@ describe("The websocket server", () => {
     await wss.playNext();
   });
 
-  it("removes the front item of the play queue when instructing the server to play the next item", async () => {
+  it("removes the played item in the play queue when instructing the server to play the next item", async () => {
     const medium = await createMedium();
+    const chapter = await createChapter({ mediumId: medium.id });
 
-    await PlayQueue.create({ mediumId: medium.id });
+    await PlayQueue.create({ mediumId: medium.id, order: 2 });
+    await PlayQueue.create({
+      mediumId: medium.id,
+      chapterId: chapter.id,
+      order: 1,
+    });
+
+    wss.nowPlaying(medium, chapter);
 
     await wss.playNext();
 
-    expect(await PlayQueue.count()).toEqual(0);
+    expect(await PlayQueue.count()).toEqual(1);
+
+    const playQueue = await PlayQueue.findOne();
+
+    expect(playQueue?.chapterId).toBeNull();
   });
 
   it("plays the next items in the play queue based on their order", async () => {
@@ -142,8 +151,6 @@ describe("The websocket server", () => {
       const res = data.toString();
       expect(res).toContain("Rick Astley - Never Gonna Give You Up");
       expect(res).toContain("foo");
-      expect(res).toContain("666");
-      expect(res).toContain("777");
     });
 
     const medium = await createMedium({
@@ -152,8 +159,6 @@ describe("The websocket server", () => {
 
     const chapter = await createChapter({
       mediumId: medium.id,
-      startTime: 666,
-      endTime: 777,
       title: "foo",
     });
 

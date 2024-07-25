@@ -1,3 +1,4 @@
+import Medium from "@/database/models/medium";
 import express from "@/routes";
 import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
@@ -32,6 +33,8 @@ describe("The medium play route", () => {
 
     await supertest(express).get(`/media/${medium.id}/play`);
 
-    expect(mockedNowPlaying).toHaveBeenCalledWith({ title: medium.title });
+    expect(mockedNowPlaying).toHaveBeenCalledWith(
+      await Medium.findOne({ where: { id: medium.id } }),
+    );
   });
 });

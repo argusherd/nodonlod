@@ -1,3 +1,5 @@
+import Chapter from "@/database/models/chapter";
+import Medium from "@/database/models/medium";
 import PlayQueue from "@/database/models/play-queue";
 import PlaylistItem from "@/database/models/playlist-item";
 import express from "@/routes";
@@ -35,8 +37,11 @@ describe("The playlist play route", () => {
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium2.url);
-    expect(mockedNowPlaying).toHaveBeenCalledWith({ title: medium2.title });
+    expect(mockedPlay).toHaveBeenCalledWith(medium2.url, undefined, undefined);
+    expect(mockedNowPlaying).toHaveBeenCalledWith(
+      await Medium.findOne({ where: { id: medium2.id } }),
+      undefined,
+    );
   });
 
   it("tells the htmx to refresh the play queue view", async () => {
@@ -150,15 +155,13 @@ describe("The playlist play route", () => {
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
-    const playQueue = await PlayQueue.findOne();
+    const playQueue = await PlayQueue.findOne({ include: [Medium, Chapter] });
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 123, 456);
-    expect(mockedNowPlaying).toHaveBeenCalledWith({
-      title: medium.title,
-      chapter: chapter1.title,
-      startTime: 123,
-      endTime: 456,
-    });
+    expect(mockedNowPlaying).toHaveBeenCalledWith(
+      await Medium.findOne({ where: { id: medium.id } }),
+      await Chapter.findOne({ where: { id: chapter1.id } }),
+    );
     expect(playQueue?.chapterId).toEqual(chapter2.id);
   });
 });
