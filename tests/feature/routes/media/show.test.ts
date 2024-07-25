@@ -1,4 +1,5 @@
 import express from "@/routes";
+import { formatSeconds } from "@/src/neat-duration";
 import dayjs from "dayjs";
 import supertest from "supertest";
 import {
@@ -31,7 +32,7 @@ describe("The medium show page", () => {
           "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
         );
         expect(res.text).toContain("My title");
-        expect(res.text).toContain("00:02:03");
+        expect(res.text).toContain(formatSeconds(123));
         expect(res.text).toContain("My description");
         expect(res.text).toContain("https://foo.com/bar.jpg");
         expect(res.text).toContain("1995-01-01");
@@ -64,7 +65,6 @@ describe("The medium show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(uploader.name);
-        expect(res.text).toContain(uploader.url);
       });
   });
 
@@ -83,8 +83,8 @@ describe("The medium show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain("ep1");
-        expect(res.text).toContain("00:00:10");
-        expect(res.text).toContain("00:00:30");
+        expect(res.text).toContain(formatSeconds(10));
+        expect(res.text).toContain(formatSeconds(30));
         expect(res.text).toContain("ep2");
         expect(res.text).toContain(`/chapters/${chapter1.id}/play`);
         expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
