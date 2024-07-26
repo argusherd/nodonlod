@@ -96,7 +96,7 @@ describe("The websocket server", () => {
     await wss.playNext();
   });
 
-  it("emits a signal instructing to play the media from the URL", async () => {
+  it("emits a signal instructing the server to play the media from the URL when requesting to play the next item", async () => {
     wss.on("play-next", (url) => {
       expect(url).toEqual("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
     });
@@ -108,28 +108,6 @@ describe("The websocket server", () => {
     await PlayQueue.create({ mediumId: medium.id });
 
     await wss.playNext();
-  });
-
-  it("removes the played item in the play queue when instructing the server to play the next item", async () => {
-    const medium = await createMedium();
-    const chapter = await createChapter({ mediumId: medium.id });
-
-    await PlayQueue.create({ mediumId: medium.id, order: 2 });
-    await PlayQueue.create({
-      mediumId: medium.id,
-      chapterId: chapter.id,
-      order: 1,
-    });
-
-    wss.nowPlaying(medium, chapter);
-
-    await wss.playNext();
-
-    expect(await PlayQueue.count()).toEqual(1);
-
-    const playQueue = await PlayQueue.findOne();
-
-    expect(playQueue?.chapterId).toBeNull();
   });
 
   it("plays the next items in the play queue based on their order", async () => {
@@ -144,6 +122,74 @@ describe("The websocket server", () => {
     await PlayQueue.create({ mediumId: goFirst.id, order: 14 });
 
     await wss.playNext();
+  });
+
+  it("removes the played item from the play queue and reorders the remaining items when instructing the server to play the next item", async () => {
+    const medium = await createMedium();
+
+    await PlayQueue.create({ mediumId: medium.id, order: 1 });
+    const remaining = await PlayQueue.create({ mediumId: medium.id, order: 2 });
+
+    wss.nowPlaying(medium);
+
+    await wss.playNext();
+
+    expect(await PlayQueue.count()).toEqual(1);
+
+    await remaining.reload();
+
+    expect(remaining.order).toEqual(1);
+  });
+
+  it("only reorders the remaining items whose order is greater than the played item", async () => {
+    const playFirst = await createMedium();
+    const remaining = await createMedium();
+
+    await PlayQueue.create({ mediumId: remaining.id, order: 1 });
+    const untouched = await PlayQueue.create({
+      mediumId: remaining.id,
+      order: 2,
+    });
+    await PlayQueue.create({ mediumId: playFirst.id, order: 3 });
+    const reordered = await PlayQueue.create({
+      mediumId: remaining.id,
+      order: 4,
+    });
+
+    wss.nowPlaying(playFirst);
+
+    await wss.playNext();
+
+    await untouched.reload();
+    await reordered.reload();
+
+    expect(untouched.order).toEqual(2);
+    expect(reordered.order).toEqual(3);
+  });
+
+  it("distinguishes the same medium with different chapters when removing the played item from the play queue", async () => {
+    const medium = await createMedium();
+    const chapter1 = await createChapter();
+    const chapter2 = await createChapter();
+
+    await PlayQueue.create({
+      mediumId: medium.id,
+      chapterId: chapter1.id,
+      order: 1,
+    });
+    await PlayQueue.create({
+      mediumId: medium.id,
+      chapterId: chapter2.id,
+      order: 2,
+    });
+
+    wss.nowPlaying(medium, chapter2);
+
+    await wss.playNext();
+
+    const playQueue = await PlayQueue.findOne();
+
+    expect(playQueue?.chapterId).toEqual(chapter1.id);
   });
 
   it("can broadcast media information along with the chapter when instructing the server to play the next item in the play queue", async () => {

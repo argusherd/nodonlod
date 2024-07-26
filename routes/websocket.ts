@@ -1,4 +1,5 @@
 import { IncomingMessage } from "http";
+import { Op } from "sequelize";
 import internal from "stream";
 import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
@@ -35,6 +36,25 @@ export interface WSS {
   latestPlayQueue: () => Promise<void>;
   on: Pick<WsServer, "on">["on"];
   removeAllListeners: (event: "play-next") => void;
+}
+
+async function reorderRemaining() {
+  const played = await PlayQueue.findOne({
+    where: {
+      mediumId: cachedMedium.id,
+      ...(cachedChapter && { chapterId: cachedChapter?.id }),
+    },
+    order: [["order", "ASC"]],
+  });
+
+  if (!played) return;
+
+  await played.destroy();
+
+  await PlayQueue.increment("order", {
+    by: -1,
+    where: { order: { [Op.gt]: played.order } },
+  });
 }
 
 const wsServer: WsServer = new WebSocketServer({ noServer: true });
@@ -77,14 +97,7 @@ const wss: WSS = {
   mediaStop: () =>
     wsServer.clients.forEach((ws) => ws.send(render("player/_replay.pug"))),
   playNext: async () => {
-    if (cachedMedium)
-      await PlayQueue.destroy({
-        where: {
-          mediumId: cachedMedium.id,
-          ...(cachedChapter && { chapterId: cachedChapter?.id }),
-        },
-        limit: 1,
-      });
+    if (cachedMedium) reorderRemaining();
 
     const playQueue = await PlayQueue.findOne({
       include: [Medium, Chapter],
