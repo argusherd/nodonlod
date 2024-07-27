@@ -8,9 +8,26 @@
         title=__("Delete all")
       )
     h3.text-lg.font-semibold #{ __("Play Queue") }
-  .flex.flex-col.gap-1.p-2.pt-0
+
+  .flex.flex-col.gap-1.p-2.pt-0(
+    x-data="{ id: 0, order: 0 }",
+    x-sort=`
+      id = $item; order = $position;
+      $nextTick(() => { htmx.process($refs.sort); htmx.trigger($refs.sort, 'sorted') });
+    `
+  )
+    input(
+      :hx-put="`/play-queues/${id}`",
+      hx-include="this",
+      hx-trigger="sorted",
+      name="order",
+      type="hidden",
+      x-model="order",
+      x-ref="sort"
+    )
+
     each item in items
-      .group.flex.items-center.justify-between.gap-1
+      .group.flex.items-center.justify-between.gap-1(x-sort:item=item.id)
         button.overflow-hidden.text-ellipsis.text-nowrap(
           hx-get=`/media/${item.medium.id}/play`,
           hx-swap="none",

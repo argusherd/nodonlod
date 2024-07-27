@@ -1,5 +1,8 @@
 import Chapter, { ChapterCreationAttributes } from "@/database/models/chapter";
 import Medium, { MediumCreationAttributes } from "@/database/models/medium";
+import PlayQueue, {
+  PlayQueueCreationAttributes,
+} from "@/database/models/play-queue";
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
@@ -50,5 +53,13 @@ export const createChapter = async (
   await Chapter.create({
     mediumId: overwrite?.mediumId || (await createMedium()).id,
     title: faker.lorem.slug(),
+    ...overwrite,
+  });
+
+export const createPlayQueue = async (
+  overwrite?: Partial<PlayQueueCreationAttributes>,
+) =>
+  await PlayQueue.create({
+    mediumId: overwrite?.mediumId || (await createMedium()).id,
     ...overwrite,
   });

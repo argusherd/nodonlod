@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@alpinejs/morph": "^3.14.1",
+    "@alpinejs/sort": "^3.14.1",
     "@faker-js/faker": "^8.4.1",
     "@iconify/json": "^2.2.217",
     "@iconify/tailwind": "^1.1.1",
