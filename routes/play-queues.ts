@@ -40,6 +40,11 @@ router.delete("/", async (_req, res) => {
 router.delete("/:playQueue", async (req: HasPlayQueue, res) => {
   await req.playQueue.destroy();
 
+  await PlayQueue.decrement("order", {
+    by: 1,
+    where: { order: { [Op.gt]: req.playQueue.order } },
+  });
+
   res.sendStatus(205);
 });
 
