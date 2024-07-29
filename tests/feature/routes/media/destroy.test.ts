@@ -11,4 +11,13 @@ describe("The destory medium route", () => {
 
     expect(await Medium.count()).toEqual(0);
   });
+
+  it("directs htmx to navigate to the media index page", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .delete(`/media/${medium.id}`)
+      .expect(204)
+      .expect("HX-Location", "/media");
+  });
 });

@@ -67,7 +67,7 @@ router.post("/:medium/queue", async (req: MediumRequest, res) => {
 router.delete("/:medium", async (req: MediumRequest, res) => {
   await req.medium.destroy();
 
-  res.sendStatus(204);
+  res.set("HX-Location", "/media").sendStatus(204);
 });
 
 export default router;
