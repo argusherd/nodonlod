@@ -1,0 +1,28 @@
+.flex.flex-col.gap-2(class="sm:flex-row")
+  .w-full.shrink-0(class="sm:max-w-xs")
+    a(href=`/media/${medium.id}`)
+      if medium.thumbnail
+        img.rounded(src=medium.thumbnail)
+      else
+        .aspect-video.w-full.rounded.bg-gray-800
+
+  .flex.grow.flex-col.flex-wrap.gap-2
+    a.w-full.break-words.text-lg.font-semibold(href=`/media/${medium.id}`) #{ medium.title }
+
+    a.line-clamp-1.overflow-ellipsis.break-all.text-sm(
+      href=`/media/${medium.id}`
+    ) #{ medium.description }
+
+    .flex.flex-wrap.gap-2
+      button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+        hx-get=`/media/${medium.id}/play`,
+        hx-swap="none"
+      )
+        i.shrink-0.text-2xl(class="icon-[mdi--play]")
+        span #{ __("Play") }
+      button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+        hx-post=`/media/${medium.id}/queue`,
+        hx-swap="none"
+      )
+        i.shrink-0.text-2xl(class="icon-[ic--outline-watch-later]")
+        span #{ __("Watch later") }

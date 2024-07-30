@@ -1,37 +1,23 @@
 extends ../_layout.pug
 
 block body
-  .flex.flex-wrap.gap-2.rounded.border.p-2
-    .flex.basis-full(class="sm:basis-1/3")
-      img.rounded(src=medium.thumbnail)
-    .flex.grow.flex-col.flex-wrap.justify-between
-      h2.break-words.text-xl #{ medium.title }
-      .flex.flex-wrap.justify-between.gap-2
-        .flex.flex-wrap.gap-2
-          button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold(
-            hx-get=`/media/${medium.id}/play`,
-            hx-swap="none"
-          )
-            i.shrink-0.text-2xl(class="icon-[mdi--play]")
-            span #{ __("Play") }
-          button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold(
-            hx-post=`/media/${medium.id}/queue`,
-            hx-swap="none"
-          )
-            i.shrink-0.text-2xl(class="icon-[ic--outline-watch-later]")
-            span #{ __("Watch later") }
-        button.flex.items-center.gap-1.px-2.font-bold.text-gray-500(
-          @click=`$dispatch('confirm', {
+  .flex.justify-between
+    h1.text-xl.font-bold #{ __("Medium Info") }
+
+    button.flex.items-center.gap-1.px-2.font-bold.text-gray-500(
+      @click=`$dispatch('confirm', {
             listener: "delete-medium",
             message: '${__("Are you sure you want to delete this medium?")}',
           })`,
-          @delete-medium.window="if ($event.detail) htmx.trigger($el, 'confirmed')",
-          hx-delete=`/media/${medium.id}`,
-          hx-trigger="confirmed",
-          x-data=""
-        )
-          i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
-          span #{ __("Delete") }
+      @delete-medium.window="if ($event.detail) htmx.trigger($el, 'confirmed')",
+      hx-delete=`/media/${medium.id}`,
+      hx-trigger="confirmed",
+      x-data=""
+    )
+      i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
+      span #{ __("Delete") }
+
+  include _widget.pug
 
   .flex.flex-col.rounded.border(x-data="{ show: false }")
     .flex.justify-between.p-2
