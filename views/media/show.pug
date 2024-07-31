@@ -28,17 +28,7 @@ block body
       )
     .flex.flex-col.gap-2.border-t.p-2(x-show="show")
       each chapter in chapters || []
-        .flex.flex-wrap.justify-between
-          a(href=`/chapters/${chapter.id}/play`, hx-swap="none") #{ chapter.title }
-          - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
-          - var endAt = chapter.endTime ? dayjs.duration(chapter.endTime, "seconds").format("HH:mm:ss") : "";
-          .flex.gap-1
-            if chapter.startTime
-              span #{ dayjs.neatDuration(chapter.startTime) }
-            if chapter.startTime && chapter.endTime
-              span -
-            if chapter.endTime
-              span #{ dayjs.neatDuration(chapter.endTime) }
+        include chapters/_widget.pug
 
   .flex.flex-col.gap-2.py-2
     .flex.flex-wrap.gap-1

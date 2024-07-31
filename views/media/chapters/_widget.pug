@@ -1,0 +1,30 @@
+.flex.flex-col.flex-wrap.gap-2(class="sm:flex-row sm:items-center")
+  .flex.flex-wrap.items-center.gap-2
+    a.font-semibold(href=`/media/${chapter.mediumId}`) #{ chapter.title }
+
+    - var startAt = chapter.startTime ? dayjs.duration(chapter.startTime, "seconds").format("HH:mm:ss") : "";
+    - var endAt = chapter.endTime ? dayjs.duration(chapter.endTime, "seconds").format("HH:mm:ss") : "";
+    .flex.gap-1.text-sm
+      if chapter.startTime || chapter.startTime == 0
+        span #{ dayjs.neatDuration(chapter.startTime) }
+      if (chapter.startTime || chapter.startTime == 0) && chapter.endTime
+        span -
+      if chapter.endTime
+        span #{ dayjs.neatDuration(chapter.endTime) }
+
+  hr.hidden.grow(class="sm:block")
+
+  .flex.flex-wrap.gap-2(class="sm:ml-auto")
+    button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+      hx-get=`/chapters/${chapter.id}/play`,
+      hx-swap="none"
+    )
+      i.shrink-0.text-2xl(class="icon-[mdi--play]")
+      span #{ __("Play") }
+
+    button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+      hx-post=`/chapters/${chapter.id}/queue`,
+      hx-swap="none"
+    )
+      i.shrink-0.text-2xl(class="icon-[ic--outline-watch-later]")
+      span #{ __("Watch later") }
