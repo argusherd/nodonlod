@@ -1,10 +1,10 @@
 extends ../_layout.pug
 
 block body
-  .flex.justify-between
+  .mb-2.flex.flex-wrap.items-center.justify-between
     h1.text-xl.font-bold #{ __("Medium Info") }
 
-    button.flex.items-center.gap-1.px-2.font-bold.text-gray-500(
+    button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold.text-gray-500(
       @click=`$dispatch('confirm', {
             listener: "delete-medium",
             message: '${__("Are you sure you want to delete this medium?")}',

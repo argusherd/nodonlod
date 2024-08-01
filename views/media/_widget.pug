@@ -1,5 +1,5 @@
 .flex.flex-col.gap-2(class="sm:flex-row")
-  .w-full.shrink-0(class="sm:max-w-xs")
+  .w-full.max-w-xs.shrink-0
     a(href=`/media/${medium.id}`)
       if medium.thumbnail
         img.rounded(src=medium.thumbnail)
@@ -18,7 +18,7 @@
         hx-get=`/media/${medium.id}/play`,
         hx-swap="none"
       )
-        i.shrink-0.text-2xl(class="icon-[mdi--play]")
+        i.shrink-0.text-2xl(class="icon-[raphael--play]")
         span #{ __("Play") }
       button.flex.items-center.gap-1.rounded.border.px-2.py-1(
         hx-post=`/media/${medium.id}/queue`,
