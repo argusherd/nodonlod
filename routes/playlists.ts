@@ -89,7 +89,7 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
 router.delete("/:playlist", async (req: PlaylistRequest, res) => {
   await req.playlist.destroy();
 
-  res.sendStatus(204);
+  res.set("HX-Location", "/playlists").sendStatus(204);
 });
 
 async function queue(playlistItems: PlaylistItem[]) {

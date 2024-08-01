@@ -1,0 +1,30 @@
+.flex.flex-col.gap-2(class="sm:flex-row")
+  .w-full.max-w-xs.shrink-0
+    a(href=`/playlists/${playlist.id}`)
+      if playlist.thumbnail
+        img.rounded(src=playlist.thumbnail)
+      else
+        .aspect-video.w-full.rounded.bg-gray-800
+
+  .flex.grow.flex-col.flex-wrap.gap-2
+    a.w-full.break-words.text-lg.font-semibold(
+      href=`/playlists/${playlist.id}`
+    ) #{ playlist.title }
+
+    a.line-clamp-1.overflow-ellipsis.break-all.text-sm(
+      href=`/playlists/${playlist.id}`
+    ) #{ playlist.description }
+
+    .flex.flex-wrap.gap-2
+      button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+        hx-get=`/playlists/${playlist.id}/play`,
+        hx-swap="none"
+      )
+        i.shrink-0.text-2xl(class="icon-[mdi--play]")
+        span #{ __("Play") }
+      button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+        hx-post=`/playlists/${playlist.id}/queue`,
+        hx-swap="none"
+      )
+        i.shrink-0.text-2xl(class="icon-[ic--outline-watch-later]")
+        span #{ __("Watch later") }
