@@ -51,8 +51,8 @@ async function reorderRemaining() {
 
   await played.destroy();
 
-  await PlayQueue.increment("order", {
-    by: -1,
+  await PlayQueue.decrement("order", {
+    by: 1,
     where: { order: { [Op.gt]: played.order } },
   });
 }
@@ -97,7 +97,7 @@ const wss: WSS = {
   mediaStop: () =>
     wsServer.clients.forEach((ws) => ws.send(render("player/_replay.pug"))),
   playNext: async () => {
-    if (cachedMedium) reorderRemaining();
+    if (cachedMedium) await reorderRemaining();
 
     const playQueue = await PlayQueue.findOne({
       include: [Medium, Chapter],
