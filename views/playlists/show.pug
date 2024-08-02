@@ -17,10 +17,27 @@ block body
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
 
-  include _widget.pug
+  .mb-2
+    include _widget.pug
 
-  each item in items
-    div
-      if (item.chapter)
-        span #{ item.chapter.title }
-      a(href=`/media/${item.medium.id}`) #{ item.medium.title }
+  .flex.flex-col.gap-2
+    each item in items
+      .flex.flex-col.gap-1(class="sm:flex-row sm:items-center")
+        div
+          input.w-10.rounded.border.p-1.text-center(
+            type="text",
+            value=item.order
+          )
+        .flex.grow.flex-col.gap-1
+          - var medium = item.medium;
+          - var chapter = item.chapter;
+          if (chapter)
+            include ../media/chapters/_widget.pug
+            .flex
+              .relative.w-6.shrink-0
+                .absolute.right-0.top-0.rounded-bl.border-b.border-l.border-gray-300(
+                  class="h-1/2 w-1/2"
+                )
+              include ../media/_widget.pug
+          else
+            include ../media/_widget.pug

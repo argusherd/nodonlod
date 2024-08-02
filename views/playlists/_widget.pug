@@ -1,10 +1,12 @@
 .flex.flex-col.gap-2(class="sm:flex-row")
-  .w-full.max-w-xs.shrink-0
-    a(href=`/playlists/${playlist.id}`)
-      if playlist.thumbnail
-        img.rounded(src=playlist.thumbnail)
-      else
-        .aspect-video.w-full.rounded.bg-gray-800
+  a.block.aspect-square.shrink-0.overflow-hidden.rounded(
+    class="sm:basis-56",
+    href=`/playlists/${playlist.id}`
+  )
+    if playlist.thumbnail
+      img.h-full.w-full.object-cover(src=playlist.thumbnail)
+    else
+      .h-full.bg-gray-800
 
   .flex.grow.flex-col.flex-wrap.gap-2
     a.w-full.break-words.text-lg.font-semibold(
