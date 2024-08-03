@@ -1,5 +1,5 @@
 .flex.flex-col.gap-2(class="sm:flex-row")
-  a.block.aspect-video.shrink-0.overflow-hidden.rounded(
+  a.relative.block.aspect-video.shrink-0.overflow-hidden.rounded(
     class="sm:basis-44",
     href=`/media/${medium.id}`
   )
@@ -7,6 +7,8 @@
       img.h-full.w-full.object-cover(src=medium.thumbnail)
     else
       .h-full.bg-gray-800
+
+    small.absolute.bottom-0.right-0.rounded.px-1.text-white(class="bg-black/50") #{ dayjs.neatDuration(medium.duration) }
 
   .flex.flex-col.flex-wrap.gap-2
     a.w-full.break-words.text-lg.font-semibold(href=`/media/${medium.id}`) #{ medium.title }
