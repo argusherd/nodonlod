@@ -71,7 +71,7 @@ describe("The playlist play route", () => {
     expect(mockedPlay).not.toHaveBeenCalled();
   });
 
-  it("puts other items in the playlist into the play queue", async () => {
+  it("puts all items in the playlist into the play queue", async () => {
     const playlist = await createPlaylist();
     const medium1 = await createMedium();
     const medium2 = await createMedium();
@@ -89,11 +89,11 @@ describe("The playlist play route", () => {
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
-    expect(await PlayQueue.count()).toEqual(1);
+    expect(await PlayQueue.count()).toEqual(2);
 
-    const playQueue = await PlayQueue.findOne();
+    const playQueue = await PlayQueue.findOne({ order: [["order", "ASC"]] });
 
-    expect(playQueue?.mediumId).toEqual(medium1.id);
+    expect(playQueue?.mediumId).toEqual(medium2.id);
   });
 
   it("increases the order number when other items are added to the play queue", async () => {
@@ -121,7 +121,7 @@ describe("The playlist play route", () => {
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
-    expect(await PlayQueue.max("order")).toEqual(12);
+    expect(await PlayQueue.max("order")).toEqual(13);
   });
 
   it("can also play and queue chapters in the playlist", async () => {
@@ -155,7 +155,11 @@ describe("The playlist play route", () => {
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
-    const playQueue = await PlayQueue.findOne({ include: [Medium, Chapter] });
+    const playQueue = await PlayQueue.findOne({
+      include: [Medium, Chapter],
+      order: [["order", "ASC"]],
+      offset: 1,
+    });
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 123, 456);
     expect(mockedNowPlaying).toHaveBeenCalledWith(

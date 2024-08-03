@@ -71,13 +71,14 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
   mediaPlayer.play(medium.url, startTime, endTime);
   wss.nowPlaying(medium, chapter);
 
-  await queue(playlistItems.slice(1));
+  await queue(playlistItems);
 
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(202);
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
   const playlistItems = await PlaylistItem.findAll({
+    order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
   });
 
