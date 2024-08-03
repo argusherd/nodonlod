@@ -42,11 +42,7 @@ export default class RawInfoConverter {
     for (const subRawMedium of rawPlaylist.entries)
       media.push(await this.toMedium(subRawMedium as SubRawMedium));
 
-    await this.createAssociation(
-      playlist,
-      media,
-      rawPlaylist.requested_entries,
-    );
+    await this.createAssociation(playlist, media);
   }
 
   async toPlaylist(
@@ -116,12 +112,10 @@ export default class RawInfoConverter {
     return medium;
   }
 
-  async createAssociation(
-    playlist: Playlist,
-    media: Medium[],
-    orders: number[] = [],
-  ) {
-    let idx = 0;
+  async createAssociation(playlist: Playlist, media: Medium[]) {
+    let order = Number(
+      await PlaylistItem.max("order", { where: { playlistId: playlist.id } }),
+    );
 
     for (const medium of media) {
       const playlistItem = await PlaylistItem.findOne({
@@ -132,15 +126,12 @@ export default class RawInfoConverter {
         },
       });
 
-      if (playlistItem) {
-        await playlistItem.update({ order: orders.at(idx++) });
-        return;
-      }
+      if (playlistItem) return;
 
       await PlaylistItem.create({
         playlistId: playlist.id,
         mediumId: medium.id,
-        order: orders.at(idx++),
+        order: ++order,
       });
     }
   }

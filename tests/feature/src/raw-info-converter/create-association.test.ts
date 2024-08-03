@@ -34,25 +34,36 @@ describe("The createAssociation method in the RawInfoConverter", () => {
   });
 
   it("preserves the order of the media when establishing the relationship between the playlist and media", async () => {
-    const medium = await createMedium();
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
     const playlist = await createPlaylist();
 
-    await converter.createAssociation(playlist, [medium], [21]);
+    await converter.createAssociation(playlist, [medium1, medium2]);
 
-    const playlistItem = await PlaylistItem.findOne();
+    const playlistItem1 = await PlaylistItem.findOne({
+      where: { mediumId: medium1.id },
+    });
+    const playlistItem2 = await PlaylistItem.findOne({
+      where: { mediumId: medium2.id },
+    });
 
-    expect(playlistItem?.order).toEqual(21);
+    expect(playlistItem1?.order).toEqual(1);
+    expect(playlistItem2?.order).toEqual(2);
   });
 
-  it("updates the order of the media when establishing the existing relationship", async () => {
-    const medium = await createMedium();
+  it("continues the order of the media when establishing the existing relationship", async () => {
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
+    const medium3 = await createMedium();
     const playlist = await createPlaylist();
 
-    await converter.createAssociation(playlist, [medium], [21]);
-    await converter.createAssociation(playlist, [medium], [60]);
+    await converter.createAssociation(playlist, [medium1, medium2]);
+    await converter.createAssociation(playlist, [medium3]);
 
-    const playlistItem = await PlaylistItem.findOne();
+    const playlistItem = await PlaylistItem.findOne({
+      where: { mediumId: medium3.id },
+    });
 
-    expect(playlistItem?.order).toEqual(60);
+    expect(playlistItem?.order).toEqual(3);
   });
 });
