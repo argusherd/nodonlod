@@ -49,3 +49,7 @@ mixin link(page)
       value=currentPage
     )
     button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
+
+  - var from = (currentPage - 1) * limit + 1;
+  - var to = Math.min(currentPage * limit, count);
+  small.text-gray-700 #{ from }-#{ to } (#{ count })
