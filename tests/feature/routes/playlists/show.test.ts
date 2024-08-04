@@ -60,8 +60,16 @@ describe("The playlist show page", () => {
     const medium2 = await createMedium();
     const chapter = await createChapter();
 
-    await playlist.$add("medium", medium1, { through: { order: 50 } });
-    await playlist.$add("medium", medium2, { through: { order: 49 } });
+    await PlaylistItem.create({
+      playlistId: playlist.id,
+      mediumId: medium1.id,
+      order: 50,
+    });
+    await PlaylistItem.create({
+      playlistId: playlist.id,
+      mediumId: medium2.id,
+      order: 49,
+    });
     await PlaylistItem.create({
       playlistId: playlist.id,
       mediumId: chapter.mediumId,

@@ -18,6 +18,8 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
     const mockedToPlaylist = jest
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
+    jest.spyOn(converter, "createAssociation").mockImplementation();
+
     const rawPlaylist = createRawPlaylist();
 
     await converter.fromRawPlaylistAndEntries(rawPlaylist);
@@ -29,6 +31,8 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
     const mockedToPlaylist = jest
       .spyOn(converter, "toPlaylist")
       .mockImplementation();
+    jest.spyOn(converter, "createAssociation").mockImplementation();
+
     const nestedRawPlaylist1 = createRawPlaylist();
     const nestedRawPlaylist2 = createRawPlaylist();
     const rawPlaylist = createRawPlaylist({
@@ -102,15 +106,10 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
     const subRawMedium = createSubRawMedium();
     const rawPlaylist = createRawPlaylist({
       entries: [subRawMedium],
-      requested_entries: [20],
     });
 
     await converter.fromRawPlaylistAndEntries(rawPlaylist);
 
-    expect(mockedCreateAssociation).toHaveBeenCalledWith(
-      playlist,
-      [medium],
-      [20],
-    );
+    expect(mockedCreateAssociation).toHaveBeenCalledWith(playlist, [medium]);
   });
 });
