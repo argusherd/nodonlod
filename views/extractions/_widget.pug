@@ -1,0 +1,18 @@
+mixin type(name, classes="")
+  small.rounded.border.px-2(class=classes) #{ name }
+
+.relative.flex.w-full.flex-wrap.gap-2
+  .flex.flex-wrap.items-center.gap-1
+    if extraction.isProcessing
+      +type(__("Processing"), "text-yellow-500 border-yellow-500")
+    else if extraction.error
+      +type(__("Error"), "text-red-500 border-red-500")
+    else if extraction.content && extraction.content._type == "playlist"
+      +type(__("Playlist"), "text-blue-500 border-blue-500")
+      small.rounded.border.px-2 #{ __("Page") }: #{ extraction.page }
+    else if extraction.content
+      +type(__("Medium"), "text-green-500 border-green-500")
+    else
+      +type(__("Pending"))
+
+  a.overflow-hidden.break-words(href=`/extractions/${extraction.id}`) #{ extraction.url }

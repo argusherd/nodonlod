@@ -127,16 +127,10 @@ router.post(
 router.delete("/:extraction", async (req: ExtractionRequest, res) => {
   await req.extraction.destroy();
 
-  if (req.query._list === undefined) {
-    res.set("HX-Location", "/extractions").sendStatus(204);
-  } else {
-    const { rows: extractions, count } = await paginated(req.currentPage);
+  if (req.query._list === undefined) res.set("HX-Location", "/extractions");
+  else res.set("HX-Trigger", "refresh-extractions");
 
-    res.render("extractions/_list", {
-      extractions,
-      count,
-    });
-  }
+  res.sendStatus(204);
 });
 
 function findRawInfoById(

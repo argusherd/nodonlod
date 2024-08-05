@@ -1,15 +1,15 @@
-#extractions.flex.flex-col.gap-1
+#extractions.flex.flex-col.gap-2
   #refresh-extractions(
     hx-get=`/extractions?${qs().set("_list", true).toString()}`,
-    hx-swap="morph",
+    hx-swap="outerHTML",
     hx-target="#extractions",
-    hx-trigger="every 3s"
+    hx-trigger="every 3s, refresh-extractions from:body"
   )
 
   each extraction, index in extractions || []
-    .group.flex.items-center.rounded.border(
+    .relative.flex.gap-1.p-2(
       :class="show || 'pointer-events-none'",
-      class="hover:bg-gray-100",
+      class={ "bg-gray-100": index % 2 },
       x-bind="transition",
       x-data=`{
         show: true,
@@ -20,29 +20,14 @@
       }`,
       x-show="show"
     )
-      a.flex.grow.flex-wrap.items-center.justify-between.gap-1.overflow-hidden.p-2(
-        href=`/extractions/${extraction.id}`
-      )
-        p
-          if extraction.isProcessing
-            span.mr-1.rounded.border.border-yellow-500.px-1.text-yellow-500 #{ __("Processing") }
+      include _widget.pug
 
-          if extraction.error
-            span.mr-1.rounded.border.border-red-500.px-1.text-red-500 #{ __("Error") }
-          else if extraction.content && extraction.content._type == "playlist"
-            span.mr-1.rounded.border.border-blue-400.px-1.text-blue-500 #{ __("Playlist") }
-
-          span #{ extraction.url }
-
-        if extraction.page > 1
-          span.text-nowrap.rounded.border.border-gray-300.bg-gray-100.px-1.text-sm #{ __("Page") }: #{ extraction.page }
-
-      button.m-2.hidden.shrink-0.text-xl(
+      button.absolute.right-2.top-2.ml-auto.shrink-0.text-2xl(
         @click="show = false",
-        class="icon-[material-symbols--delete-outline] group-hover:block",
-        hx-delete=`/extractions/${extraction.id}?${qs().set("_list", true).toString()}`,
-        hx-swap="outerHTML show:none swap:200ms",
-        hx-target="#extractions"
+        class="icon-[material-symbols--delete-outline]",
+        hx-delete=`/extractions/${extraction.id}?_list`,
+        hx-swap="delete",
+        hx-target="closest div"
       )
 
   .flex.flex-wrap.justify-between.gap-2
