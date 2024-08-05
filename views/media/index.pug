@@ -1,7 +1,11 @@
 extends ../_layout.pug
 
 block body
-  h1.mb-2.text-xl.font-bold #{ __("Media") }
+  .mb-2.flex.flex-wrap.items-center.justify-between
+    h1.text-xl.font-bold #{ __("Media") }
+    a.flex.items-center.gap-1.rounded.border.px-2.py-1(href="/extractions")
+      i.text-2xl(class="icon-[gridicons--create]")
+      span #{ __("Create") }
 
   .mb-2.flex.flex-col.gap-2
     each medium in media
