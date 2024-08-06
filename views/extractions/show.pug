@@ -2,19 +2,34 @@ extends ../_layout.pug
 
 mixin raw-info(rawInfo)
   if rawInfo._type === 'playlist'
-    .flex.flex-col.gap-4.border-l-4.border-blue-400.p-2.pr-0(
-      x-data="{ show: false }"
-    )
-      - var rawPlaylist = rawInfo;
-      include _raw-playlist.pug
-      button.m-auto.text-2xl.text-gray-600(
-        :class="show ? 'icon-[mingcute--up-fill]' : 'icon-[mingcute--down-fill]'",
-        @click="show = !show"
-      )
-      div(x-show="show")
-        if rawPlaylist.entries
-          each entry in rawPlaylist.entries
-            +raw-info(entry)
+    - var rawPlaylist = rawInfo;
+    include _raw-playlist.pug
+
+    if rawPlaylist.entries
+      .flex.flex-col
+        each entry, index in rawPlaylist.entries
+          .flex.min-h-12(x-data="{ show: true }")
+            .relative.shrink-0.basis-4(class="sm:basis-6")
+              if index != rawPlaylist.entries.length - 1
+                .absolute.bottom-0.right-0.border-l.border-dashed.border-gray-300(
+                  class="h-1/2 w-1/2"
+                )
+              .absolute.right-0.top-0.box-content.cursor-pointer.rounded-bl-lg.border-b.border-l.border-gray-400(
+                @click="show = !show",
+                class="h-1/2 w-1/2 hover:border-b-2 hover:border-l-2"
+              )
+
+              .absolute.top-0.flex.bg-white(
+                class="right-1/2 -translate-y-1/2 translate-x-1/2"
+              )
+                i.cursor-pointer.text-xl(
+                  :class="show ? 'icon-[material-symbols-light--collapse-all]' : 'icon-[material-symbols-light--expand-all]'",
+                  @click="show = !show"
+                )
+            .grow.pt-2(x-show="show")
+              +raw-info(entry)
+            .grow.cursor-pointer.pt-2(@click="show = !show", x-show="!show")
+              small.rounded.border.px-2 #{ entry._type == 'playlist' ? __("Playlist") : __("Medium") }
   else
     - var rawMedium = rawInfo;
     include _raw-medium.pug
@@ -27,9 +42,6 @@ block body
     )
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
-
-  .mb-2
-    include _widget.pug
 
   if extraction.error
     p.rounded.bg-red-50.p-1.text-red-600 #{ extraction.error }
