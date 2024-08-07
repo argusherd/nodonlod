@@ -9,14 +9,14 @@ mixin raw-info(rawInfo)
       .flex.flex-col
         each entry, index in rawPlaylist.entries
           .flex.min-h-12(x-data="{ show: true }")
-            .relative.shrink-0.basis-4(class="sm:basis-6")
+            .relative.shrink-0(class="sm:basis-6")
               if index != rawPlaylist.entries.length - 1
-                .absolute.bottom-0.right-0.border-l.border-dashed.border-gray-300(
-                  class="h-1/2 w-1/2"
+                .absolute.bottom-0.right-0.hidden.border-l.border-dashed.border-gray-300(
+                  class="h-1/2 w-1/2 sm:block"
                 )
-              .absolute.right-0.top-0.box-content.cursor-pointer.rounded-bl-lg.border-b.border-l.border-gray-400(
+              .absolute.right-0.top-0.box-content.hidden.cursor-pointer.rounded-bl-lg.border-b.border-l.border-gray-300(
                 @click="show = !show",
-                class="h-1/2 w-1/2 hover:border-b-2 hover:border-l-2"
+                class="h-1/2 w-1/2 hover:border-b-2 hover:border-l-2 sm:block"
               )
 
               .absolute.top-0.flex.bg-white(
@@ -42,6 +42,9 @@ block body
     )
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
+
+  .mb-4
+    include _widget.pug
 
   if extraction.error
     p.rounded.bg-red-50.p-1.text-red-600 #{ extraction.error }

@@ -9,23 +9,30 @@ form.flex.flex-col.gap-2(
   .flex.flex-wrap.items-center.gap-1
     label.w-full(class="sm:w-2/12") #{ __("Type") }
     span.break-all.rounded.border.border-blue-400.px-1.text-blue-500 #{ __("Playlist") }
+
   .flex.flex-wrap.items-center.gap-1
     label.w-full(class="sm:w-2/12") #{ __("URL") }
     span.break-all #{ rawPlaylist.webpage_url }
+
+  .flex.items-center.gap-2
+    small #{ __("Overwrite") }
+    hr.grow
+
   .flex.flex-wrap.items-center.gap-1
     label.w-full.cursor-pointer(class="sm:w-2/12", for=`title-${rawPlaylist.id}`) #{ __("Title") }
-    input.max-w-full.grow.rounded.border.border-gray-400.px-2.py-1(
+    input.max-w-full.grow.rounded.border.px-2.py-1(
       id=`title-${rawPlaylist.id}`,
       name="title",
       type="text",
       value=rawPlaylist.title
     )
+
   .flex.flex-wrap.gap-1
     label.w-full.cursor-pointer.pt-1(
       class="sm:w-2/12",
       for=`description-${rawPlaylist.id}`
     ) #{ __("Description") }
-    textarea.grow.rounded.border.border-gray-400.p-2(
+    textarea.grow.rounded.border.p-2(
       id=`description-${rawPlaylist.id}`,
       name="description"
     ) #{ rawPlaylist.description }
@@ -34,7 +41,7 @@ form.flex.flex-col.gap-2(
     x-data=`{ thumbnail: "${rawPlaylist.thumbnails ? rawPlaylist.thumbnails.at(0).url : ''}", show: false }`
   )
     label.w-full.cursor-pointer(class="sm:w-2/12", for=`thumbnail-${rawPlaylist.id}`) #{ __("Thumbnail") }
-    .flex.grow.items-center.rounded.border.border-gray-400
+    .flex.grow.items-center.rounded.border
       input.w-full.rounded.px-2.py-1(
         id=`thumbnail-${rawPlaylist.id}`,
         name="thumbnail",
@@ -60,7 +67,7 @@ form.flex.flex-col.gap-2(
                 src=thumbnail.url
               )
 
-  button.ml-auto.rounded.border.border-gray-400.px-2.py-1(
+  button.ml-auto.rounded.border.px-2.py-1(
     title=__("Save the extracted playlist information"),
     type="submit"
   ) #{ __("Save") }
