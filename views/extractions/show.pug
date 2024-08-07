@@ -43,6 +43,13 @@ block body
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
 
+  if extraction.isProcessing || (!extraction.content && ! extraction.error)
+    #refresh-extraction(
+      hx-get=`/extractions/${extraction.id}`,
+      hx-target="body",
+      hx-trigger="every 3s"
+    )
+
   .mb-4
     include _widget.pug
 
