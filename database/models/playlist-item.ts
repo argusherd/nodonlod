@@ -3,8 +3,11 @@ import {
   BelongsTo,
   Column,
   CreatedAt,
+  DataType,
+  Default,
   ForeignKey,
   Model,
+  PrimaryKey,
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
@@ -13,6 +16,7 @@ import Medium from "./medium";
 import Playlist from "./playlist";
 
 interface OptionalPlaylistItemCreationAttributes {
+  id: string;
   chapterId: string | null;
   order: number;
   createdAt: Date;
@@ -25,7 +29,7 @@ interface PlaylistItemAttributes
   mediumId: string;
 }
 
-interface PlaylistItemCreationAttributes
+export interface PlaylistItemCreationAttributes
   extends Optional<
     PlaylistItemAttributes,
     keyof OptionalPlaylistItemCreationAttributes
@@ -36,6 +40,11 @@ export default class PlaylistItem extends Model<
   PlaylistItemAttributes,
   PlaylistItemCreationAttributes
 > {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @Column
+  id: string;
+
   @ForeignKey(() => Playlist)
   @Column
   playlistId: string;

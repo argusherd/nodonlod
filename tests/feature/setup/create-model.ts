@@ -6,6 +6,9 @@ import PlayQueue, {
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
+import PlaylistItem, {
+  PlaylistItemCreationAttributes,
+} from "@/database/models/playlist-item";
 import Tag, { TagCreationAttributes } from "@/database/models/tag";
 import Uploader, {
   UploaderCreationAttributes,
@@ -60,6 +63,15 @@ export const createPlayQueue = async (
   overwrite?: Partial<PlayQueueCreationAttributes>,
 ) =>
   await PlayQueue.create({
+    mediumId: overwrite?.mediumId || (await createMedium()).id,
+    ...overwrite,
+  });
+
+export const createPlaylistItem = async (
+  overwrite?: Partial<PlaylistItemCreationAttributes>,
+) =>
+  await PlaylistItem.create({
+    playlistId: overwrite?.playlistId || (await createPlaylist()).id,
     mediumId: overwrite?.mediumId || (await createMedium()).id,
     ...overwrite,
   });

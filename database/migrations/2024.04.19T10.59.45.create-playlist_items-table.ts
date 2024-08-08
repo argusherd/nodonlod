@@ -5,6 +5,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
   await queryInterface.createTable(
     "playlist_items",
     {
+      id: {
+        type: DataType.UUID,
+        primaryKey: true,
+      },
       playlist_id: {
         type: DataType.UUID,
         allowNull: false,

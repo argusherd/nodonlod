@@ -11,6 +11,7 @@ import pagination from "./middlewares/pagination";
 import queryString from "./middlewares/query-string";
 import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
+import playlistItemRouter from "./playlist-items";
 import playlistRouter from "./playlists";
 
 dayjs.extend(duration);
@@ -38,5 +39,6 @@ express.use("/chapters", chapterRouter);
 express.use("/play-queues", playQueueRouter);
 express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
+express.use("/playlist-items", playlistItemRouter);
 
 export default express;
