@@ -20,11 +20,36 @@ block body
   .mb-2
     include _widget.pug
 
-  .flex.flex-col.gap-2
+  .flex.flex-col.gap-2(
+    x-data=`{
+      id: '',
+      order: 0,
+      handle: () => {
+        $nextTick(() => { htmx.process($refs.sort);
+        htmx.trigger($refs.sort, "sorted") });
+      }
+    }`,
+    x-sort="id = $item; order = $position; handle()"
+  )
+    input(
+      :hx-put="`/playlist-items/${id}`",
+      hx-include="this",
+      hx-trigger="sorted",
+      name="order",
+      type="hidden",
+      x-model="order",
+      x-ref="sort"
+    )
+
     each item in items
-      .flex.flex-col.gap-1(class="sm:flex-row sm:items-center")
-        div
+      .flex.flex-col.gap-1(
+        class="sm:flex-row sm:items-center",
+        x-sort:item=`"${item.id}"`
+      )
+        .flex.flex-col.items-center.gap-2
+          i.cursor-pointer.text-2xl(class="icon-[mingcute--dots-fill]", x-sort:handle)
           input.w-10.rounded.border.p-1.text-center(
+            @keyup.enter=`id = "${item.id}"; order = $el.value; handle()`,
             type="text",
             value=item.order
           )

@@ -31,17 +31,23 @@ router.put(
       return;
     }
 
-    const order = Number(req.body.order);
-    const between = [order, req.playlistItem.order].sort();
+    const playlistItem = req.playlistItem;
+    const max = await PlaylistItem.count({
+      where: { playlistId: playlistItem.playlistId },
+    });
+    const order = Math.max(1, Math.min(max, Number(req.body.order)));
+    const between = [order, playlistItem.order].sort();
 
     await PlaylistItem.increment("order", {
-      by: order > req.playlistItem.order ? -1 : 1,
+      by: order > playlistItem.order ? -1 : 1,
       where: { order: { [Op.between]: between as [number, number] } },
     });
 
     await req.playlistItem.update({ order });
 
-    res.sendStatus(205);
+    res
+      .set("HX-Location", `/playlists/${playlistItem.playlistId}`)
+      .sendStatus(205);
   },
 );
 
