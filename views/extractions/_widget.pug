@@ -1,7 +1,7 @@
 mixin type(name, classes="")
   small.rounded.border.px-2(class=classes) #{ name }
 
-.relative.flex.w-full.flex-wrap.gap-2
+.flex.flex-wrap.gap-2
   .flex.flex-wrap.items-center.gap-1
     if extraction.isProcessing
       +type(__("Processing"), "text-yellow-500 border-yellow-500")
