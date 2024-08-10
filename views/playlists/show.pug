@@ -20,7 +20,10 @@ block body
   .mb-2
     include _widget.pug
 
-  .flex.flex-col.gap-2(
+  hr.mb-2
+
+  .flex.flex-col.gap-4(
+    class="sm:gap-2",
     x-data=`{
       id: '',
       order: 0,
@@ -46,7 +49,7 @@ block body
         class="sm:flex-row sm:items-center",
         x-sort:item=`"${item.id}"`
       )
-        .flex.flex-col.items-center.gap-2
+        .flex.items-center.gap-2(class="sm:flex-col")
           i.cursor-pointer.text-2xl(class="icon-[mingcute--dots-fill]", x-sort:handle)
           input.w-10.rounded.border.p-1.text-center(
             @keyup.enter=`id = "${item.id}"; order = $el.value; handle()`,

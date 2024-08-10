@@ -13,9 +13,10 @@
   .flex.flex-col.flex-wrap.gap-2
     a.w-full.break-words.text-lg.font-semibold(href=`/media/${medium.id}`) #{ medium.title }
 
-    a.line-clamp-1.overflow-ellipsis.break-all.text-sm(
-      href=`/media/${medium.id}`
-    ) #{ medium.description }
+    if medium.description
+      a.line-clamp-1.overflow-ellipsis.break-all.text-sm(
+        href=`/media/${medium.id}`
+      ) #{ medium.description }
 
     .flex.flex-wrap.gap-2
       button.flex.items-center.gap-1.rounded.border.px-2.py-1(
