@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
+import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
@@ -69,5 +71,31 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
 
   res.set("HX-Location", "/media").sendStatus(204);
 });
+
+router.post(
+  "/:medium/chapters",
+  body("title").notEmpty(),
+  body("startTime").isNumeric({ no_symbols: true }),
+  body("endTime").isNumeric({ no_symbols: true }),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+    const startTime = Number(req.body.startTime);
+    const endTime = Number(req.body.endTime);
+
+    if (!errors.isEmpty() || startTime >= endTime) {
+      res.sendStatus(422);
+      return;
+    }
+
+    await Chapter.create({
+      mediumId: req.medium.id,
+      title: req.body.title,
+      startTime,
+      endTime,
+    });
+
+    res.sendStatus(201);
+  },
+);
 
 export default router;
