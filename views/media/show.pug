@@ -30,7 +30,7 @@ block body
       each chapter in chapters || []
         .flex.flex-wrap.items-center.gap-2.px-2.py-1(class="hover:bg-gray-100")
           .grow
-            include chapters/_widget.pug
+            include ../chapters/_widget.pug
 
           - var eventName = `@delete-chapter-${chapter.id}.window`;
           - var chapterEvent = {};
