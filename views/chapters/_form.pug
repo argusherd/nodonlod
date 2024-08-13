@@ -1,0 +1,28 @@
+form.flex.flex-col.gap-2(
+  action=`/media/${medium.id}/chapters`,
+  hx-swap="none",
+  method="POST",
+  x-data="{ startTime: 0, endTime: 1 }",
+  x-effect="startTime = Math.max(0, startTime); endTime = Math.max(startTime + 1, endTime)"
+)
+  .flex.flex-wrap.gap-2
+    label #{ __("Title") }
+    input(name="title", type="text")
+
+  .flex.flex-wrap.gap-2
+    label #{ __("Start Time") }
+    span(x-text="dayjs.neatDuration(startTime)")
+    input(name="startTime", type="hidden", x-model="startTime")
+
+    button(@click="startTime += 3600", class="icon-[ep--arrow-up]", type="button")
+    button(@click="startTime -= 3600", class="icon-[ep--arrow-down]", type="button")
+
+  .flex.flex-wrap.gap-2
+    label #{ __("End Time") }
+    span(x-text="dayjs.neatDuration(endTime)")
+    input(name="endTime", type="hidden", x-model="endTime")
+
+    button(@click="endTime += 3600", class="icon-[ep--arrow-up]", type="button")
+    button(@click="endTime -= 3600", class="icon-[ep--arrow-down]", type="button")
+
+  button(@click="show = false") #{ __("Save") }

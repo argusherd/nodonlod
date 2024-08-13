@@ -22,10 +22,20 @@ block body
   .flex.flex-col.rounded.border(x-data="{ show: false }")
     .flex.justify-between.p-2
       h4 #{ __("Chapters") }
-      button.text-2xl(
-        :class="show ? 'icon-[ep--arrow-up]' : 'icon-[ep--arrow-down]'",
-        @click="show = !show"
-      )
+
+      .flex.gap-2
+        button.flex.items-center.gap-2(
+          hx-get=`/media/${medium.id}/chapters/create`,
+          hx-target="#chapter-form-container",
+          title=__("Create a chapter")
+        )
+          i.text-2xl(class="icon-[gridicons--create]")
+
+        button.text-2xl(
+          :class="show ? 'icon-[ep--arrow-up]' : 'icon-[ep--arrow-down]'",
+          @click="show = !show"
+        )
+
     .flex.flex-col.border-t.py-2(x-show="show")
       each chapter in chapters || []
         .flex.flex-wrap.items-center.gap-2.px-2.py-1(class="hover:bg-gray-100")
@@ -89,3 +99,20 @@ block body
   each playlist in playlists || []
     div
       a(href=`/playlists/${playlist.id}`) #{ playlist.title }
+
+  #chapter-form(
+    @show-chapter-form.window="show = true",
+    x-data="{ show: false }"
+  )
+    .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
+      x-show="show"
+    )
+    .fixed.z-10.rounded.bg-white.p-2(
+      class="left-1/2 top-1/2 w-11/12 -translate-x-1/2 -translate-y-1/2 sm:w-2/3",
+      x-show="show"
+    )
+      button.absolute.right-2.top-2(
+        @click="show = false",
+        class="icon-[material-symbols--close]"
+      )
+      #chapter-form-container

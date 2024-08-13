@@ -72,6 +72,12 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
   res.set("HX-Location", "/media").sendStatus(204);
 });
 
+router.get("/:medium/chapters/create", (req: MediumRequest, res) => {
+  res
+    .set("HX-Trigger", "show-chapter-form")
+    .render("chapters/_form.pug", { medium: req.medium });
+});
+
 router.post(
   "/:medium/chapters",
   body("title").notEmpty(),
@@ -94,7 +100,7 @@ router.post(
       endTime,
     });
 
-    res.sendStatus(201);
+    res.set("HX-Location", `/media/${req.medium.id}`).sendStatus(201);
   },
 );
 
