@@ -35,7 +35,7 @@ express.get("/", async (_req, res) => {
 express.use("/extractions", extractionRouter);
 express.use("/media", mediumRouter);
 express.use("/playlists", playlistRouter);
-express.use("/chapters", chapterRouter);
+express.use("/", chapterRouter);
 express.use("/play-queues", playQueueRouter);
 express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
