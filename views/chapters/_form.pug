@@ -1,28 +1,103 @@
-form.flex.flex-col.gap-2(
-  action=`/media/${medium.id}/chapters`,
+h2.mb-2.text-lg.font-bold #{ __("Create a new chapter") }
+
+form#chapter-form.flex.flex-col.gap-2(
+  hx-post=`/media/${medium.id}/chapters`,
   hx-swap="none",
-  method="POST",
-  x-data="{ startTime: 0, endTime: 1 }",
-  x-effect="startTime = Math.max(0, startTime); endTime = Math.max(startTime + 1, endTime)"
+  x-data=`{
+    startTime: dayjs.duration(0, 'seconds'),
+    endTime: dayjs.duration(1, 'seconds'),
+    sHours: 0, sMinutes: 0, sSeconds: 0,
+    eHours: 0, eMinutes: 0, eSeconds: 1,
+  }`,
+  x-effect=`
+    startTime = dayjs.duration({ hours: sHours, minutes: sMinutes, seconds: sSeconds });
+    endTime = dayjs.duration({ hours: eHours, minutes: eMinutes, seconds: eSeconds });
+  `
 )
-  .flex.flex-wrap.gap-2
-    label #{ __("Title") }
-    input(name="title", type="text")
+  input(name="startTime", type="hidden", x-model="startTime.asSeconds()")
+  input(name="endTime", type="hidden", x-model="endTime.asSeconds()")
 
-  .flex.flex-wrap.gap-2
-    label #{ __("Start Time") }
-    span(x-text="dayjs.neatDuration(startTime)")
-    input(name="startTime", type="hidden", x-model="startTime")
+  .flex.flex-wrap.items-center.gap-2
+    label.min-w-20 #{ __("Title") }
+    input.rounded.border.px-2.py-1(name="title", required, type="text")
 
-    button(@click="startTime += 3600", class="icon-[ep--arrow-up]", type="button")
-    button(@click="startTime -= 3600", class="icon-[ep--arrow-down]", type="button")
+  .flex.flex-wrap.items-center.gap-2
+    .flex.items-center.gap-2(class="sm:flex-col")
+      label.min-w-20 #{ __("Start Time") }
+      small(x-text="dayjs.neatDuration(startTime.asSeconds())")
 
-  .flex.flex-wrap.gap-2
-    label #{ __("End Time") }
-    span(x-text="dayjs.neatDuration(endTime)")
-    input(name="endTime", type="hidden", x-model="endTime")
+    .flex.gap-1
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          min="0",
+          type="number",
+          x-model="sHours"
+        )
+        small #{ __("Hour") }
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          max="59",
+          min="0",
+          type="number",
+          x-model="sMinutes"
+        )
+        small #{ __("Minute") }
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          max="59",
+          min="0",
+          type="number",
+          x-model="sSeconds"
+        )
+        small #{ __("Second") }
 
-    button(@click="endTime += 3600", class="icon-[ep--arrow-up]", type="button")
-    button(@click="endTime -= 3600", class="icon-[ep--arrow-down]", type="button")
+  .flex.flex-wrap.items-center.gap-2
+    .flex.items-center.gap-2(class="sm:flex-col")
+      label.min-w-20 #{ __("End Time") }
+      small(x-text="dayjs.neatDuration(endTime.asSeconds())")
 
-  button(@click="show = false") #{ __("Save") }
+    .flex.grow.gap-1
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          min="0",
+          type="number",
+          x-model="eHours"
+        )
+        small #{ __("Hour") }
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          max="59",
+          min="0",
+          type="number",
+          x-model="eMinutes"
+        )
+        small #{ __("Minute") }
+      .flex.flex-col.items-end
+        input.w-16.rounded.border.p-1.text-right(
+          max="59",
+          min="0",
+          type="number",
+          x-model="eSeconds"
+        )
+        small #{ __("Second") }
+
+  .flex.flex-wrap.items-center.justify-end.gap-2
+    span.text-right.text-red-400(
+      x-show="startTime.asSeconds() >= endTime.asSeconds()"
+    ) #{ __("The end time should be greater than the start time.") }
+
+    span.text-right.text-red-400(
+      x-show=`
+      startTime.asSeconds() >= ${medium.duration} ||
+      endTime.asSeconds() >= ${medium.duration}
+    `
+    ) #{ __(`The start time and the end time should fall within the duration (${dayjs.neatDuration(medium.duration)}) of the medium.`) }
+
+    button.rounded.border.px-2.py-1(
+      :disabled=`
+        startTime.asSeconds() >= endTime.asSeconds() ||
+        startTime.asSeconds() >= ${medium.duration} ||
+        endTime.asSeconds() >= ${medium.duration}
+      `,
+      class="disabled:cursor-not-allowed disabled:bg-gray-100"
+    ) #{ __("Save") }
