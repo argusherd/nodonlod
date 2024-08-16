@@ -54,7 +54,11 @@ router.post(
     const startTime = Number(req.body.startTime);
     const endTime = Number(req.body.endTime);
 
-    if (!errors.isEmpty() || startTime >= endTime) {
+    if (
+      !errors.isEmpty() ||
+      startTime >= endTime ||
+      endTime > req.medium.duration
+    ) {
       res.sendStatus(422);
       return;
     }

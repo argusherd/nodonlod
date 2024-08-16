@@ -46,6 +46,22 @@ describe("The chapter store route", () => {
       .expect(422);
   });
 
+  it("requires the end time to be less than or equal to the medium.", async () => {
+    const medium = await createMedium({ duration: 123 });
+
+    await supertest(express)
+      .post(`/media/${medium.id}/chapters`)
+      .type("form")
+      .send({ title: "foo", startTime: 60, endTime: 124 })
+      .expect(422);
+
+    await supertest(express)
+      .post(`/media/${medium.id}/chapters`)
+      .type("form")
+      .send({ title: "foo", startTime: 60, endTime: 123 })
+      .expect(201);
+  });
+
   it("can create a chapter", async () => {
     const medium = await createMedium();
 
