@@ -74,6 +74,34 @@ router.post(
   },
 );
 
+router.put(
+  "/chapters/:chapter",
+  body("title").notEmpty(),
+  body("startTime").isNumeric({ no_symbols: true }),
+  body("endTime").isNumeric({ no_symbols: true }),
+  async (req: ChapterRequest, res) => {
+    const medium = (await req.chapter.$get("medium")) as Medium;
+    const errors = validationResult(req);
+    const startTime = Number(req.body.startTime);
+    const endTime = Number(req.body.endTime);
+
+    if (
+      !errors.isEmpty() ||
+      startTime >= endTime ||
+      endTime > medium.duration
+    ) {
+      res.sendStatus(422);
+      return;
+    }
+
+    const title = req.body.title;
+
+    await req.chapter.update({ title, startTime, endTime });
+
+    res.sendStatus(205);
+  },
+);
+
 router.get("/chapters/:chapter/play", async (req: ChapterRequest, res) => {
   const medium = (await req.chapter.$get("medium")) as Medium;
   const { startTime, endTime } = req.chapter;
