@@ -74,6 +74,13 @@ router.post(
   },
 );
 
+router.get("/chapters/:chapter/edit", async (req: ChapterRequest, res) => {
+  res.set("HX-Trigger", "show-chapter-form").render("chapters/_form.pug", {
+    chapter: req.chapter,
+    medium: await req.chapter.$get("medium"),
+  });
+});
+
 router.put(
   "/chapters/:chapter",
   body("title").notEmpty(),
@@ -98,7 +105,7 @@ router.put(
 
     await req.chapter.update({ title, startTime, endTime });
 
-    res.sendStatus(205);
+    res.set("HX-Location", `/media/${medium.id}`).sendStatus(205);
   },
 );
 

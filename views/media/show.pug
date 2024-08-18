@@ -42,6 +42,12 @@ block body
           .grow
             include ../chapters/_widget.pug
 
+          button.text-2xl(
+            class="icon-[lucide--edit]",
+            hx-get=`/chapters/${chapter.id}/edit`,
+            hx-target="#chapter-form-container"
+          )
+
           - var eventName = `@delete-chapter-${chapter.id}.window`;
           - var chapterEvent = {};
           - chapterEvent[eventName] = "if ($event.detail) htmx.trigger($el, 'confirmed')";

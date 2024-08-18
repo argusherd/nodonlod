@@ -1,12 +1,12 @@
-h2.mb-2.text-lg.font-bold #{ __("Create a new chapter") }
+h2.mb-2.text-lg.font-bold #{ chapter ? __("Edit the chapter") : __("Create a new chapter") }
+
+- var route = chapter ? { "hx-put": `/chapters/${chapter.id}` } : { "hx-post": `/media/${medium.id}/chapters` };
 
 form#chapter-form.flex.flex-col.gap-2(
-  hx-post=`/media/${medium.id}/chapters`,
   hx-swap="none",
   x-data=`{
-    startTime: dayjs.duration(0, 'seconds'),
-    endTime: dayjs.duration(${medium.duration}, 'seconds'),
-    mediumDuration: dayjs.duration(${medium.duration}, 'seconds'),
+    startTime: dayjs.duration(${chapter ? chapter.startTime : 0}, 'seconds'),
+    endTime: dayjs.duration(${chapter ? chapter.endTime : medium.duration}, 'seconds'),
     sHours: 0, sMinutes: 0, sSeconds: 0,
     eHours: 0, eMinutes: 0, eSeconds: 1,
   }`,
@@ -19,13 +19,18 @@ form#chapter-form.flex.flex-col.gap-2(
     eMinutes = endTime.minutes();
     eSeconds = endTime.seconds();
   `
-)
+)&attributes(route)
   input(name="startTime", type="hidden", x-model="startTime.asSeconds()")
   input(name="endTime", type="hidden", x-model="endTime.asSeconds()")
 
   .flex.flex-wrap.items-center.gap-2
     label.min-w-20 #{ __("Title") }
-    input.rounded.border.px-2.py-1(name="title", required, type="text")
+    input.rounded.border.px-2.py-1(
+      name="title",
+      required,
+      type="text",
+      value=chapter ? chapter.title : ""
+    )
 
   .flex.flex-wrap.items-center.gap-2
     .flex.items-center.gap-2(class="sm:flex-col")
@@ -55,8 +60,13 @@ form#chapter-form.flex.flex-col.gap-2(
         )
         small #{ __("Second") }
       .flex.flex-col
+        - var ogStartTime = dayjs.duration(chapter ? chapter.startTime : 0, "seconds");
         button.rounded.border.px-2.py-1(
-          @click="sHours = 0; sMinutes = 0; sSeconds = 0",
+          @click=`
+            sHours = ${ogStartTime.hours()};
+            sMinutes = ${ogStartTime.minutes()};
+            sSeconds = ${ogStartTime.seconds()};
+          `,
           type="button"
         ) #{ __("Reset") }
 
@@ -88,11 +98,12 @@ form#chapter-form.flex.flex-col.gap-2(
         )
         small #{ __("Second") }
       .flex.flex-col
+        - var ogEndTime = dayjs.duration(chapter ? chapter.endTime : medium.duration, "seconds");
         button.rounded.border.px-2.py-1(
           @click=`
-            eHours = mediumDuration.hours();
-            eMinutes = mediumDuration.minutes();
-            eSeconds = mediumDuration.seconds();
+            eHours = ${ogEndTime.hours()};
+            eMinutes = ${ogEndTime.minutes()};
+            eSeconds = ${ogEndTime.seconds()};
           `,
           type="button"
         ) #{ __("Reset") }
