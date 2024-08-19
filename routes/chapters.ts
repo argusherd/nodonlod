@@ -1,9 +1,11 @@
+import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
+import { i18n } from "./middlewares/i18n";
 import wss from "./websocket";
 
 interface ChapterRequest extends Request {
@@ -50,16 +52,32 @@ router.post(
   body("startTime").isNumeric({ no_symbols: true }),
   body("endTime").isNumeric({ no_symbols: true }),
   async (req: MediumRequest, res) => {
+    const medium = req.medium;
     const errors = validationResult(req);
-    const startTime = Number(req.body.startTime);
-    const endTime = Number(req.body.endTime);
+    const startTime = isNaN(req.body.startTime)
+      ? 0
+      : Number(req.body.startTime);
+    const endTime = isNaN(req.body.endTime) ? 0 : Number(req.body.endTime);
+    const exists = await Chapter.count({
+      where: { startTime, endTime, mediumId: medium.id },
+    });
 
-    if (
-      !errors.isEmpty() ||
-      startTime >= endTime ||
-      endTime > req.medium.duration
-    ) {
-      res.sendStatus(422);
+    let error = errors.array().at(0)?.msg;
+
+    if (exists)
+      error = i18n.__(
+        "The given start time and end time already exist for the medium.",
+      );
+    else if (startTime >= endTime)
+      error = i18n.__("The end time should be greater than the start time.");
+    else if (endTime > medium.duration)
+      error = i18n.__(
+        "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
+        { duration: dayjs.neatDuration(medium.duration) },
+      );
+
+    if (error) {
+      res.status(422).render("chapters/_form.pug", { medium, error });
       return;
     }
 
@@ -70,7 +88,7 @@ router.post(
       endTime,
     });
 
-    res.set("HX-Location", `/media/${req.medium.id}`).sendStatus(201);
+    res.set("HX-Trigger", "refresh-chapters").sendStatus(201);
   },
 );
 

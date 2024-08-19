@@ -1,7 +1,7 @@
 import Chapter from "@/database/models/chapter";
 import express from "@/routes";
 import supertest from "supertest";
-import { createMedium } from "../../setup/create-model";
+import { createChapter, createMedium } from "../../setup/create-model";
 
 describe("The chapter store route", () => {
   it("requires a title to create a chapter", async () => {
@@ -63,7 +63,7 @@ describe("The chapter store route", () => {
   });
 
   it("can create a chapter", async () => {
-    const medium = await createMedium();
+    const medium = await createMedium({ duration: 123 });
 
     await supertest(express)
       .post(`/media/${medium.id}/chapters`)
@@ -79,5 +79,52 @@ describe("The chapter store route", () => {
     expect(chapter?.title).toEqual("foo");
     expect(chapter?.startTime).toEqual(0);
     expect(chapter?.endTime).toEqual(30);
+  });
+
+  it("should not create the same chapter for the medium", async () => {
+    const medium = await createMedium({ duration: 123 });
+    const chapter = await createChapter({
+      mediumId: medium.id,
+      startTime: 12,
+      endTime: 34,
+    });
+
+    await supertest(express)
+      .post(`/media/${medium.id}/chapters`)
+      .type("form")
+      .send({
+        title: "foo",
+        startTime: chapter.startTime,
+        endTime: chapter.endTime,
+      })
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The given start time and end time already exist for the medium",
+        );
+      });
+
+    const others = await createChapter({ startTime: 34, endTime: 45 });
+
+    await supertest(express)
+      .post(`/media/${medium.id}/chapters`)
+      .type("form")
+      .send({
+        title: "foo",
+        startTime: others.startTime,
+        endTime: others.endTime,
+      })
+      .expect(201);
+  });
+
+  it("tells the frontend to refresh the chapter list", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .post(`/media/${medium.id}/chapters`)
+      .type("form")
+      .send({ title: "foo", startTime: 0, endTime: 1 })
+      .expect(201)
+      .expect("HX-Trigger", "refresh-chapters");
   });
 });

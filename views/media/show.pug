@@ -107,6 +107,7 @@ block body
       a(href=`/playlists/${playlist.id}`) #{ playlist.title }
 
   #chapter-form(
+    @refresh-chapters.window="show = false",
     @show-chapter-form.window="show = true",
     x-data="{ show: false }"
   )

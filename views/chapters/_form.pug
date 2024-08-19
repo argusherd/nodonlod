@@ -1,9 +1,7 @@
-h2.mb-2.text-lg.font-bold #{ chapter ? __("Edit the chapter") : __("Create a new chapter") }
-
 - var route = chapter ? { "hx-put": `/chapters/${chapter.id}` } : { "hx-post": `/media/${medium.id}/chapters` };
 
 form#chapter-form.flex.flex-col.gap-2(
-  hx-swap="none",
+  hx-swap="outerHTML",
   x-data=`{
     startTime: dayjs.duration(${chapter ? chapter.startTime : 0}, 'seconds'),
     endTime: dayjs.duration(${chapter ? chapter.endTime : medium.duration}, 'seconds'),
@@ -22,6 +20,8 @@ form#chapter-form.flex.flex-col.gap-2(
 )&attributes(route)
   input(name="startTime", type="hidden", x-model="startTime.asSeconds()")
   input(name="endTime", type="hidden", x-model="endTime.asSeconds()")
+
+  h2.mb-2.text-lg.font-bold #{ chapter ? __("Edit the chapter") : __("Create a new chapter") }
 
   .flex.flex-wrap.items-center.gap-2
     label.min-w-20 #{ __("Title") }
@@ -118,7 +118,10 @@ form#chapter-form.flex.flex-col.gap-2(
       startTime.asSeconds() >= ${medium.duration} ||
       endTime.asSeconds() > ${medium.duration}
     `
-    ) #{ __(`The start time and the end time should fall within the duration (${dayjs.neatDuration(medium.duration)}) of the medium.`) }
+    ) #{ __("The start time and the end time should fall within the duration ({{duration}}) of the medium.", { duration: dayjs.neatDuration(medium.duration) }) }
+
+    if error
+      span.text-right.text-red-400 #{ error }
 
     button.rounded.border.px-2.py-1(
       :disabled=`
