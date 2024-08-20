@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
@@ -105,25 +106,48 @@ router.put(
   body("startTime").isNumeric({ no_symbols: true }),
   body("endTime").isNumeric({ no_symbols: true }),
   async (req: ChapterRequest, res) => {
-    const medium = (await req.chapter.$get("medium")) as Medium;
+    const chpater = req.chapter;
+    const medium = (await chpater.$get("medium")) as Medium;
     const errors = validationResult(req);
-    const startTime = Number(req.body.startTime);
-    const endTime = Number(req.body.endTime);
+    const startTime = isNaN(req.body.startTime)
+      ? 0
+      : Number(req.body.startTime);
+    const endTime = isNaN(req.body.endTime) ? 0 : Number(req.body.endTime);
+    const exists = await Chapter.count({
+      where: {
+        startTime,
+        endTime,
+        mediumId: medium.id,
+        id: { [Op.ne]: chpater.id },
+      },
+    });
 
-    if (
-      !errors.isEmpty() ||
-      startTime >= endTime ||
-      endTime > medium.duration
-    ) {
-      res.sendStatus(422);
+    let error = errors.array().at(0)?.msg;
+
+    if (exists)
+      error = i18n.__(
+        "The given start time and end time already exist for the medium.",
+      );
+    else if (startTime >= endTime)
+      error = i18n.__("The end time should be greater than the start time.");
+    else if (endTime > medium.duration)
+      error = i18n.__(
+        "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
+        { duration: dayjs.neatDuration(medium.duration) },
+      );
+
+    if (error) {
+      res
+        .status(422)
+        .render("chapters/_form.pug", { medium, error, chapter: chpater });
       return;
     }
 
     const title = req.body.title;
 
-    await req.chapter.update({ title, startTime, endTime });
+    await chpater.update({ title, startTime, endTime });
 
-    res.set("HX-Location", `/media/${medium.id}`).sendStatus(205);
+    res.set("HX-Trigger", "refresh-chapters").sendStatus(205);
   },
 );
 
