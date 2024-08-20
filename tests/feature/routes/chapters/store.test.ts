@@ -43,7 +43,12 @@ describe("The chapter store route", () => {
       .post(`/media/${medium.id}/chapters`)
       .type("form")
       .send({ title: "foo", startTime: 60, endTime: 30 })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The end time should be greater than the start time.",
+        );
+      });
   });
 
   it("requires the end time to be less than or equal to the medium.", async () => {
@@ -53,7 +58,12 @@ describe("The chapter store route", () => {
       .post(`/media/${medium.id}/chapters`)
       .type("form")
       .send({ title: "foo", startTime: 60, endTime: 124 })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The start time and the end time should fall within the duration",
+        );
+      });
 
     await supertest(express)
       .post(`/media/${medium.id}/chapters`)
