@@ -41,6 +41,13 @@ router.param("medium", async (req: MediumRequest, res, next) => {
   }
 });
 
+router.get("/media/:medium/chapters", async (req: MediumRequest, res) => {
+  res.render("chapters/index.pug", {
+    medium: req.medium,
+    chapters: await req.medium.$get("chapters"),
+  });
+});
+
 router.get("/media/:medium/chapters/create", (req: MediumRequest, res) => {
   res
     .set("HX-Trigger", "show-chapter-form")

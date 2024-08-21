@@ -36,33 +36,7 @@ block body
           @click="show = !show"
         )
 
-    .flex.flex-col.border-t.py-2(x-show="show")
-      each chapter in chapters || []
-        .flex.flex-wrap.items-center.gap-2.px-2.py-1(class="hover:bg-gray-100")
-          .grow
-            include ../chapters/_widget.pug
-
-          button.text-2xl(
-            class="icon-[lucide--edit]",
-            hx-get=`/chapters/${chapter.id}/edit`,
-            hx-target="#chapter-form-container"
-          )
-
-          - var eventName = `@delete-chapter-${chapter.id}.window`;
-          - var chapterEvent = {};
-          - chapterEvent[eventName] = "if ($event.detail) htmx.trigger($el, 'confirmed')";
-          button.text-2xl(
-            @click=`$dispatch('confirm', {
-              listener: "delete-chapter-${chapter.id}",
-              message: '${__("Are you sure you want to delete this chapter?")}',
-            })`,
-            class="icon-[material-symbols--delete-outline]",
-            hx-delete=`/chapters/${chapter.id}`,
-            hx-swap="delete",
-            hx-target="closest div",
-            hx-trigger="confirmed",
-            x-data=""
-          )&attributes(chapterEvent)
+    include ../chapters/index.pug
 
   .flex.flex-col.gap-2.py-2
     .flex.flex-wrap.gap-1
