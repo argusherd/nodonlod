@@ -13,6 +13,9 @@ form#chapter-form.flex.flex-col.gap-2(
     endTime = dayjs.duration({ hours: eHours, minutes: eMinutes, seconds: eSeconds });
   `,
   x-init=`
+    sHours = startTime.hours();
+    sMinutes = startTime.minutes();
+    sSeconds = startTime.seconds();
     eHours = endTime.hours();
     eMinutes = endTime.minutes();
     eSeconds = endTime.seconds();
