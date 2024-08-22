@@ -23,11 +23,9 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
-  const limit = 10;
-
   const { rows: media, count } = await Medium.findAndCountAll({
-    limit,
-    offset: Math.max(req.currentPage - 1, 0) * limit,
+    limit: req.perPage,
+    offset: Math.max(req.currentPage - 1, 0) * req.perPage,
     order: [["createdAt", "DESC"]],
   });
 

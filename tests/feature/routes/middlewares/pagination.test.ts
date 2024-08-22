@@ -65,4 +65,24 @@ describe("The pagination middleware", () => {
         expect(paginator).not.toContain("/pagination?q=foo&amp;page=9");
       });
   });
+
+  it("defaults to displaying 10 items on the page", async () => {
+    await supertest(express)
+      .get("/pagination")
+      .expect((res) => {
+        expect(res.body.paginator).toContain("1-10 (100)");
+      });
+  });
+
+  it("can set a specific limit on the number of results displayed on the page", async () => {
+    await supertest(express)
+      .get("/pagination?limit=20")
+      .expect((res) => {
+        const paginator = res.body.paginator;
+        expect(paginator).toContain("/pagination?limit=20&amp;page=1");
+        expect(paginator).toContain("/pagination?limit=20&amp;page=5");
+        expect(paginator).toContain("1-20 (100)");
+        expect(paginator).not.toContain("/pagination?limit=20&amp;page=6");
+      });
+  });
 });

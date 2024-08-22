@@ -1,6 +1,5 @@
 - var eachSide = 2;
-- var limit = 10;
-- var totalPage = Math.ceil((count ?? 0) / limit);
+- var totalPage = Math.ceil((count ?? 0) / perPage);
 
 mixin link(page)
   a.px-2.py-1(
@@ -50,6 +49,6 @@ mixin link(page)
     )
     button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
 
-  - var from = (currentPage - 1) * limit + 1;
-  - var to = Math.min(currentPage * limit, count);
+  - var from = (currentPage - 1) * perPage + 1;
+  - var to = Math.min(currentPage * perPage, count);
   small.text-gray-700 #{ from }-#{ to } (#{ count })
