@@ -13,6 +13,7 @@ import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
 import playlistItemRouter from "./playlist-items";
 import playlistRouter from "./playlists";
+import uploaderRouter from "./uploaders";
 
 dayjs.extend(duration);
 
@@ -40,5 +41,6 @@ express.use("/play-queues", playQueueRouter);
 express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
 express.use("/playlist-items", playlistItemRouter);
+express.use("/uploaders", uploaderRouter);
 
 export default express;
