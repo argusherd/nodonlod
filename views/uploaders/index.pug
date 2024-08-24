@@ -1,4 +1,14 @@
-each uploader in uploaders
-  p #{ uploader.name }
-  p #{ uploader.url }
-  a(href=`/uploaders/${uploader.id}`)
+extends ../_layout.pug
+
+block body
+  .mb-2
+    each uploader, index in uploaders
+      .flex.flex-col.gap-2.p-2(class={ "bg-gray-100": index % 2 })
+        a(href=`/uploaders/${uploader.id}`) #{ uploader.name } (#{ uploader.get('mediaCount') })
+
+        .flex.gap-2
+          p.overflow-hidden.break-words #{ uploader.url }
+          button.flex.items-center.text-lg
+            +copyIcon(uploader.url)
+
+  != paginator({ path: "/playlists", qs: qs(), count })

@@ -1,6 +1,6 @@
 import express from "@/routes";
 import supertest from "supertest";
-import { createUploader } from "../../setup/create-model";
+import { createMedium, createUploader } from "../../setup/create-model";
 
 describe("The uploader index page", () => {
   it("lists the names and URLs of the uploaders", async () => {
@@ -37,6 +37,20 @@ describe("The uploader index page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(eleventh.name);
+      });
+  });
+
+  it("displays the number of the media that uploader has", async () => {
+    const uploader = await createUploader();
+
+    for (let i = 0; i < 11; i++)
+      await createMedium({ uploaderId: uploader.id });
+
+    await supertest(express)
+      .get("/uploaders")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("(11)");
       });
   });
 });

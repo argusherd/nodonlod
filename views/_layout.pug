@@ -1,3 +1,14 @@
+mixin copyIcon(copyContent)
+  i(
+    :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'",
+    @click=`
+      copy = true;
+      navigator.clipboard.writeText('${copyContent}');
+      setTimeout(() => (copy = false), 1000)
+    `,
+    x-data="{ copy: false }"
+  )
+
 doctype html
 html(lang=`${getLocale()}`)
   head
@@ -24,6 +35,9 @@ html(lang=`${getLocale()}`)
         a.flex.items-center.gap-1(href="/playlists")
           i.text-2xl(class="icon-[mage--playlist]")
           span.mr-2(x-show="show") #{ __("Playlists") }
+        a.flex.items-center.gap-1(href="/uploaders")
+          i.text-2xl(class="icon-[icon-park-outline--upload-web]")
+          span.mr-2(x-show="show") #{ __("Uploaders") }
 
       .flex.flex-col.gap-2
         button.flex.items-center.gap-1(
