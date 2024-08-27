@@ -5,12 +5,14 @@ import {
   CreatedAt,
   DataType,
   Default,
+  HasMany,
   Model,
   PrimaryKey,
   Table,
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import Label from "./label";
 
 interface OptionalCategoryCreationAttributes {
   id: string;
@@ -20,7 +22,7 @@ interface OptionalCategoryCreationAttributes {
 
 interface CategoryAttributes extends OptionalCategoryCreationAttributes {
   name: string;
-  type: string;
+  type: "string" | "number" | "datetime";
 }
 
 interface CategoryCreationAttributes
@@ -53,4 +55,7 @@ export default class Category extends Model<
 
   @UpdatedAt
   updatedAt: Date;
+
+  @HasMany(() => Label)
+  labels: Label[];
 }
