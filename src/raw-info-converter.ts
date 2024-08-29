@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
+import Category from "../database/models/category";
 import Chapter from "../database/models/chapter";
+import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
-import Tag from "../database/models/tag";
 import Uploader from "../database/models/uploader";
 import { RawMedium, RawPlaylist, SubRawMedium } from "./raw-info-extractor";
 
@@ -175,12 +176,20 @@ export default class RawInfoConverter {
   }
 
   async preserveAllTags(rawMedium: RawMedium | SubRawMedium, medium: Medium) {
+    let category = await Category.findOne({ where: { name: "Tag" } });
+
+    if (!category)
+      category = await Category.create({ name: "Tag", type: "string" });
+
     for (const name of rawMedium.tags ?? []) {
-      let tag = await Tag.findOne({ where: { name } });
+      let tag = await Label.findOne({
+        where: { categoryId: category.id, text: name },
+      });
 
-      if (!tag) tag = await Tag.create({ name });
+      if (!tag)
+        tag = await Label.create({ categoryId: category.id, text: name });
 
-      await medium.$add("tag", tag);
+      await medium.$add("label", tag);
     }
   }
 }

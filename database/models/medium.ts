@@ -19,6 +19,8 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import Chapter from "./chapter";
+import Label from "./label";
+import Labelable from "./labelable";
 import Playlist from "./playlist";
 import PlaylistItem from "./playlist-item";
 import Tag from "./tag";
@@ -121,4 +123,10 @@ export default class Medium extends Model<
     foreignKey: "taggableId",
   })
   tags: Tag[];
+
+  @BelongsToMany(() => Label, {
+    through: { model: () => Labelable, scope: { labelableType: "medium" } },
+    foreignKey: "labelableId",
+  })
+  labels: Label[];
 }
