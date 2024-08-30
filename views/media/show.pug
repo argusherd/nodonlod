@@ -72,6 +72,14 @@ block body
       .flex.flex-wrap.gap-1
         each tag in tags || []
           span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ tag.name }
+
+    each labels, category in categorized
+      .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
+        span.shrink-0(class="sm:basis-1/6") #{ __(category) }
+        .flex.flex-wrap.gap-1
+          each label in labels
+            span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ label.text }
+
     .flex.flex-wrap.gap-1
       span.shrink-0(class="sm:basis-1/6") #{ __("Created At") }
       span #{ dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss") }

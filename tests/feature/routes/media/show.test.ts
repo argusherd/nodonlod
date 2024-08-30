@@ -3,6 +3,7 @@ import { formatSeconds } from "@/src/neat-duration";
 import dayjs from "dayjs";
 import supertest from "supertest";
 import {
+  createLabel,
   createMedium,
   createPlaylist,
   createTag,
@@ -122,6 +123,22 @@ describe("The medium show page", () => {
         expect(res.text).toContain(playlist2.title);
         expect(res.text).toContain(`/playlists/${playlist1.id}`);
         expect(res.text).toContain(`/playlists/${playlist2.id}`);
+      });
+  });
+
+  it("displays all related categories and labels of the medium", async () => {
+    const medium = await createMedium();
+    const label = await createLabel();
+    const category = await label.$get("category");
+
+    await label.$add("medium", medium);
+
+    await supertest(express)
+      .get(`/media/${medium.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(label.text);
+        expect(res.text).toContain(category?.name);
       });
   });
 });

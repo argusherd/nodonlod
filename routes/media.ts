@@ -1,4 +1,6 @@
 import { Router } from "express";
+import Category from "../database/models/category";
+import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
@@ -36,12 +38,22 @@ router.get("/", async (req: HasPageRequest, res) => {
 });
 
 router.get("/:medium", async (req: MediumRequest, res) => {
+  const labels = await req.medium.$get("labels", { include: [Category] });
+  const categorized: Record<string, Label[]> = {};
+
+  labels.forEach((label) => {
+    if (label.category.name in categorized == false)
+      categorized[label.category.name] = [];
+    categorized[label.category.name]?.push(label);
+  });
+
   res.render("media/show", {
     medium: req.medium,
     uploader: await req.medium.$get("uploader"),
     chapters: await req.medium.$get("chapters"),
     tags: await req.medium.$get("tags"),
     playlists: await req.medium.$get("playlists"),
+    categorized,
   });
 });
 
