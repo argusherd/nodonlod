@@ -25,7 +25,7 @@ interface CategoryAttributes extends OptionalCategoryCreationAttributes {
   type: "string" | "number" | "datetime";
 }
 
-interface CategoryCreationAttributes
+export interface CategoryCreationAttributes
   extends Optional<
     CategoryAttributes,
     keyof OptionalCategoryCreationAttributes

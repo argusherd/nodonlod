@@ -29,7 +29,7 @@ interface LabelAttributes extends OptionalLabelCreationAttributes {
   text: string;
 }
 
-interface LabelCreationAttributes
+export interface LabelCreationAttributes
   extends Optional<LabelAttributes, keyof OptionalLabelCreationAttributes> {}
 
 @Table({ underscored: true })
