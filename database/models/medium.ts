@@ -23,8 +23,6 @@ import Label from "./label";
 import Labelable from "./labelable";
 import Playlist from "./playlist";
 import PlaylistItem from "./playlist-item";
-import Tag from "./tag";
-import Taggable from "./taggable";
 import Uploader from "./uploader";
 
 interface OptionalMediumCreationAttributes {
@@ -117,12 +115,6 @@ export default class Medium extends Model<
 
   @HasMany(() => Chapter)
   chapters: Chapter[];
-
-  @BelongsToMany(() => Tag, {
-    through: { model: () => Taggable, scope: { taggableType: "medium" } },
-    foreignKey: "taggableId",
-  })
-  tags: Tag[];
 
   @BelongsToMany(() => Label, {
     through: { model: () => Labelable, scope: { labelableType: "medium" } },

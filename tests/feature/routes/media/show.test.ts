@@ -6,7 +6,6 @@ import {
   createLabel,
   createMedium,
   createPlaylist,
-  createTag,
   createUploader,
 } from "../../setup/create-model";
 
@@ -89,22 +88,6 @@ describe("The medium show page", () => {
         expect(res.text).toContain("ep2");
         expect(res.text).toContain(`/chapters/${chapter1.id}/play`);
         expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
-      });
-  });
-
-  it("displays all the tags of the medium", async () => {
-    const medium = await createMedium();
-    const tag1 = await createTag();
-    const tag2 = await createTag();
-
-    await medium.$add("tag", [tag1, tag2]);
-
-    await supertest(express)
-      .get(`/media/${medium.id}`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain(tag1.name);
-        expect(res.text).toContain(tag2.name);
       });
   });
 

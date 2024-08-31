@@ -67,11 +67,6 @@ block body
             span #{ __("Expand") }
         else
           span.px-2.text-gray-400 #{ __("No content") }
-    .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
-      span.shrink-0(class="sm:basis-1/6") #{ __("Tags") }
-      .flex.flex-wrap.gap-1
-        each tag in tags || []
-          span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ tag.name }
 
     each labels, category in categorized
       .flex.flex-wrap.gap-1(class="sm:flex-nowrap")

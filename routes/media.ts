@@ -51,7 +51,6 @@ router.get("/:medium", async (req: MediumRequest, res) => {
     medium: req.medium,
     uploader: await req.medium.$get("uploader"),
     chapters: await req.medium.$get("chapters"),
-    tags: await req.medium.$get("tags"),
     playlists: await req.medium.$get("playlists"),
     categorized,
   });

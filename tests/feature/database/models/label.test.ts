@@ -21,12 +21,12 @@ describe("The label model", () => {
     await label.$add("medium", [medium1, medium2]);
 
     const mediumIds = (await label.$get("media")).map((medium) => medium.id);
-    const taggable = await Labelable.findOne();
+    const labelable = await Labelable.findOne();
 
     expect(mediumIds).toHaveLength(2);
     expect(mediumIds).toContain(medium1.id);
     expect(mediumIds).toContain(medium2.id);
-    expect(taggable?.labelableType).toEqual("medium");
+    expect(labelable?.labelableType).toEqual("medium");
   });
 
   it("can belong to many playlists", async () => {
@@ -40,11 +40,11 @@ describe("The label model", () => {
     const playlistIds = (await label.$get("playlists")).map(
       (playlist) => playlist.id,
     );
-    const taggable = await Labelable.findOne();
+    const labelable = await Labelable.findOne();
 
     expect(playlistIds).toHaveLength(2);
     expect(playlistIds).toContain(playlist1.id);
     expect(playlistIds).toContain(playlist2.id);
-    expect(taggable?.labelableType).toEqual("playlist");
+    expect(labelable?.labelableType).toEqual("playlist");
   });
 });

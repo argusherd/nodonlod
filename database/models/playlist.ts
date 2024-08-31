@@ -15,8 +15,6 @@ import {
 } from "sequelize-typescript";
 import Medium from "./medium";
 import PlaylistItem from "./playlist-item";
-import Tag from "./tag";
-import Taggable from "./taggable";
 
 interface OptionalPlaylistCreationAttributes {
   id: string;
@@ -78,10 +76,4 @@ export default class Playlist extends Model<
 
   @BelongsToMany(() => Medium, () => PlaylistItem)
   media: Array<Medium & { PlaylistItem: PlaylistItem }>;
-
-  @BelongsToMany(() => Tag, {
-    through: { model: () => Taggable, scope: { taggableType: "playlist" } },
-    foreignKey: "taggableId",
-  })
-  tags: Tag[];
 }

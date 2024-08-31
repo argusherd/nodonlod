@@ -1,7 +1,5 @@
 import Chapter from "@/database/models/chapter";
 import Medium from "@/database/models/medium";
-import Tag from "@/database/models/tag";
-import Taggable from "@/database/models/taggable";
 import {
   createMedium,
   createPlaylist,
@@ -80,21 +78,5 @@ describe("The medium model", () => {
     expect(hasMany).toHaveLength(2);
     expect(hasMany.at(0)?.id).toEqual(ep1.id);
     expect(hasMany.at(1)?.id).toEqual(ep2.id);
-  });
-
-  it("can belong to many tags", async () => {
-    const medium = await createMedium();
-    const tag1 = await Tag.create({ name: "foo" });
-    const tag2 = await Tag.create({ name: "bar" });
-
-    await medium.$add("tag", [tag1, tag2]);
-
-    const tags = await medium.$get("tags");
-    const taggable = await Taggable.findOne();
-
-    expect(tags).toHaveLength(2);
-    expect(tags.at(0)?.name).toEqual("foo");
-    expect(tags.at(1)?.name).toEqual("bar");
-    expect(taggable?.taggableType).toEqual("medium");
   });
 });

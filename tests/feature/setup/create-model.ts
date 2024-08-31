@@ -13,7 +13,6 @@ import Playlist, {
 import PlaylistItem, {
   PlaylistItemCreationAttributes,
 } from "@/database/models/playlist-item";
-import Tag, { TagCreationAttributes } from "@/database/models/tag";
 import Uploader, {
   UploaderCreationAttributes,
 } from "@/database/models/uploader";
@@ -45,12 +44,6 @@ export const createUploader = async (
   await Uploader.create({
     name: faker.person.fullName(),
     url: faker.internet.url(),
-    ...overwrite,
-  });
-
-export const createTag = async (overwrite?: Partial<TagCreationAttributes>) =>
-  await Tag.create({
-    name: faker.lorem.slug(),
     ...overwrite,
   });
 
