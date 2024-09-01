@@ -4,6 +4,9 @@ import Category, {
 import Chapter, { ChapterCreationAttributes } from "@/database/models/chapter";
 import Label, { LabelCreationAttributes } from "@/database/models/label";
 import Medium, { MediumCreationAttributes } from "@/database/models/medium";
+import Performer, {
+  PerformerCreationAttributes,
+} from "@/database/models/performer";
 import PlayQueue, {
   PlayQueueCreationAttributes,
 } from "@/database/models/play-queue";
@@ -88,5 +91,13 @@ export const createLabel = async (
   await Label.create({
     text: faker.lorem.word(),
     categoryId: overwrite?.categoryId || (await createCategory()).id,
+    ...overwrite,
+  });
+
+export const createPerformer = async (
+  overwrite?: Partial<PerformerCreationAttributes>,
+) =>
+  await Performer.create({
+    name: faker.person.fullName(),
     ...overwrite,
   });
