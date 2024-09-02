@@ -21,6 +21,8 @@ import {
 import Chapter from "./chapter";
 import Label from "./label";
 import Labelable from "./labelable";
+import Performable from "./performable";
+import Performer from "./performer";
 import Playlist from "./playlist";
 import PlaylistItem from "./playlist-item";
 import Uploader from "./uploader";
@@ -121,4 +123,10 @@ export default class Medium extends Model<
     foreignKey: "labelableId",
   })
   labels: Label[];
+
+  @BelongsToMany(() => Performer, {
+    through: { model: () => Performable, scope: { performableType: "medium" } },
+    foreignKey: "performableId",
+  })
+  performers: Performer[];
 }

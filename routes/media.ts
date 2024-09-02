@@ -53,6 +53,7 @@ router.get("/:medium", async (req: MediumRequest, res) => {
     chapters: await req.medium.$get("chapters"),
     playlists: await req.medium.$get("playlists"),
     categorized,
+    performers: await req.medium.$get("performers"),
   });
 });
 

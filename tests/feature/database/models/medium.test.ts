@@ -1,7 +1,9 @@
 import Chapter from "@/database/models/chapter";
 import Medium from "@/database/models/medium";
+import Performer from "@/database/models/performer";
 import {
   createMedium,
+  createPerformer,
   createPlaylist,
   createUploader,
 } from "../../setup/create-model";
@@ -78,5 +80,21 @@ describe("The medium model", () => {
     expect(hasMany).toHaveLength(2);
     expect(hasMany.at(0)?.id).toEqual(ep1.id);
     expect(hasMany.at(1)?.id).toEqual(ep2.id);
+  });
+
+  it("can belong to many performers", async () => {
+    const medium = await createMedium();
+    const performer1 = await createPerformer();
+    const performer2 = await createPerformer();
+
+    await medium.$add("performer", [performer1, performer2]);
+
+    const performers = (await medium.$get("performers")).map(
+      (performer: Performer) => performer.name,
+    );
+
+    expect(performers).toHaveLength(2);
+    expect(performers).toContain(performer1.name);
+    expect(performers).toContain(performer2.name);
   });
 });

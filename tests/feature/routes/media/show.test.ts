@@ -5,6 +5,7 @@ import supertest from "supertest";
 import {
   createLabel,
   createMedium,
+  createPerformer,
   createPlaylist,
   createUploader,
 } from "../../setup/create-model";
@@ -122,6 +123,25 @@ describe("The medium show page", () => {
       .expect((res) => {
         expect(res.text).toContain(label.text);
         expect(res.text).toContain(category?.name);
+      });
+  });
+
+  it("displays all related performers", async () => {
+    const medium = await createMedium();
+    const performer1 = await createPerformer();
+    const performer2 = await createPerformer();
+
+    await performer1.$add("medium", medium);
+    await performer2.$add("medium", medium);
+
+    await supertest(express)
+      .get(`/media/${medium.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(performer1.name);
+        expect(res.text).toContain(`/performers/${performer1.id}`);
+        expect(res.text).toContain(performer2.name);
+        expect(res.text).toContain(`/performers/${performer2.id}`);
       });
   });
 });

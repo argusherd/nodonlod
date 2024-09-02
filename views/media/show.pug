@@ -68,6 +68,14 @@ block body
         else
           span.px-2.text-gray-400 #{ __("No content") }
 
+    .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
+      span.shrink-0(class="sm:basis-1/6") #{ __('Performer') }
+      .flex.flex-wrap.gap-1
+        each performer in performers
+          a.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm(
+            href=`/performers/${performer.id}`
+          ) #{ performer.name }
+
     each labels, category in categorized
       .flex.flex-wrap.gap-1(class="sm:flex-nowrap")
         span.shrink-0(class="sm:basis-1/6") #{ __(category) }
