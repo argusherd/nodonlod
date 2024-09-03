@@ -2,6 +2,7 @@ import { Router } from "express";
 import Category from "../database/models/category";
 import Label from "../database/models/label";
 import Medium from "../database/models/medium";
+import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
 import { HasPageRequest } from "./middlewares/pagination";
@@ -11,6 +12,10 @@ interface MediumRequest extends HasPageRequest {
   medium: Medium;
 }
 
+interface PerformerRequest extends HasPageRequest {
+  performer: Performer;
+}
+
 const router = Router();
 
 router.param("medium", async (req: MediumRequest, res, next) => {
@@ -18,6 +23,17 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 
   if (medium) {
     req.medium = medium;
+    next();
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+router.param("performer", async (req: PerformerRequest, res, next) => {
+  const performer = await Performer.findByPk(req.params.performer);
+
+  if (performer) {
+    req.performer = performer;
     next();
   } else {
     res.sendStatus(404);
@@ -79,5 +95,18 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
 
   res.set("HX-Location", "/media").sendStatus(204);
 });
+
+router.put(
+  "/:medium/performers/:performer",
+  async (req: MediumRequest & PerformerRequest, res) => {
+    if (await req.medium.$has("performer", req.performer)) {
+      await req.medium.$remove("performer", req.performer);
+    } else {
+      await req.medium.$add("performer", req.performer);
+    }
+
+    res.sendStatus(201);
+  },
+);
 
 export default router;
