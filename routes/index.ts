@@ -9,6 +9,7 @@ import mediumRouter from "./media";
 import i18nMiddleware from "./middlewares/i18n";
 import pagination from "./middlewares/pagination";
 import queryString from "./middlewares/query-string";
+import performerRouter from "./performers";
 import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
 import playlistItemRouter from "./playlist-items";
@@ -42,5 +43,6 @@ express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
 express.use("/playlist-items", playlistItemRouter);
 express.use("/uploaders", uploaderRouter);
+express.use("/performers", performerRouter);
 
 export default express;

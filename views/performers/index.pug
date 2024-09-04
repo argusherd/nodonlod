@@ -1,0 +1,16 @@
+extends ../_layout.pug
+
+block body
+  .mb-2.flex.flex-wrap.items-center.justify-between
+    h1.text-xl.font-bold #{ __("Performers") }
+    a.flex.items-center.gap-1.rounded.border.px-2.py-1
+      i.text-2xl(class="icon-[gridicons--create]")
+      span #{ __("Create") }
+
+  .mb-2
+    each performer, index in performers
+      .flex.flex-col.gap-2.p-2(class={ "bg-gray-100": index % 2 })
+        img(src=performer.thumbnail)
+        a(href=`/performers/${performer.id}`) #{ performer.name }
+
+  != paginator({ path: "/performers", qs: qs(), count })
