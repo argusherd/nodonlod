@@ -20,4 +20,19 @@ describe("The destory medium route", () => {
       .expect(204)
       .expect("HX-Location", "/media");
   });
+
+  it("can display a confirmation message for deletion", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .delete(`/media/${medium.id}/confirm`)
+      .expect(200)
+      .expect("HX-Trigger", "open-modal")
+      .expect((res) => {
+        expect(res.text).toContain(
+          "Are you sure you want to delete this medium?",
+        );
+        expect(res.text).toContain(`/media/${medium.id}`);
+      });
+  });
 });

@@ -1,0 +1,15 @@
+p.mb-4.font-bold #{ __("Are you sure you want to delete this medium?") }
+
+.flex.justify-end.gap-2
+  button.flex.items-center.gap-1.rounded.border.border-green-500.bg-green-50.px-2.py-1(
+    @click="show = false",
+    hx-delete=`/media/${medium.id}`
+  )
+    i.text-2xl.text-green-600(class="icon-[material-symbols--check]")
+    span #{ __("Confirm") }
+
+  button.flex.items-center.gap-1.rounded.border.border-red-500.bg-red-50.px-2.py-1(
+    @click="show = false"
+  )
+    i.text-2xl.text-red-600(class="icon-[material-symbols--close]")
+    span #{ __("Cancel") }

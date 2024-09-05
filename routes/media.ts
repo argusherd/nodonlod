@@ -90,6 +90,12 @@ router.post("/:medium/queue", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
+router.delete("/:medium/confirm", async (req: MediumRequest, res) => {
+  res
+    .set("HX-Trigger", "open-modal")
+    .render("media/_delete", { medium: req.medium });
+});
+
 router.delete("/:medium", async (req: MediumRequest, res) => {
   await req.medium.destroy();
 

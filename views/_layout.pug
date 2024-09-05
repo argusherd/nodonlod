@@ -119,6 +119,17 @@ html(lang=`${getLocale()}`)
             i.text-2xl.text-red-600(class="icon-[material-symbols--close]")
             span #{ __("Cancel") }
 
+    #modal(@open-modal.window="show = true", x-data="{ show: false }")
+      .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
+        @click="show = false",
+        x-show="show"
+      )
+      .fixed.z-10.rounded.bg-white.p-2(
+        class="left-1/2 top-1/2 w-11/12 -translate-x-1/2 -translate-y-1/2 sm:w-2/3",
+        x-show="show"
+      )
+        #modal-content
+
     //- #locales
     //-   a(href="?locale=en") en
     //-   a(href="?locale=zh-TW") zh-TW
