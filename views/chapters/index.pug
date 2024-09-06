@@ -20,18 +20,8 @@
         hx-target="#chapter-form-container"
       )
 
-      - var eventName = `@delete-chapter-${chapter.id}.window`;
-      - var chapterEvent = {};
-      - chapterEvent[eventName] = "if ($event.detail) htmx.trigger($el, 'confirmed')";
       button.text-2xl(
-        @click=`$dispatch('confirm', {
-              listener: "delete-chapter-${chapter.id}",
-              message: '${__("Are you sure you want to delete this chapter?")}',
-            })`,
         class="icon-[material-symbols--delete-outline]",
-        hx-delete=`/chapters/${chapter.id}`,
-        hx-swap="delete",
-        hx-target="closest div",
-        hx-trigger="confirmed",
-        x-data=""
-      )&attributes(chapterEvent)
+        hx-delete=`/chapters/${chapter.id}/confirm`,
+        hx-target="#modal-content"
+      )

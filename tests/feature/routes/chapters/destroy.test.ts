@@ -11,4 +11,26 @@ describe("The destroy chapter route", () => {
 
     expect(await Chapter.count()).toEqual(0);
   });
+
+  it("tells htmx to refresh the chapter list", async () => {
+    const chapter = await createChapter();
+
+    await supertest(express)
+      .delete(`/chapters/${chapter.id}`)
+      .expect("HX-Trigger", "refresh-chapters");
+  });
+
+  it("can display a confirmation message for deletion", async () => {
+    const chapter = await createChapter();
+
+    await supertest(express)
+      .delete(`/chapters/${chapter.id}/confirm`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(
+          `Are you sure you want to delete the chapter ${chapter.title}?`,
+        );
+        expect(res.text).toContain(`/chapters/${chapter.id}`);
+      });
+  });
 });

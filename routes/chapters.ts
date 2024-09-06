@@ -178,10 +178,16 @@ router.post("/chapters/:chapter/queue", async (req: ChapterRequest, res) => {
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
+router.delete("/chapters/:chapter/confirm", (req: ChapterRequest, res) => {
+  res
+    .set("HX-Trigger", "open-modal")
+    .render("chapters/_delete", { chapter: req.chapter });
+});
+
 router.delete("/chapters/:chapter", async (req: ChapterRequest, res) => {
   await req.chapter.destroy();
 
-  res.sendStatus(205);
+  res.set("HX-Trigger", "refresh-chapters").sendStatus(205);
 });
 
 export default router;
