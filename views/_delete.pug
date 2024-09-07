@@ -1,9 +1,9 @@
-p.mb-4.font-bold #{ __(`Are you sure you want to delete the chapter {{title}}?`, { title: chapter.title }) }
+p.mb-4.font-bold #{ message }
 
 .flex.justify-end.gap-2
   button.flex.items-center.gap-1.rounded.border.border-green-500.bg-green-50.px-2.py-1(
     @click="show = false",
-    hx-delete=`/chapters/${chapter.id}`
+    hx-delete=route
   )
     i.text-2xl.text-green-600(class="icon-[material-symbols--check]")
     span #{ __("Confirm") }

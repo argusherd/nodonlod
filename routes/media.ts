@@ -5,6 +5,7 @@ import Medium from "../database/models/medium";
 import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
+import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 import wss from "./websocket";
 
@@ -93,7 +94,11 @@ router.post("/:medium/queue", async (req: MediumRequest, res) => {
 router.delete("/:medium/confirm", async (req: MediumRequest, res) => {
   res
     .set("HX-Trigger", "open-modal")
-    .render("media/_delete", { medium: req.medium });
+    .render("_delete", {
+      medium: req.medium,
+      message: i18n.__("Are you sure you want to delete this medium?"),
+      route: `/media/${req.medium.id}`,
+    });
 });
 
 router.delete("/:medium", async (req: MediumRequest, res) => {
