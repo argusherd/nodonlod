@@ -180,7 +180,6 @@ router.post("/chapters/:chapter/queue", async (req: ChapterRequest, res) => {
 
 router.delete("/chapters/:chapter/confirm", (req: ChapterRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
-    chapter: req.chapter,
     message: i18n.__(`Are you sure you want to delete the chapter {{title}}?`, {
       title: req.chapter.title,
     }),
