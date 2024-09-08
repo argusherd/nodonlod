@@ -5,14 +5,8 @@ block body
     h1.text-xl.font-bold #{ __("Playlist") }
 
     button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold.text-gray-500(
-      @click=`$dispatch('confirm', {
-            listener: "delete-playlist",
-            message: '${__("Are you sure you want to delete this playlist?")}',
-          })`,
-      @delete-playlist.window="if ($event.detail) htmx.trigger($el, 'confirmed')",
-      hx-delete=`/playlists/${playlist.id}`,
-      hx-trigger="confirmed",
-      x-data=""
+      hx-delete=`/playlists/${playlist.id}/confirm`,
+      hx-target="#modal"
     )
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }

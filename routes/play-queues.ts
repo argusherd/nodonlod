@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
+import { i18n } from "./middlewares/i18n";
 
 interface HasPlayQueue extends Request {
   playQueue: PlayQueue;
@@ -28,6 +29,15 @@ router.get("/", async (_req, res) => {
       include: [Medium, Chapter],
       order: [["order", "ASC"]],
     }),
+  });
+});
+
+router.delete("/confirm", (_req, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: i18n.__(
+      "Are you sure you want to delete all items in the play queue?",
+    ),
+    route: "/play-queues",
   });
 });
 

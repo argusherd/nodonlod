@@ -84,42 +84,10 @@ html(lang=`${getLocale()}`)
       )
       #play-queues
 
-    #confirm(
-      @confirm.window="show = true; message = $event.detail.message; listener = $event.detail.listener",
-      x-data=`{
-        show: false,
-        message: "",
-        listener: "",
-        handle(confirmed) {
-          this.$dispatch(this.listener, confirmed);
-          this.message = "";
-          this.listener = "";
-          this.show = false;
-        },
-      }`
+    #modal-container(
+      @open-modal.window="show = true",
+      x-data="{ show: false }"
     )
-      .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
-        @click="handle(false)",
-        x-show="show"
-      )
-      .fixed.z-10.rounded.bg-white.p-2(
-        class="left-1/2 top-1/2 w-11/12 -translate-x-1/2 -translate-y-1/2 sm:w-2/3",
-        x-show="show"
-      )
-        p.mb-4.font-bold(x-text="message")
-        .flex.justify-end.gap-2
-          button.flex.items-center.gap-1.rounded.border.border-green-500.bg-green-50.px-2.py-1(
-            @click="handle(true)"
-          )
-            i.text-2xl.text-green-600(class="icon-[material-symbols--check]")
-            span #{ __("Confirm") }
-          button.flex.items-center.gap-1.rounded.border.border-red-500.bg-red-50.px-2.py-1(
-            @click="handle(false)"
-          )
-            i.text-2xl.text-red-600(class="icon-[material-symbols--close]")
-            span #{ __("Cancel") }
-
-    #modal(@open-modal.window="show = true", x-data="{ show: false }")
       .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
         @click="show = false",
         x-show="show"
@@ -128,7 +96,7 @@ html(lang=`${getLocale()}`)
         class="left-1/2 top-1/2 w-11/12 -translate-x-1/2 -translate-y-1/2 sm:w-2/3",
         x-show="show"
       )
-        #modal-content
+        #modal
 
     //- #locales
     //-   a(href="?locale=en") en

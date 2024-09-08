@@ -35,14 +35,8 @@
     != paginator({ path: "/extractions", qs: qs().omit("_list"), count })
 
     button.flex.items-center.gap-1.rounded.border.px-2.py-1(
-      @click=`$dispatch('confirm', {
-        listener: "delete-all-extractions",
-        message: '${__("Are you sure you want to delete all extractions?")}',
-      })`,
-      @delete-all-extractions.window="if ($event.detail) htmx.trigger($el, 'confirmed')",
-      hx-delete="/extractions",
-      hx-trigger="confirmed",
-      x-data=""
+      hx-delete="/extractions/confirm",
+      hx-target="#modal"
     )
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete all") }

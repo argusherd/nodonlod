@@ -39,4 +39,17 @@ describe("The destroy extraction route", () => {
       .expect(204)
       .expect("HX-Trigger", "refresh-extractions");
   });
+
+  it("can display a confirmation message for deletion", async () => {
+    await supertest(express)
+      .delete("/extractions/confirm")
+      .expect(200)
+      .expect("HX-Trigger", "open-modal")
+      .expect((res) => {
+        expect(res.text).toContain(
+          "Are you sure you want to delete all extractions?",
+        );
+        expect(res.text).toContain("/extractions");
+      });
+  });
 });

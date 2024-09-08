@@ -40,4 +40,17 @@ describe("The play queue destroy route", () => {
     expect(remain1.order).toEqual(1);
     expect(shouldBe2.order).toEqual(2);
   });
+
+  it("can display a confirmation message for deletion", async () => {
+    await supertest(express)
+      .delete("/play-queues/confirm")
+      .expect(200)
+      .expect("HX-Trigger", "open-modal")
+      .expect((res) => {
+        expect(res.text).toContain(
+          "Are you sure you want to delete all items in the play queue?",
+        );
+        expect(res.text).toContain("/play-queues");
+      });
+  });
 });

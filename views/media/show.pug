@@ -6,7 +6,7 @@ block body
 
     button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold.text-gray-500(
       hx-delete=`/media/${medium.id}/confirm`,
-      hx-target="#modal-content"
+      hx-target="#modal"
     )
       i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
