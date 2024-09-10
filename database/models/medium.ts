@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { Optional } from "sequelize";
 import {
   AllowNull,
+  BeforeDestroy,
   BelongsTo,
   BelongsToMany,
   Column,
@@ -129,4 +130,15 @@ export default class Medium extends Model<
     foreignKey: "performableId",
   })
   performers: Performer[];
+
+  @BeforeDestroy
+  static async removeBelongsToMany(instance: Medium) {
+    await Labelable.destroy({
+      where: { labelableId: instance.id, labelableType: "medium" },
+    });
+
+    await Performable.destroy({
+      where: { performableId: instance.id, performableType: "medium" },
+    });
+  }
 }

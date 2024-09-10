@@ -1,7 +1,10 @@
 import Chapter from "@/database/models/chapter";
+import Labelable from "@/database/models/labelable";
 import Medium from "@/database/models/medium";
+import Performable from "@/database/models/performable";
 import Performer from "@/database/models/performer";
 import {
+  createLabel,
   createMedium,
   createPerformer,
   createPlaylist,
@@ -82,6 +85,18 @@ describe("The medium model", () => {
     expect(hasMany.at(1)?.id).toEqual(ep2.id);
   });
 
+  it("can belongs to many labels", async () => {
+    const medium = await createMedium();
+    const label = await createLabel();
+
+    await medium.$add("label", [label]);
+
+    const belongsToMany = await medium.$get("labels");
+
+    expect(belongsToMany).toHaveLength(1);
+    expect(belongsToMany[0]?.id).toEqual(label.id);
+  });
+
   it("can belong to many performers", async () => {
     const medium = await createMedium();
     const performer1 = await createPerformer();
@@ -96,5 +111,31 @@ describe("The medium model", () => {
     expect(performers).toHaveLength(2);
     expect(performers).toContain(performer1.name);
     expect(performers).toContain(performer2.name);
+  });
+
+  it("removes all associated labels before deletion", async () => {
+    const medium = await createMedium();
+    const label = await createLabel();
+
+    await medium.$add("label", [label]);
+
+    expect(await Labelable.count()).toEqual(1);
+
+    await medium.destroy();
+
+    expect(await Labelable.count()).toEqual(0);
+  });
+
+  it("removes all associated performers before deletion", async () => {
+    const medium = await createMedium();
+    const performer = await createPerformer();
+
+    await medium.$add("performer", [performer]);
+
+    expect(await Performable.count()).toEqual(1);
+
+    await medium.destroy();
+
+    expect(await Performable.count()).toEqual(0);
   });
 });
