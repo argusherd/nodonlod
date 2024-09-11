@@ -1,0 +1,16 @@
+h3.text-lg #{ __("Create a new performer") }
+
+form(action="/performers", method="post")
+  label(for="name")
+  input#name(name="name", placeholder=__("Name"), type="text")
+
+  label(for="thumbnail")
+  input#thumbnail(name="thumbnail", placeholder=__("Thumbnail"), type="url")
+
+  label(for="description")
+  textarea#description(
+    cols="30",
+    name="description",
+    placeholder=__("description"),
+    rows="10"
+  )

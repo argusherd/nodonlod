@@ -14,4 +14,8 @@ router.get("/", async (req: HasPageRequest, res) => {
   res.render("performers/index", { count, performers });
 });
 
+router.get("/create", (_req, res) => {
+  res.set("HX-Trigger", "open-modal").render("performers/create");
+});
+
 export default router;

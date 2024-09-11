@@ -3,7 +3,10 @@ extends ../_layout.pug
 block body
   .mb-2.flex.flex-wrap.items-center.justify-between
     h1.text-xl.font-bold #{ __("Performers") }
-    a.flex.items-center.gap-1.rounded.border.px-2.py-1
+    button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+      hx-get="/performers/create",
+      hx-target="#modal"
+    )
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
