@@ -1,6 +1,6 @@
 h3.text-lg #{ __("Create a new performer") }
 
-form(action="/performers", method="post")
+form(action="/performers", hx-target="#modal", method="post")
   label(for="name")
   input#name(name="name", placeholder=__("Name"), type="text")
 
@@ -14,3 +14,5 @@ form(action="/performers", method="post")
     placeholder=__("description"),
     rows="10"
   )
+
+  button #{ __("Submit") }
