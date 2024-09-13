@@ -100,5 +100,6 @@ export const createPerformer = async (
   await Performer.create({
     name: faker.person.fullName(),
     thumbnail: faker.image.avatar(),
+    description: faker.lorem.paragraphs(),
     ...overwrite,
   });

@@ -3,7 +3,22 @@ import { body, validationResult } from "express-validator";
 import Performer from "../database/models/performer";
 import { HasPageRequest } from "./middlewares/pagination";
 
+interface PerformerRequest extends HasPageRequest {
+  performer: Performer;
+}
+
 const router = Router();
+
+router.param("performer", async (req: PerformerRequest, res, next) => {
+  const performer = await Performer.findByPk(req.params.performer);
+
+  if (performer) {
+    req.performer = performer;
+    next();
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: performers, count } = await Performer.findAndCountAll({
@@ -33,6 +48,10 @@ router.post("/", body("name").notEmpty(), async (req, res) => {
   const performer = await Performer.create({ name: req.body.name });
 
   res.set("HX-Location", `/performers/${performer.id}`).sendStatus(201);
+});
+
+router.get("/:performer", async (req: PerformerRequest, res) => {
+  res.render("performers/show", { performer: req.performer });
 });
 
 export default router;
