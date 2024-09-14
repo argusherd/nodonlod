@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
+import { join } from "path";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
@@ -19,6 +20,8 @@ import uploaderRouter from "./uploaders";
 dayjs.extend(duration);
 
 const express = coreExpress();
+const relativePath =
+  process.env.NODE_ENV === "test" ? "../views" : "../../views";
 
 express.set("view engine", "pug");
 express.use(coreExpress.static("public"));
@@ -28,6 +31,7 @@ express.use(i18nMiddleware);
 express.use(queryString);
 express.use(pagination);
 
+express.locals.basedir = join(__dirname, relativePath);
 express.locals.dayjs = dayjs;
 
 express.get("/", async (_req, res) => {
