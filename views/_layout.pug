@@ -18,7 +18,14 @@ html(lang=`${getLocale()}`)
     link(href="/css/app.css", rel="stylesheet")
     script(defer, src="/js/app.js")
 
-  body(hx-boost="true", hx-ext="ws,alpine-morph", ws-connect="/")
+  body(
+    :class="dark && 'dark'",
+    class="dark:bg-slate-900",
+    hx-boost="true",
+    hx-ext="ws,alpine-morph",
+    ws-connect="/",
+    x-data="{ dark: $persist(true) }"
+  )
     nav#nav.fixed.left-0.top-0.z-10.flex.h-screen.flex-col.justify-between.bg-gray-300.p-2(
       @mouseenter="show = true",
       @mouseleave="show = false",
