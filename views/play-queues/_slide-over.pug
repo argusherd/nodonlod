@@ -1,6 +1,6 @@
 .relative.z-10.h-auto.w-auto(
-  @open-play-queues.window="show = true",
-  x-data="{ show: true }"
+  @open-play-queues.window="$dispatch('refresh-play-queues'); show = true",
+  x-data="{ show: false }"
 )
   .relative.z-10(@keydown.window.escape="show = false", x-show="show")
     .fixed.inset-0.bg-black.bg-opacity-10(
@@ -36,7 +36,8 @@
                     class="rtl:flex-row-reverse dark:bg-gray-900"
                   )
                     button.flex.items-center.gap-x-2.rounded-lg.border.px-4.py-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-                      class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+                      class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800",
+                      hx-delete="/play-queues"
                     )
                       i.text-3xl(
                         class="icon-[material-symbols-light--delete-sweep-outline]"
@@ -51,4 +52,11 @@
 
               .relative.mt-4.flex-1.px-4(class="sm:px-5")
                 .absolute.inset-0.px-4(class="sm:px-5")
-                  .relative.h-full.overflow-hidden.rounded-md.border.border-dashed.border-neutral-300
+                  .relative.h-full.overflow-y-auto.rounded-md.border.border-dashed.border-neutral-300
+                    #refresh-play-queues(
+                      hx-get="/play-queues",
+                      hx-swap="outerHTML",
+                      hx-target="#play-queues",
+                      hx-trigger="refresh-play-queues from:body"
+                    )
+                    #play-queues

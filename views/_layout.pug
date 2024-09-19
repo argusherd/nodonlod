@@ -44,20 +44,6 @@ html(lang=`${getLocale()}`)
 
     include play-queues/_slide-over.pug
 
-    #play-queue-container.fixed.right-0.top-0.h-screen.min-w-40.overflow-y-auto.bg-blue-100(
-      class="w-4/12 shadow-[0_0_50px_10px_rgba(0,0,0,0.25)]",
-      hx-preserve,
-      x-data="{ show: false }",
-      x-show="show"
-    )
-      #refresh-play-queue(
-        hx-get="/play-queues",
-        hx-swap="outerHTML",
-        hx-target="#play-queues",
-        hx-trigger="load, refresh-play-queues from:body"
-      )
-      #play-queues
-
     #modal-container(
       @open-modal.window="show = true",
       x-data="{ show: false }"
