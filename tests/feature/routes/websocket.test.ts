@@ -1,4 +1,3 @@
-import Medium from "@/database/models/medium";
 import PlayQueue from "@/database/models/play-queue";
 import wss from "@/routes/websocket";
 import { createServer } from "http";
@@ -244,34 +243,14 @@ describe("The websocket server", () => {
     wss.currentTime(30);
   });
 
-  it("can broadcast the latest play queue", async () => {
-    const chapter = await createChapter();
-    const medium = (await chapter.$get("medium")) as Medium;
-
+  it("notifies clients that a custom event should be triggered", () => {
     client.on("message", (data) => {
-      expect(data.toString()).toContain(medium.title);
-      expect(data.toString()).toContain(chapter.title);
+      expect(data.toString()).toContain(
+        JSON.stringify({ event: "refresh-list" }),
+      );
     });
 
-    await PlayQueue.create({ mediumId: medium.id, chapterId: chapter.id });
-
-    await wss.latestPlayQueue();
-  });
-
-  it("broadcasts the latest play queue items based on their order", async () => {
-    const medium1 = await createMedium();
-    const medium2 = await createMedium();
-
-    client.on("message", (data) => {
-      const displayOrder = new RegExp(`.*${medium2.title}.*${medium1.title}.*`);
-
-      expect(data.toString().match(displayOrder)).not.toBeNull();
-    });
-
-    await PlayQueue.create({ mediumId: medium1.id, order: 15 });
-    await PlayQueue.create({ mediumId: medium2.id, order: 14 });
-
-    await wss.latestPlayQueue();
+    wss.dispatch("refresh-list");
   });
 
   it("can broadcast the media is stopped", () => {

@@ -11,6 +11,7 @@ import "htmx.org/dist/ext/ws";
 import neatDuration from "../../src/neat-duration";
 import currentTime from "./current-time";
 import { HTMXEvent } from "./renderer";
+import wsEvent from "./ws-event";
 
 dayjs.extend(neatDuration);
 
@@ -20,6 +21,7 @@ Alpine.plugin(morph);
 Alpine.plugin(sort);
 Alpine.plugin(persist);
 Alpine.data("currentTime", currentTime);
+Alpine.data("wsEvent", wsEvent);
 Alpine.start();
 
 document.addEventListener("htmx:beforeSwap", (event: HTMXEvent) => {

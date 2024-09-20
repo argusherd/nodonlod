@@ -33,7 +33,7 @@ export interface WSS {
   mediaStop: () => void;
   playNext: () => Promise<void>;
   currentTime: (currentTime: number) => void;
-  latestPlayQueue: () => Promise<void>;
+  dispatch: (event: string) => void;
   on: Pick<WsServer, "on">["on"];
   removeAllListeners: (event: "play-next") => void;
 }
@@ -114,16 +114,8 @@ const wss: WSS = {
   },
   currentTime: (currentTime) =>
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ currentTime }))),
-  latestPlayQueue: async () => {
-    const items = await PlayQueue.findAll({
-      include: [Medium, Chapter],
-      order: [["order", "ASC"]],
-    });
-
-    wsServer.clients.forEach(async (ws) =>
-      ws.send(render("play-queues/index.pug", { items })),
-    );
-  },
+  dispatch: (event) =>
+    wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ event }))),
   on: (event, listener) => wsServer.on(event, listener),
   removeAllListeners: (event) => wsServer.removeAllListeners(event),
 };
