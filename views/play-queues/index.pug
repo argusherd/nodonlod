@@ -1,5 +1,6 @@
 #play-queues
-  .flex.flex-col.gap-1.p-2.pt-0(
+  ol.list-decimal.py-1.pl-10.pr-2.text-gray-800(
+    class="dark:text-white",
     x-data="{ id: 0, order: 0 }",
     x-sort=`
       id = $item; order = $position;
@@ -17,28 +18,38 @@
     )
 
     each item in items
-      .group.flex.items-center.justify-between.gap-1(x-sort:item=item.id)
-        button.overflow-hidden.text-ellipsis.text-nowrap(
-          hx-get=`/media/${item.medium.id}/play`,
-          hx-swap="none",
-          title=item.medium.title
-        )
-          if item.chapter
-            span.mr-1.rounded.bg-blue-300.px-1.text-white(class="py-0.5") #{ item.chapter.title }
-          span #{ item.medium.title }
-        .flex.hidden.shrink-0.flex-row.flex-nowrap.items-center.gap-1(
-          class="group-hover:flex"
-        )
-          a(
-            class="icon-[hugeicons--view]",
-            href=`/media/${item.medium.id}`,
-            hx-target="body",
-            title=__("View")
+      li(x-sort:item=item.id)
+        .flex.items-center.gap-2.py-1
+          button.flex.items-center.gap-1.overflow-hidden.text-ellipsis.text-nowrap(
+            hx-get=`/media/${item.medium.id}/play`,
+            hx-swap="none",
+            title=item.medium.title
           )
-          button(
-            class="icon-[material-symbols--delete-outline]",
-            hx-delete=`/play-queues/${item.id}`,
-            hx-swap="delete",
-            hx-target="closest .group",
-            title=__("Delete")
-          )
+            if item.chapter
+              span.inline-flex.items-center.rounded-md.border.border-gray-200.bg-white.px-2.py-1.text-xs.font-medium.text-gray-800.shadow-sm(
+                class="dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+              ) #{ item.chapter.title }
+
+            span #{ item.medium.title }
+
+          .ml-auto.flex.shrink-0.items-center.gap-1
+            i.cursor-grab.text-2xl(
+              class="icon-[ph--dots-six-vertical]",
+              title=__("Sort"),
+              x-sort:handle
+            )
+
+            a.text-2xl(
+              class="icon-[lets-icons--view-light]",
+              href=`/media/${item.medium.id}`,
+              hx-target="body",
+              title=__("View")
+            )
+
+            button.text-3xl(
+              class="icon-[material-symbols-light--delete-sweep-outline]",
+              hx-delete=`/play-queues/${item.id}`,
+              hx-swap="delete",
+              hx-target="closest li",
+              title=__("Remove")
+            )

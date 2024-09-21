@@ -1,5 +1,6 @@
-.relative.z-10.h-auto.w-auto(
+#play-queues-slide-over.relative.z-10.h-auto.w-auto(
   @open-play-queues.window="$dispatch('refresh-play-queues'); show = true",
+  hx-preserve,
   x-data="{ show: false }"
 )
   .relative.z-10(@keydown.window.escape="show = false", x-show="show")
