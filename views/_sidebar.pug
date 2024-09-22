@@ -1,7 +1,7 @@
 mixin navitem({ icon, label })
-  .group.rounded-lg.text-gray-700.transition-colors.duration-200(
+  .group.rounded-lg.transition-colors.duration-200(
     @mouseover="$refs.label.style.top = $el.getBoundingClientRect().top + 'px'",
-    class="focus:outline-nones p-1.5 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800",
+    class="focus:outline-nones p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800",
     x-data=""
   )
     i.block.text-2xl(class=icon || "icon-[ph--placeholder]")
@@ -15,8 +15,8 @@ mixin navlink({ href, icon, label })
   a(href=href || "")
     +navitem({ icon, label })
 
-aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border-r.bg-white.py-6(
-  class="rtl:border-l rtl:border-r-0 dark:border-gray-700 dark:bg-gray-900"
+aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border-r.bg-white.py-6.text-gray-700(
+  class="rtl:border-l rtl:border-r-0 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
 )
   nav.flex.flex-1.flex-col.gap-4
     +navlink({ href: "/", icon: "icon-[heroicons--home]", label: __("Home") })
@@ -27,8 +27,11 @@ aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border
 
     <hr class="border-gray-200 dark:border-gray-600" />
 
-    button(@click="$dispatch('open-play-queues')")
+    button.relative(@click="$dispatch('open-play-queues')")
       +navitem({ icon: "icon-[ph--stack-light]", label: __("Play Queue") })
+
+      #play-queues-count.absolute.-bottom-2.-right-1(hx-preserve)
+        include play-queues/_count.pug
 
     button(@click="$dispatch('open-player')")
       +navitem({ icon: "icon-[fluent--headphones-sound-wave-48-regular]", label: __("Open Player") })
