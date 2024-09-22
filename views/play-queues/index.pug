@@ -1,5 +1,5 @@
 #play-queues
-  ol.list-decimal.py-1.pl-10.pr-2.text-gray-800(
+  ol.list-decimal.py-1.pl-10.text-gray-800(
     class="dark:text-white",
     x-data="{ id: 0, order: 0 }",
     x-sort=`
@@ -18,8 +18,8 @@
     )
 
     each item in items
-      li(x-sort:item=item.id)
-        .flex.items-center.gap-2.py-1
+      li(class="hover:bg-gray-100 dark:hover:bg-gray-800", x-sort:item=item.id)
+        .flex.items-center.gap-2.py-1.pr-2
           button.flex.items-center.gap-1.overflow-hidden.text-ellipsis.text-nowrap(
             hx-get=`/media/${item.medium.id}/play`,
             hx-swap="none",
