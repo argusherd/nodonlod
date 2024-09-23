@@ -31,16 +31,7 @@ html(lang=`${getLocale()}`)
     .ml-16.p-2
       block body
 
-    #player-container.fixed.bottom-4(
-      :class="minimize || 'w-5/6'",
-      @open-player.window="show = true",
-      class="left-1/2 -translate-x-1/2",
-      hx-preserve,
-      x-data="{ show: true, minimize: false }",
-      x-show="show"
-    )
-      .relative.ml-10.rounded.bg-pink-100
-        #player
+    include player/show.pug
 
     include play-queues/_slide-over.pug
 
