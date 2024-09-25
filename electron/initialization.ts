@@ -72,7 +72,7 @@ function setUpMediaEvent() {
     wss.dispatch("refresh-play-queues");
   });
 
-  mediaPlayer.on("start", (duration) => wss.mediaStart(duration));
+  mediaPlayer.on("start", (duration) => wss.duration(duration));
   mediaPlayer.on("end", () => {
     wss.mediaStop();
     wss.playNext();

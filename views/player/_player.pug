@@ -1,16 +1,13 @@
-#player(x-data="currentTime")
+#player(x-data="playingTrack")
   .absolute.-right-2.-top-2.flex.gap-1
-    button.flex.rounded-full.bg-pink-400.text-white(
-      @click="minimize = !minimize",
-      x-show="!minimize"
-    )
+    button.flex.rounded-full.bg-pink-400.text-white
       i(class="icon-[fluent--minimize-12-regular]")
     button.flex.rounded-full.bg-pink-400.text-white(
       @click="show = false; minimize = false; $dispatch('player-closed')"
     )
       i(class="icon-[material-symbols--close]")
 
-  .flex.flex-col.gap-2.p-2(x-show="!minimize")
+  .flex.flex-col.gap-2.p-2
     p.overflow-hidden.text-ellipsis.whitespace-nowrap.py-1(title=title)
       if chapter
         span.mr-1.rounded-lg.bg-blue-200.px-2 #{ chapter || 'Chapter' }
@@ -28,10 +25,6 @@
         span /
         include _duration.pug
 
-  .flex.gap-2.p-1(x-show="minimize")
+  .flex.gap-2.p-1
     i#minimized-play-btn.text-2xl(class="icon-[line-md--loading-loop]")
-    span.cursor-pointer(
-      @click="minimize = false",
-      title=title,
-      x-text="dayjs.neatDuration(currentTime)"
-    )
+    span.cursor-pointer(title=title, x-text="dayjs.neatDuration(currentTime)")

@@ -9,7 +9,7 @@ import dayjs from "dayjs";
 import "htmx.org/dist/ext/alpine-morph";
 import "htmx.org/dist/ext/ws";
 import neatDuration from "../../src/neat-duration";
-import currentTime from "./current-time";
+import playingTrack from "./playing-track";
 import { HTMXEvent } from "./renderer";
 import wsEvent from "./ws-event";
 
@@ -20,7 +20,7 @@ window.Alpine = Alpine;
 Alpine.plugin(morph);
 Alpine.plugin(sort);
 Alpine.plugin(persist);
-Alpine.data("currentTime", currentTime);
+Alpine.data("playingTrack", playingTrack);
 Alpine.data("wsEvent", wsEvent);
 Alpine.start();
 
