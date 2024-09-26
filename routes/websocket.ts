@@ -72,17 +72,10 @@ const wss: WSS = {
     wsServer.handleUpgrade(request, socket, head, (ws) => {
       ws.emit("connection", ws, request);
     }),
-  nowPlaying: (medium: Medium, chapter?: Chapter) =>
-    wsServer.clients.forEach((ws) => {
-      cachedMedium = medium;
-      cachedChapter = chapter;
-      ws.send(
-        render("player/_player.pug", {
-          title: medium.title,
-          chapter: chapter?.title,
-        }),
-      );
-    }),
+  nowPlaying: (medium: Medium, chapter?: Chapter) => {
+    cachedMedium = medium;
+    cachedChapter = chapter;
+  },
   mediaStart: (duration: number) =>
     wsServer.clients.forEach((ws) =>
       ws.send(
