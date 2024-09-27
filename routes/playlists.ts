@@ -9,7 +9,6 @@ import PlaylistItem from "../database/models/playlist-item";
 import mediaPlayer from "../src/media-player";
 import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
-import wss from "./websocket";
 
 interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
@@ -68,7 +67,6 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
   const { startTime, endTime } = chapter || {};
 
   mediaPlayer.play(medium.url, startTime, endTime);
-  wss.nowPlaying(medium, chapter);
 
   await queue(playlistItems);
 

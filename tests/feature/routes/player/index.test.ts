@@ -6,13 +6,7 @@ describe("The media player hook route", () => {
   it("can tell the player to pause the media", async () => {
     const mockedPause = jest.spyOn(mediaPlayer, "pause").mockImplementation();
 
-    await supertest(express)
-      .put("/player/pause")
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain('id="play-btn"');
-        expect(res.text).toContain("/player/resume");
-      });
+    await supertest(express).put("/player/pause").expect(205);
 
     expect(mockedPause).toHaveBeenCalled();
   });
@@ -20,13 +14,7 @@ describe("The media player hook route", () => {
   it("can tell the player to resume the media", async () => {
     const mockedResume = jest.spyOn(mediaPlayer, "resume").mockImplementation();
 
-    await supertest(express)
-      .put("/player/resume")
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain('id="play-btn"');
-        expect(res.text).toContain("/player/pause");
-      });
+    await supertest(express).put("/player/resume").expect(205);
 
     expect(mockedResume).toHaveBeenCalled();
   });

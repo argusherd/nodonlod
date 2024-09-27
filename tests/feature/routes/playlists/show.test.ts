@@ -63,18 +63,18 @@ describe("The playlist show page", () => {
     await PlaylistItem.create({
       playlistId: playlist.id,
       mediumId: medium1.id,
-      order: 50,
+      order: 100,
     });
     await PlaylistItem.create({
       playlistId: playlist.id,
       mediumId: medium2.id,
-      order: 49,
+      order: 10,
     });
     await PlaylistItem.create({
       playlistId: playlist.id,
       mediumId: chapter.mediumId,
       chapterId: chapter.id,
-      order: 48,
+      order: 1,
     });
 
     const displayOrder = new RegExp(

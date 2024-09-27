@@ -74,10 +74,9 @@ function setUpMediaEvent() {
 
   mediaPlayer.on("start", (duration) => wss.duration(duration));
   mediaPlayer.on("end", () => {
-    wss.mediaStop();
     wss.playNext();
   });
-  mediaPlayer.on("stop", () => wss.mediaStop());
+  mediaPlayer.on("stop", () => {});
   mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
 }
 

@@ -1,6 +1,4 @@
-import Medium from "@/database/models/medium";
 import express from "@/routes";
-import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
 import { createMedium } from "../../setup/create-model";
@@ -23,18 +21,5 @@ describe("The medium play route", () => {
     jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
 
     await supertest(express).get(`/media/NOT_EXISTS/play`).expect(404);
-  });
-
-  it("also instructs the websocket to send out the medium information", async () => {
-    const medium = await createMedium();
-    const mockedNowPlaying = jest.fn();
-
-    jest.spyOn(wss, "nowPlaying").mockImplementation(mockedNowPlaying);
-
-    await supertest(express).get(`/media/${medium.id}/play`);
-
-    expect(mockedNowPlaying).toHaveBeenCalledWith(
-      await Medium.findOne({ where: { id: medium.id } }),
-    );
   });
 });

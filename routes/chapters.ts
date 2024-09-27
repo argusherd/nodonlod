@@ -7,7 +7,6 @@ import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
 import { i18n } from "./middlewares/i18n";
-import wss from "./websocket";
 
 interface ChapterRequest extends Request {
   chapter: Chapter;
@@ -163,7 +162,6 @@ router.get("/chapters/:chapter/play", async (req: ChapterRequest, res) => {
   const { startTime, endTime } = req.chapter;
 
   mediaPlayer.play(medium.url, startTime, endTime);
-  wss.nowPlaying(medium, req.chapter);
 
   res.sendStatus(202);
 });

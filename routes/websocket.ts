@@ -5,7 +5,6 @@ import { WebSocketServer } from "ws";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import render from "./pug";
 
 interface WsServer extends WebSocketServer {
   emit(
@@ -28,9 +27,6 @@ export interface WSS {
     socket: internal.Duplex,
     head: Buffer,
   ) => void;
-  nowPlaying: (medium: Medium, chapter?: Chapter) => void;
-  mediaStart: (duration: number) => void;
-  mediaStop: () => void;
   playNext: () => Promise<void>;
   currentTime: (currentTime: number) => void;
   duration: (duration: number) => void;
@@ -72,24 +68,6 @@ const wss: WSS = {
     wsServer.handleUpgrade(request, socket, head, (ws) => {
       ws.emit("connection", ws, request);
     }),
-  nowPlaying: (medium: Medium, chapter?: Chapter) => {
-    cachedMedium = medium;
-    cachedChapter = chapter;
-  },
-  mediaStart: (duration: number) =>
-    wsServer.clients.forEach((ws) =>
-      ws.send(
-        render("player/_progress-bar.pug", {
-          startTime: cachedChapter?.startTime,
-          endTime: cachedChapter?.endTime,
-          duration,
-        }) +
-          render("player/_duration.pug", { duration }) +
-          render("player/_pause.pug"),
-      ),
-    ),
-  mediaStop: () =>
-    wsServer.clients.forEach((ws) => ws.send(render("player/_replay.pug"))),
   playNext: async () => {
     if (cachedMedium) await reorderRemaining();
 
@@ -104,7 +82,6 @@ const wss: WSS = {
     const { startTime, endTime } = chapter || {};
 
     wsServer.emit("play-next", medium.url, startTime, endTime);
-    wss.nowPlaying(medium, chapter);
   },
   currentTime: (currentTime) =>
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ currentTime }))),

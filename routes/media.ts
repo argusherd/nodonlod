@@ -7,7 +7,6 @@ import PlayQueue from "../database/models/play-queue";
 import mediaPlayer from "../src/media-player";
 import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
-import wss from "./websocket";
 
 interface MediumRequest extends HasPageRequest {
   medium: Medium;
@@ -76,8 +75,6 @@ router.get("/:medium", async (req: MediumRequest, res) => {
 
 router.get("/:medium/play", (req: MediumRequest, res) => {
   mediaPlayer.play(req.medium.url as string);
-
-  wss.nowPlaying(req.medium);
 
   res.sendStatus(202);
 });

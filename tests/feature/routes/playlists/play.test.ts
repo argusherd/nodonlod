@@ -3,7 +3,6 @@ import Medium from "@/database/models/medium";
 import PlayQueue from "@/database/models/play-queue";
 import PlaylistItem from "@/database/models/playlist-item";
 import express from "@/routes";
-import wss from "@/routes/websocket";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
 import {
@@ -30,18 +29,12 @@ describe("The playlist play route", () => {
     });
 
     const mockedPlay = jest.fn();
-    const mockedNowPlaying = jest.fn();
 
     jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
-    jest.spyOn(wss, "nowPlaying").mockImplementation(mockedNowPlaying);
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
     expect(mockedPlay).toHaveBeenCalledWith(medium2.url, undefined, undefined);
-    expect(mockedNowPlaying).toHaveBeenCalledWith(
-      await Medium.findOne({ where: { id: medium2.id } }),
-      undefined,
-    );
   });
 
   it("tells the htmx to refresh the play queue view", async () => {
@@ -148,10 +141,8 @@ describe("The playlist play route", () => {
     });
 
     const mockedPlay = jest.fn();
-    const mockedNowPlaying = jest.fn();
 
     jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
-    jest.spyOn(wss, "nowPlaying").mockImplementation(mockedNowPlaying);
 
     await supertest(express).get(`/playlists/${playlist.id}/play`).expect(202);
 
@@ -162,10 +153,6 @@ describe("The playlist play route", () => {
     });
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 123, 456);
-    expect(mockedNowPlaying).toHaveBeenCalledWith(
-      await Medium.findOne({ where: { id: medium.id } }),
-      await Chapter.findOne({ where: { id: chapter1.id } }),
-    );
     expect(playQueue?.chapterId).toEqual(chapter2.id);
   });
 });
