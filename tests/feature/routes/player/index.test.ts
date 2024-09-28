@@ -22,7 +22,7 @@ describe("The media player hook route", () => {
   it("can tell the player to stop the media", async () => {
     const mockedStop = jest.spyOn(mediaPlayer, "stop").mockImplementation();
 
-    await supertest(express).put("/player/stop").expect(204);
+    await supertest(express).put("/player/stop").expect(205);
 
     expect(mockedStop).toHaveBeenCalled();
   });
@@ -34,7 +34,7 @@ describe("The media player hook route", () => {
       .put("/player/seek")
       .type("form")
       .send({ seek: 10 })
-      .expect(204);
+      .expect(205);
 
     expect(mockedSeek).toHaveBeenCalledWith(10);
   });
@@ -42,7 +42,7 @@ describe("The media player hook route", () => {
   it("can instruct the player to replay the media", async () => {
     const mockedReplay = jest.spyOn(mediaPlayer, "replay").mockImplementation();
 
-    await supertest(express).put("/player/replay").expect(204);
+    await supertest(express).put("/player/replay").expect(205);
 
     expect(mockedReplay).toHaveBeenCalled();
   });

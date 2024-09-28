@@ -72,11 +72,15 @@ function setUpMediaEvent() {
     wss.dispatch("refresh-play-queues");
   });
 
-  mediaPlayer.on("start", (duration) => wss.duration(duration));
+  mediaPlayer.on("start", (duration) => {
+    wss.duration(duration);
+    wss.dispatch("track-started");
+  });
   mediaPlayer.on("end", () => {
     wss.playNext();
+    wss.dispatch("track-ended");
   });
-  mediaPlayer.on("stop", () => {});
+  mediaPlayer.on("stop", () => wss.dispatch("track-ended"));
   mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
 }
 

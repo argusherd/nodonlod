@@ -1,3 +1,10 @@
+mixin controlIcon(iconClass="")
+  .-my-2.mx-auto.flex.h-20.w-20.flex-none.items-center.justify-center.rounded-full.bg-white.text-slate-900.shadow-md.ring-1.transition-all.transition-all.duration-500.duration-500(
+    class="ring-slate-900/5 dark:bg-slate-100 dark:text-slate-700",
+    type="button"
+  )
+    i.text-4xl(class=iconClass)
+
 #player.fixed.bottom-8(
   @open-player.window="show = !show",
   class="left-1/2 -translate-x-1/2",
@@ -87,13 +94,34 @@
           class="icon-[fluent--arrow-repeat-all-off-16-regular]",
           type="button"
         )
-        button.text-2xl(class="icon-[material-symbols--stop]", type="button")
+        button.text-2xl(
+          class="icon-[material-symbols--stop]",
+          hx-put="/player/stop",
+          hx-swap="none",
+          type="button"
+        )
 
-      button.-my-2.mx-auto.flex.h-20.w-20.flex-none.items-center.justify-center.rounded-full.bg-white.text-slate-900.shadow-md.ring-1.transition-all.transition-all.duration-500.duration-500(
-        class="ring-slate-900/5 dark:bg-slate-100 dark:text-slate-700",
-        type="button"
+      div(
+        @track-ended.window="ended = true",
+        @track-started.window="ended = false; playing = true",
+        x-data="{ playing: false, ended: true }"
       )
-        i.text-4xl(class="icon-[ion--pause-outline]")
+        button(
+          @click="playing = false",
+          hx-put="/player/pause",
+          hx-swap="none",
+          x-show="playing && !ended"
+        )
+          +controlIcon("icon-[ion--pause-outline]")
+        button(
+          @click="playing = true",
+          hx-put="/player/resume",
+          hx-swap="none",
+          x-show="!playing && !ended"
+        )
+          +controlIcon("icon-[teenyicons--play-solid] translate-x-0.5")
+        button(hx-put="/player/replay", hx-swap="none", x-show="ended")
+          +controlIcon("icon-[material-symbols--replay]")
 
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
         button.text-2xl(class="icon-[mdi--next-title]", type="button")
