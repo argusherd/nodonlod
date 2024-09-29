@@ -4,9 +4,9 @@ import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
-import mediaPlayer from "../src/media-player";
 import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
+import { play } from "./play";
 
 interface MediumRequest extends HasPageRequest {
   medium: Medium;
@@ -73,10 +73,10 @@ router.get("/:medium", async (req: MediumRequest, res) => {
   });
 });
 
-router.get("/:medium/play", (req: MediumRequest, res) => {
-  mediaPlayer.play(req.medium.url as string);
+router.get("/:medium/play", async (req: MediumRequest, res) => {
+  await play(req.medium);
 
-  res.sendStatus(202);
+  res.set("HX-Trigger", "show-playing").sendStatus(202);
 });
 
 router.post("/:medium/queue", async (req: MediumRequest, res) => {

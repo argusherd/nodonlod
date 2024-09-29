@@ -22,25 +22,11 @@ mixin controlIcon(iconClass="")
     .space-y-6.rounded-t-xl.border.border-slate-100.bg-white.p-4.pb-6.transition-all.transition-all.duration-500.duration-500(
       class="sm:min-w-96 sm:space-y-8 sm:p-10 sm:pb-8 lg:space-y-6 lg:p-6 xl:space-y-8 xl:p-10 xl:pb-8 dark:border-transparent dark:border-b-slate-500 dark:bg-slate-800"
     )
-      .flex.items-center.space-x-4
-        img.flex-none.rounded-lg.bg-slate-100(
-          alt="",
-          decoding="async",
-          height="88",
-          loading="lazy",
-          src="https://tailwindcss.com/_next/static/media/full-stack-radio.afb14e4e.png",
-          width="88"
-        )
-        .min-w-0.flex-auto.space-y-1.font-semibold
-          p.text-sm.leading-6.text-cyan-500.transition-all.duration-500(
-            class="dark:text-cyan-400"
-          ) Chapter
-          p.truncate.text-sm.leading-6.text-slate-500.transition-all.duration-500(
-            class="dark:text-slate-400"
-          ) description
-          h2.text-lg.text-slate-900.transition-all.duration-500(
-            class="dark:text-slate-50"
-          ) Title
+      .flex.items-center.space-x-4(
+        hx-get="/play",
+        hx-trigger="show-playing from:body"
+      )
+
       .space-y-2(x-data="playingTrack")
         .group.relative(
           x-data=`{
