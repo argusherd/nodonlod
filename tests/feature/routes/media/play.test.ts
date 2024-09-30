@@ -14,7 +14,10 @@ describe("The medium play route", () => {
 
     jest.spyOn(playModule, "play").mockImplementation(mockedPlay);
 
-    await supertest(express).get(`/media/${medium?.id}/play`).expect(202);
+    await supertest(express)
+      .get(`/media/${medium?.id}/play`)
+      .expect(202)
+      .expect("HX-Trigger", "show-playing");
 
     expect(mockedPlay).toHaveBeenCalledWith(medium);
   });

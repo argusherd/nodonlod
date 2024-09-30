@@ -9,9 +9,10 @@ a.shrink-0(href=`/media/${medium.id}`)
     width="88"
   )
 .min-w-0.flex-auto.space-y-1.font-semibold
-  p.text-sm.leading-6.text-cyan-500.transition-all.duration-500(
-    class="dark:text-cyan-400"
-  ) Chapter
+  if chapter
+    p.text-sm.leading-6.text-cyan-500.transition-all.duration-500(
+      class="dark:text-cyan-400"
+    ) #{ chapter.title }
   p.line-clamp-1.max-w-md.truncate.text-wrap.text-sm.leading-6.text-slate-500.transition-all.duration-500(
     class="dark:text-slate-400"
   ) #{ medium.description }

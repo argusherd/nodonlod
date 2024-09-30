@@ -5,8 +5,8 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import mediaPlayer from "../src/media-player";
 import { i18n } from "./middlewares/i18n";
+import { play } from "./play";
 
 interface ChapterRequest extends Request {
   chapter: Chapter;
@@ -158,12 +158,9 @@ router.put(
 );
 
 router.get("/chapters/:chapter/play", async (req: ChapterRequest, res) => {
-  const medium = (await req.chapter.$get("medium")) as Medium;
-  const { startTime, endTime } = req.chapter;
+  await play(req.chapter);
 
-  mediaPlayer.play(medium.url, startTime, endTime);
-
-  res.sendStatus(202);
+  res.set("HX-Trigger", "show-playing").sendStatus(202);
 });
 
 router.post("/chapters/:chapter/queue", async (req: ChapterRequest, res) => {
