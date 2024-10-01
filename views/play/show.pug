@@ -1,4 +1,4 @@
-a.shrink-0(href=`/media/${medium.id}`)
+a.shrink-0(href=playlist ? `/playlists/${playlist.id}` : `/media/${medium.id}`)
   img.flex-none.rounded-lg.bg-slate-100(
     alt="",
     class="dark:bg-slate-700",

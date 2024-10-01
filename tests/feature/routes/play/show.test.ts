@@ -2,7 +2,11 @@ import express from "@/routes";
 import { play } from "@/routes/play";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
-import { createChapter, createMedium } from "../../setup/create-model";
+import {
+  createChapter,
+  createMedium,
+  createPlaylistItem,
+} from "../../setup/create-model";
 
 describe("The show play route", () => {
   beforeAll(() => {
@@ -35,6 +39,19 @@ describe("The show play route", () => {
       .expect((res) => {
         expect(res.text).toContain(chapter.title);
         expect(res.text).toContain(`/media/${chapter.mediumId}`);
+      });
+  });
+
+  it("can provide a link to the currently playing item in the playlist", async () => {
+    const playlistItem = await createPlaylistItem();
+
+    await play(playlistItem);
+
+    await supertest(express)
+      .get("/play")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`/playlists/${playlistItem.playlistId}`);
       });
   });
 });

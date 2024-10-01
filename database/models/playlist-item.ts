@@ -66,6 +66,9 @@ export default class PlaylistItem extends Model<
   @UpdatedAt
   updatedAt: Date;
 
+  @BelongsTo(() => Playlist)
+  playlist: Playlist;
+
   @BelongsTo(() => Medium)
   medium: Medium;
 

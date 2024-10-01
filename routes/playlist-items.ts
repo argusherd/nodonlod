@@ -2,6 +2,7 @@ import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import PlaylistItem from "../database/models/playlist-item";
+import { play } from "./play";
 
 interface HasPlaylistItem extends Request {
   playlistItem: PlaylistItem;
@@ -50,5 +51,11 @@ router.put(
       .sendStatus(205);
   },
 );
+
+router.get("/:playlistItem/play", async (req: HasPlaylistItem, res) => {
+  await play(req.playlistItem);
+
+  res.set("HX-Trigger", "show-playing").sendStatus(202);
+});
 
 export default router;
