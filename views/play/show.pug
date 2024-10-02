@@ -17,3 +17,13 @@ a.shrink-0(href=playlist ? `/playlists/${playlist.id}` : `/media/${medium.id}`)
     class="dark:text-slate-400"
   ) #{ medium.description }
   h2.text-lg.text-slate-900.transition-all.duration-500(class="dark:text-slate-50") #{ medium.title }
+
+if chapter
+  #chapter-end-time.text-slate-400.transition-all.duration-500(
+    class="dark:text-slate-500",
+    hx-swap-oob="true",
+    title=__("Chapter End Time"),
+    x-text=`dayjs.neatDuration(${chapter.endTime}) + ' |'`
+  )
+else
+  #chapter-end-time(hx-swap-oob="true")

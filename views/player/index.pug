@@ -67,10 +67,13 @@ mixin controlIcon(iconClass="")
             class="dark:text-slate-100",
             x-text="dayjs.neatDuration(currentTime)"
           )
-          .text-slate-500.transition-all.duration-500(
-            class="dark:text-slate-400",
-            x-text="dayjs.neatDuration(duration)"
-          )
+          .flex.gap-1
+            #chapter-end-time
+
+            .text-slate-500.transition-all.duration-500(
+              class="dark:text-slate-400",
+              x-text="dayjs.neatDuration(duration)"
+            )
     .flex.items-center.rounded-b-xl.bg-slate-50.text-slate-500.transition-all.transition-all.duration-500.duration-500(
       class="dark:bg-slate-600 dark:text-slate-200"
     )

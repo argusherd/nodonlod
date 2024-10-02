@@ -29,7 +29,7 @@ describe("The show play route", () => {
   });
 
   it("displays the currently playing chapter", async () => {
-    const chapter = await createChapter();
+    const chapter = await createChapter({ endTime: 114514 });
 
     await play(chapter);
 
@@ -39,6 +39,7 @@ describe("The show play route", () => {
       .expect((res) => {
         expect(res.text).toContain(chapter.title);
         expect(res.text).toContain(`/media/${chapter.mediumId}`);
+        expect(res.text).toContain("114514");
       });
   });
 
