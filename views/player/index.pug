@@ -75,10 +75,42 @@ mixin controlIcon(iconClass="")
               x-text="dayjs.neatDuration(duration)"
             )
     .flex.items-center.rounded-b-xl.bg-slate-50.text-slate-500.transition-all.transition-all.duration-500.duration-500(
-      class="dark:bg-slate-600 dark:text-slate-200"
+      class="dark:bg-slate-600 dark:text-slate-200",
+      x-data=`{
+        NextMode: {
+          NOT: 0,
+          ALL: 1,
+          LIST_ONLY: 2,
+          RANDOM: 3,
+        },
+        currentNextMode: 0,
+      }`
     )
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
-        button.text-2xl(class="icon-[la--random]", type="button")
+        button.relative.flex.flex-col.items-center.text-2xl(
+          @click="currentNextMode = (currentNextMode + 1) % Object.keys(NextMode).length"
+        )
+          span.text-xs Auto
+          i(
+            class="icon-[ic--baseline-play-disabled]",
+            title=__("Autoplay Disabled"),
+            x-show="currentNextMode == NextMode.NOT"
+          )
+          i(
+            class="icon-[material-symbols--autoplay]",
+            title=__("Autoplay Enabled"),
+            x-show="currentNextMode == NextMode.ALL"
+          )
+          i(
+            class="icon-[mage--playlist]",
+            title=__("Autoplay List/Queue Only"),
+            x-show="currentNextMode == NextMode.LIST_ONLY"
+          )
+          i(
+            class="icon-[la--random]",
+            title=__("Autoplay Randomly"),
+            x-show="currentNextMode == NextMode.RANDOM"
+          )
         button.text-2xl(
           class="icon-[fluent--arrow-repeat-all-off-16-regular]",
           type="button"
