@@ -21,7 +21,7 @@
       li(class="hover:bg-gray-100 dark:hover:bg-gray-800", x-sort:item=item.id)
         .flex.items-center.gap-2.py-1.pr-2
           button.flex.items-center.gap-1.overflow-hidden.text-ellipsis.text-nowrap(
-            hx-get=`/media/${item.medium.id}/play`,
+            hx-get=item.chapter ? `/chapters/${item.chapter.id}/play` : `/media/${item.medium.id}/play`,
             hx-swap="none",
             title=item.medium.title
           )
