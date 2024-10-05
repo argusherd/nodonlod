@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
@@ -77,6 +77,28 @@ export async function playNextQueued() {
 
   if (queued.chapter) await play(queued.chapter);
   else await play(queued.medium);
+}
+
+export async function playNextMedium() {
+  medium = await Medium.findOne({
+    where: {
+      ...(medium && {
+        createdAt: { [Op.lte]: medium.createdAt },
+        id: { [Op.ne]: medium.id },
+      }),
+    },
+    order: [["createdAt", "DESC"]],
+  });
+
+  if (medium) await play(medium);
+}
+
+export async function playNextRandom() {
+  medium = await Medium.findOne({
+    order: literal("random()"),
+  });
+
+  if (medium) await play(medium);
 }
 
 export default router;
