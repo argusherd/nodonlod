@@ -5,8 +5,8 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
+import { play } from "../src/currently-playing";
 import { i18n } from "./middlewares/i18n";
-import { play } from "./play";
 
 interface ChapterRequest extends Request {
   chapter: Chapter;

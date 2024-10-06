@@ -2,7 +2,7 @@ import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import PlaylistItem from "../database/models/playlist-item";
-import { play } from "./play";
+import { play } from "../src/currently-playing";
 
 interface HasPlaylistItem extends Request {
   playlistItem: PlaylistItem;

@@ -1,6 +1,6 @@
 import PlaylistItem from "@/database/models/playlist-item";
 import express from "@/routes";
-import * as playModule from "@/routes/play";
+import * as playModule from "@/src/currently-playing";
 import supertest from "supertest";
 import { createPlaylistItem } from "../../setup/create-model";
 

@@ -1,6 +1,6 @@
 import Chapter from "@/database/models/chapter";
 import express from "@/routes";
-import * as playModule from "@/routes/play";
+import * as playModule from "@/src/currently-playing";
 import supertest from "supertest";
 import { createChapter } from "../../setup/create-model";
 

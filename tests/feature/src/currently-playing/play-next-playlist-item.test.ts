@@ -1,4 +1,4 @@
-import { play, playNextPlaylistItem } from "@/routes/play";
+import { play, playNextPlaylistItem } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import { createPlaylist, createPlaylistItem } from "../../setup/create-model";
 

@@ -4,9 +4,9 @@ import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
+import { play } from "../src/currently-playing";
 import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
-import { play } from "./play";
 
 interface MediumRequest extends HasPageRequest {
   medium: Medium;

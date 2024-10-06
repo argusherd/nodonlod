@@ -1,6 +1,6 @@
 import Medium from "@/database/models/medium";
 import express from "@/routes";
-import * as playModule from "@/routes/play";
+import * as playModule from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
 import { createMedium } from "../../setup/create-model";

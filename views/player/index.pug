@@ -78,10 +78,10 @@ mixin controlIcon(iconClass="")
       class="dark:bg-slate-600 dark:text-slate-200",
       x-data=`{
         NextMode: {
-          NOT: 0,
-          ALL: 1,
-          LIST_ONLY: 2,
-          RANDOM: 3,
+          Not: 0,
+          All: 1,
+          ListOnly: 2,
+          Random: 3,
         },
         currentNextMode: 0,
       }`
@@ -94,22 +94,22 @@ mixin controlIcon(iconClass="")
           i(
             class="icon-[ic--baseline-play-disabled]",
             title=__("Autoplay Disabled"),
-            x-show="currentNextMode == NextMode.NOT"
+            x-show="currentNextMode == NextMode.Not"
           )
           i(
             class="icon-[material-symbols--autoplay]",
             title=__("Autoplay Enabled"),
-            x-show="currentNextMode == NextMode.ALL"
+            x-show="currentNextMode == NextMode.All"
           )
           i(
             class="icon-[mage--playlist]",
             title=__("Autoplay List/Queue Only"),
-            x-show="currentNextMode == NextMode.LIST_ONLY"
+            x-show="currentNextMode == NextMode.ListOnly"
           )
           i(
             class="icon-[la--random]",
             title=__("Autoplay Randomly"),
-            x-show="currentNextMode == NextMode.RANDOM"
+            x-show="currentNextMode == NextMode.Random"
           )
         button.text-2xl(
           class="icon-[fluent--arrow-repeat-all-off-16-regular]",

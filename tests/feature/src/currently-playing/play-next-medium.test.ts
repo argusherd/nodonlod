@@ -1,4 +1,4 @@
-import { play, playNextMedium } from "@/routes/play";
+import { play, playNextMedium } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import dayjs from "dayjs";
 import { createMedium } from "../../setup/create-model";

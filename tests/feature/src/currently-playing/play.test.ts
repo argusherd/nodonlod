@@ -1,4 +1,4 @@
-import { play } from "@/routes/play";
+import { play } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import {
   createChapter,

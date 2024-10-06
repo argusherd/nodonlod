@@ -1,4 +1,4 @@
-import { playNextRandom } from "@/routes/play";
+import { playNextRandom } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import { createMedium } from "../../setup/create-model";
 

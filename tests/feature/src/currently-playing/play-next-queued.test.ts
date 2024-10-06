@@ -1,5 +1,5 @@
 import PlayQueue from "@/database/models/play-queue";
-import { playNextQueued } from "@/routes/play";
+import { playNextQueued } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import {
   createChapter,
