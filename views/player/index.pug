@@ -145,6 +145,18 @@ mixin controlIcon(iconClass="")
           +controlIcon("icon-[material-symbols--replay]")
 
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
-        button.text-2xl(class="icon-[mdi--next-title]", type="button")
+        input(
+          :value="currentNextMode == NextMode.Random ? true : ''",
+          name="isRandom",
+          type="hidden"
+        )
+        button.text-2xl(
+          @track-ended.window="if (currentNextMode != NextMode.Not) $dispatch('play-next')",
+          class="icon-[mdi--next-title]",
+          hx-include="[name='isRandom']",
+          hx-put="/play/next",
+          hx-trigger="play-next from:body, click",
+          type="button"
+        )
         button.text-2xl(class="icon-[ic--sharp-volume-up]", type="button")
         button.text-2xl(class="icon-[material-symbols--settings]", type="button")
