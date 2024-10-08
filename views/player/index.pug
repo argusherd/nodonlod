@@ -80,8 +80,7 @@ mixin controlIcon(iconClass="")
         NextMode: {
           Not: 0,
           All: 1,
-          ListOnly: 2,
-          Random: 3,
+          Random: 2,
         },
         currentNextMode: 0,
       }`
@@ -102,11 +101,6 @@ mixin controlIcon(iconClass="")
             x-show="currentNextMode == NextMode.All"
           )
           i(
-            class="icon-[mage--playlist]",
-            title=__("Autoplay List/Queue Only"),
-            x-show="currentNextMode == NextMode.ListOnly"
-          )
-          i(
             class="icon-[la--random]",
             title=__("Autoplay Randomly"),
             x-show="currentNextMode == NextMode.Random"
@@ -125,6 +119,7 @@ mixin controlIcon(iconClass="")
       div(
         @track-ended.window="ended = true",
         @track-started.window="ended = false; playing = true",
+        @track-stopped.window="ended = true",
         x-data="{ playing: false, ended: true }"
       )
         button(

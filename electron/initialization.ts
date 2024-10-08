@@ -77,7 +77,7 @@ function setUpMediaEvent() {
     wss.dispatch("track-started");
   });
   mediaPlayer.on("end", () => wss.dispatch("track-ended"));
-  mediaPlayer.on("stop", () => wss.dispatch("track-ended"));
+  mediaPlayer.on("stop", () => wss.dispatch("track-stopped"));
   mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
 }
 
