@@ -18,7 +18,8 @@ export const currentlyPlaying: {
   chapter: null,
 };
 
-export async function play(playable: Medium | Chapter | PlaylistItem) {
+export async function play(playable: Medium | Chapter | PlaylistItem | null) {
+  currentlyPlaying.medium = null;
   currentlyPlaying.chapter = null;
   currentlyPlaying.playlist = null;
   currentlyPlaying.playlistItem = null;
@@ -51,7 +52,7 @@ export async function play(playable: Medium | Chapter | PlaylistItem) {
 export async function playNextPlaylistItem() {
   if (!currentlyPlaying.playlistItem) return;
 
-  currentlyPlaying.playlistItem = await PlaylistItem.findOne({
+  const playlistItem = await PlaylistItem.findOne({
     where: {
       playlistId: currentlyPlaying.playlistItem.playlistId,
       order: { [Op.gt]: currentlyPlaying.playlistItem.order },
@@ -59,9 +60,7 @@ export async function playNextPlaylistItem() {
     order: [["order", "ASC"]],
   });
 
-  if (!currentlyPlaying.playlistItem) return;
-
-  await play(currentlyPlaying.playlistItem);
+  await play(playlistItem);
 }
 
 export async function playNextQueued() {
@@ -83,7 +82,7 @@ export async function playNextQueued() {
 }
 
 export async function playNextMedium() {
-  currentlyPlaying.medium = await Medium.findOne({
+  const medium = await Medium.findOne({
     where: {
       ...(currentlyPlaying.medium && {
         createdAt: { [Op.lte]: currentlyPlaying.medium.createdAt },
@@ -93,13 +92,13 @@ export async function playNextMedium() {
     order: [["createdAt", "DESC"]],
   });
 
-  if (currentlyPlaying.medium) await play(currentlyPlaying.medium);
+  await play(medium);
 }
 
 export async function playNextRandom() {
-  currentlyPlaying.medium = await Medium.findOne({
+  const medium = await Medium.findOne({
     order: literal("random()"),
   });
 
-  if (currentlyPlaying.medium) await play(currentlyPlaying.medium);
+  await play(medium);
 }

@@ -1,11 +1,13 @@
-a.shrink-0(href=playlist ? `/playlists/${playlist.id}` : `/media/${medium.id}`)
+a.shrink-0(
+  href=playlist ? `/playlists/${playlist.id}` : medium ? `/media/${medium.id}` : ""
+)
   img.flex-none.rounded-lg.bg-slate-100(
     alt="",
     class="dark:bg-slate-700",
     decoding="async",
     height="88",
     loading="lazy",
-    src=medium.thumbnail,
+    src=playlist ? playlist.thumbnail : medium ? medium.thumbnail : "",
     width="88"
   )
 .min-w-0.flex-auto.space-y-1.font-semibold
@@ -13,10 +15,11 @@ a.shrink-0(href=playlist ? `/playlists/${playlist.id}` : `/media/${medium.id}`)
     p.text-sm.leading-6.text-cyan-500.transition-all.duration-500(
       class="dark:text-cyan-400"
     ) #{ chapter.title }
-  p.line-clamp-1.max-w-md.truncate.text-wrap.text-sm.leading-6.text-slate-500.transition-all.duration-500(
-    class="dark:text-slate-400"
-  ) #{ medium.description }
-  h2.text-lg.text-slate-900.transition-all.duration-500(class="dark:text-slate-50") #{ medium.title }
+  if medium
+    p.line-clamp-1.max-w-md.truncate.text-wrap.text-sm.leading-6.text-slate-500.transition-all.duration-500(
+      class="dark:text-slate-400"
+    ) #{ medium.description }
+  h2.text-lg.text-slate-900.transition-all.duration-500(class="dark:text-slate-50") #{ medium ? medium.title : __("The end of the list") }
 
 if chapter
   #chapter-end-time.text-slate-400.transition-all.duration-500(

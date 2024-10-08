@@ -5,6 +5,7 @@ import supertest from "supertest";
 import {
   createChapter,
   createMedium,
+  createPlaylist,
   createPlaylistItem,
 } from "../../setup/create-model";
 
@@ -44,7 +45,8 @@ describe("The show play route", () => {
   });
 
   it("can provide a link to the currently playing item in the playlist", async () => {
-    const playlistItem = await createPlaylistItem();
+    const playlist = await createPlaylist({ thumbnail: "foobar" });
+    const playlistItem = await createPlaylistItem({ playlistId: playlist.id });
 
     await play(playlistItem);
 
@@ -52,7 +54,20 @@ describe("The show play route", () => {
       .get("/play")
       .expect(200)
       .expect((res) => {
+        expect(res.text).toContain(playlist.thumbnail);
         expect(res.text).toContain(`/playlists/${playlistItem.playlistId}`);
+      });
+  });
+
+  it("can properly indicate that it is the end of the list", async () => {
+    await play(null);
+
+    await supertest(express)
+      .get("/play")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("The end of the list");
+        expect(res.text).not.toContain("/media/");
       });
   });
 });
