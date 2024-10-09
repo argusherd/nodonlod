@@ -82,14 +82,19 @@ mixin controlIcon(iconClass="")
           All: 1,
           Random: 2,
         },
+        RepeatMode: {
+          Not: 0,
+          Single: 1,
+          Playlist: 2,
+        },
         currentNextMode: 0,
+        currentRepeatMode: 0,
       }`
     )
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
-        button.relative.flex.flex-col.items-center.text-2xl(
+        button.flex.items-center.text-2xl(
           @click="currentNextMode = (currentNextMode + 1) % Object.keys(NextMode).length"
         )
-          span.text-xs Auto
           i(
             class="icon-[ic--baseline-play-disabled]",
             title=__("Autoplay Disabled"),
@@ -105,10 +110,25 @@ mixin controlIcon(iconClass="")
             title=__("Autoplay Randomly"),
             x-show="currentNextMode == NextMode.Random"
           )
-        button.text-2xl(
-          class="icon-[fluent--arrow-repeat-all-off-16-regular]",
+        button.flex.items-center.text-2xl(
+          @click="currentRepeatMode = (currentRepeatMode + 1) % Object.keys(RepeatMode).length",
           type="button"
         )
+          i(
+            class="icon-[fluent--arrow-repeat-all-off-16-regular]",
+            title=__("Repeat Disabled"),
+            x-show="currentRepeatMode == RepeatMode.Not"
+          )
+          i(
+            class="icon-[fluent--arrow-repeat-1-16-regular]",
+            title=__("Repeat Current"),
+            x-show="currentRepeatMode == RepeatMode.Single"
+          )
+          i(
+            class="icon-[fluent--arrow-repeat-all-16-regular]",
+            title=__("Repeat All"),
+            x-show="currentRepeatMode == RepeatMode.Playlist"
+          )
         button.text-2xl(
           class="icon-[material-symbols--stop]",
           hx-put="/player/stop",
