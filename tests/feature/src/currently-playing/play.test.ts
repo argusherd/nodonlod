@@ -3,19 +3,18 @@ import mediaPlayer from "@/src/media-player";
 import {
   createChapter,
   createMedium,
+  createPlayQueue,
   createPlaylistItem,
 } from "../../setup/create-model";
 
 describe("The play function", () => {
   it("can instruct the media player to play the medium", async () => {
     const medium = await createMedium();
-    const mockedPlay = jest.fn();
-
-    jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
     await play(medium);
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium.url);
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url, 0, 0);
   });
 
   it("can instruct the media player to play the chapter of a medium", async () => {
@@ -25,9 +24,7 @@ describe("The play function", () => {
       startTime: 10,
       endTime: 30,
     });
-    const mockedPlay = jest.fn();
-
-    jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
     await play(chapter);
 
@@ -45,11 +42,27 @@ describe("The play function", () => {
       mediumId: medium.id,
       chapterId: chapter.id,
     });
-    const mockedPlay = jest.fn();
-
-    jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
     await play(playlistItem);
+
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 30);
+  });
+
+  it("can instruct the media player to play the item in the play queue", async () => {
+    const medium = await createMedium();
+    const chapter = await createChapter({
+      mediumId: medium.id,
+      startTime: 10,
+      endTime: 30,
+    });
+    const playQueue = await createPlayQueue({
+      mediumId: medium.id,
+      chapterId: chapter.id,
+    });
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await play(playQueue);
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 30);
   });

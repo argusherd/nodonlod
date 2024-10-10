@@ -9,20 +9,30 @@ import mediaPlayer from "./media-player";
 export const currentlyPlaying: {
   playlist: Playlist | null;
   playlistItem: PlaylistItem | null;
+  playQueue: PlayQueue | null;
   medium: Medium | null;
   chapter: Chapter | null;
 } = {
   playlist: null,
   playlistItem: null,
+  playQueue: null,
   medium: null,
   chapter: null,
 };
 
-export async function play(playable: Medium | Chapter | PlaylistItem | null) {
+export async function play(
+  playable: Medium | Chapter | PlaylistItem | PlayQueue | null,
+) {
   currentlyPlaying.medium = null;
   currentlyPlaying.chapter = null;
   currentlyPlaying.playlist = null;
   currentlyPlaying.playlistItem = null;
+  currentlyPlaying.playQueue = null;
+
+  if (!playable) return;
+
+  let startTime = 0;
+  let endTime = 0;
 
   if (playable instanceof Medium) {
     currentlyPlaying.medium = playable;
@@ -32,21 +42,28 @@ export async function play(playable: Medium | Chapter | PlaylistItem | null) {
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = playable;
 
-    const { startTime, endTime } = currentlyPlaying.chapter;
-
-    mediaPlayer.play(currentlyPlaying.medium.url, startTime, endTime);
+    ({ startTime, endTime } = currentlyPlaying.chapter);
   } else if (playable instanceof PlaylistItem) {
     currentlyPlaying.playlist = await playable.$get("playlist");
     currentlyPlaying.playlistItem = playable;
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = await playable.$get("chapter");
-    const { startTime, endTime } = currentlyPlaying.chapter || {
+    ({ startTime, endTime } = currentlyPlaying.chapter || {
       startTime: 0,
       endTime: 0,
-    };
-
-    mediaPlayer.play(currentlyPlaying.medium.url, startTime, endTime);
+    });
+  } else if (playable instanceof PlayQueue) {
+    currentlyPlaying.playQueue = playable;
+    currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
+    currentlyPlaying.chapter = await playable.$get("chapter");
+    ({ startTime, endTime } = currentlyPlaying.chapter || {
+      startTime: 0,
+      endTime: 0,
+    });
   }
+
+  if (currentlyPlaying.medium)
+    mediaPlayer.play(currentlyPlaying.medium.url, startTime, endTime);
 }
 
 export async function playNextPlaylistItem() {
@@ -64,21 +81,19 @@ export async function playNextPlaylistItem() {
 }
 
 export async function playNextQueued() {
+  const lastOrder = await PlayQueue.max("order");
   const queued = await PlayQueue.findOne({
+    where: {
+      ...(currentlyPlaying.playQueue &&
+      currentlyPlaying.playQueue.order != lastOrder
+        ? { order: { [Op.gt]: currentlyPlaying.playQueue.order } }
+        : {}),
+    },
     order: [["order", "ASC"]],
     include: [Medium, Chapter],
   });
 
-  if (!queued) return;
-
-  await queued.destroy();
-  await PlayQueue.decrement("order", {
-    by: 1,
-    where: { order: { [Op.gt]: queued.order } },
-  });
-
-  if (queued.chapter) await play(queued.chapter);
-  else await play(queued.medium);
+  await play(queued);
 }
 
 export async function playNextMedium() {
