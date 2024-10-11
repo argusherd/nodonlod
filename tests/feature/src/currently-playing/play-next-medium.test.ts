@@ -29,4 +29,17 @@ describe("The playNextMedium function", () => {
 
     expect(mockedPlay).toHaveBeenCalledWith(medium2.url);
   });
+
+  it("plays the latest medium if the currently playing item is the oldest one in the database", async () => {
+    const latest = await createMedium();
+    const oldest = await createMedium({
+      createdAt: dayjs().subtract(1, "day").toDate(),
+    });
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await play(oldest);
+    await playNextMedium();
+
+    expect(mockedPlay).toHaveBeenCalledWith(latest.url);
+  });
 });

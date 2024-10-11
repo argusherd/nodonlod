@@ -23,18 +23,23 @@ describe("The playNextPlaylistItem function", () => {
     expect(mockedPlay).toHaveBeenCalledTimes(2);
   });
 
-  it("has no effect if it is the end of the playlist", async () => {
+  it("instruct the media player to play the first item in the play queue if the last item is currently playing", async () => {
     const playlist = await createPlaylist();
-    const playlistItem = await createPlaylistItem({
+    const playlistItem1 = await createPlaylistItem({
       playlistId: playlist.id,
       order: 1,
     });
+    const playlistItem2 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 2,
+    });
+    const medium = await playlistItem1.$get("medium");
     const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
-    await play(playlistItem);
+    await play(playlistItem2);
     await playNextPlaylistItem();
 
-    expect(mockedPlay).toHaveBeenCalledTimes(1);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
   });
 
   it("only searches the same playlist for the item", async () => {
@@ -55,6 +60,5 @@ describe("The playNextPlaylistItem function", () => {
     await playNextPlaylistItem();
 
     expect(mockedPlay).not.toHaveBeenCalledWith(medium?.url, 0, 0);
-    expect(mockedPlay).toHaveBeenCalledTimes(1);
   });
 });

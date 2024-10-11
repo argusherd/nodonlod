@@ -69,10 +69,15 @@ export async function play(
 export async function playNextPlaylistItem() {
   if (!currentlyPlaying.playlistItem) return;
 
+  const lastOrder = await PlaylistItem.max("order", {
+    where: { playlistId: currentlyPlaying.playlistItem.playlistId },
+  });
   const playlistItem = await PlaylistItem.findOne({
     where: {
       playlistId: currentlyPlaying.playlistItem.playlistId,
-      order: { [Op.gt]: currentlyPlaying.playlistItem.order },
+      ...(currentlyPlaying.playlistItem.order != lastOrder && {
+        order: { [Op.gt]: currentlyPlaying.playlistItem.order },
+      }),
     },
     order: [["order", "ASC"]],
   });
@@ -97,12 +102,14 @@ export async function playNextQueued() {
 }
 
 export async function playNextMedium() {
+  const oldest = await Medium.findOne({ order: [["createdAt", "ASC"]] });
   const medium = await Medium.findOne({
     where: {
-      ...(currentlyPlaying.medium && {
-        createdAt: { [Op.lte]: currentlyPlaying.medium.createdAt },
-        id: { [Op.ne]: currentlyPlaying.medium.id },
-      }),
+      ...(currentlyPlaying.medium &&
+        currentlyPlaying.medium.id != oldest?.id && {
+          createdAt: { [Op.lte]: currentlyPlaying.medium.createdAt },
+          id: { [Op.ne]: currentlyPlaying.medium.id },
+        }),
     },
     order: [["createdAt", "DESC"]],
   });
