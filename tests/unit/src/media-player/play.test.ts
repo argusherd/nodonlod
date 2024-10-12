@@ -185,7 +185,7 @@ describe("The play feature in the media player", () => {
 
     const pasueMedia = commandPrompt(["set_property", "pause", true]);
 
-    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 0);
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
 
     expect(mockedWrite).not.toHaveBeenCalledWith(pasueMedia);
   });

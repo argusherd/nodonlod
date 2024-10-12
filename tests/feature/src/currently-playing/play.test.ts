@@ -14,7 +14,7 @@ describe("The play function", () => {
 
     await play(medium);
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url);
   });
 
   it("can instruct the media player to play the chapter of a medium", async () => {

@@ -19,7 +19,7 @@ describe("The playNextPlaylistItem function", () => {
     await play(playlistItem1);
     await playNextPlaylistItem();
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
     expect(mockedPlay).toHaveBeenCalledTimes(2);
   });
 
@@ -39,7 +39,7 @@ describe("The playNextPlaylistItem function", () => {
     await play(playlistItem2);
     await playNextPlaylistItem();
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
   });
 
   it("only searches the same playlist for the item", async () => {
@@ -59,6 +59,6 @@ describe("The playNextPlaylistItem function", () => {
     await play(playlistItem1);
     await playNextPlaylistItem();
 
-    expect(mockedPlay).not.toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).not.toHaveBeenCalledWith(medium?.url);
   });
 });

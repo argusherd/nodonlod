@@ -8,7 +8,6 @@ describe("The websocket server", () => {
   const client = new WebSocket("ws://localhost:6869");
 
   beforeEach(() => {
-    wss.removeAllListeners("play-next");
     client.removeAllListeners();
   });
 

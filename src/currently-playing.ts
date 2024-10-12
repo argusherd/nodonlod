@@ -31,39 +31,31 @@ export async function play(
 
   if (!playable) return;
 
-  let startTime = 0;
-  let endTime = 0;
-
   if (playable instanceof Medium) {
     currentlyPlaying.medium = playable;
-
-    mediaPlayer.play(currentlyPlaying.medium.url);
   } else if (playable instanceof Chapter) {
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = playable;
-
-    ({ startTime, endTime } = currentlyPlaying.chapter);
   } else if (playable instanceof PlaylistItem) {
     currentlyPlaying.playlist = await playable.$get("playlist");
     currentlyPlaying.playlistItem = playable;
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = await playable.$get("chapter");
-    ({ startTime, endTime } = currentlyPlaying.chapter || {
-      startTime: 0,
-      endTime: 0,
-    });
   } else if (playable instanceof PlayQueue) {
     currentlyPlaying.playQueue = playable;
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = await playable.$get("chapter");
-    ({ startTime, endTime } = currentlyPlaying.chapter || {
-      startTime: 0,
-      endTime: 0,
-    });
   }
 
-  if (currentlyPlaying.medium)
+  const { startTime, endTime } = currentlyPlaying.chapter || {
+    startTime: 0,
+    endTime: 0,
+  };
+
+  if (currentlyPlaying.medium && endTime)
     mediaPlayer.play(currentlyPlaying.medium.url, startTime, endTime);
+  else if (currentlyPlaying.medium)
+    mediaPlayer.play(currentlyPlaying.medium.url);
 }
 
 export async function playNextPlaylistItem() {

@@ -2,21 +2,6 @@ import { IncomingMessage } from "http";
 import internal from "stream";
 import { WebSocketServer } from "ws";
 
-interface WsServer extends WebSocketServer {
-  emit(
-    event: "play-next",
-    url: string,
-    startTime?: number,
-    endTime?: number,
-  ): boolean;
-
-  on(
-    event: "play-next",
-    listener: (url: string, startTime?: number, endTime?: number) => void,
-  ): void;
-  on(event: string, listener: (...args: any[]) => void): this;
-}
-
 export interface WSS {
   handleUpgrade: (
     request: IncomingMessage,
@@ -26,11 +11,9 @@ export interface WSS {
   currentTime: (currentTime: number) => void;
   duration: (duration: number) => void;
   dispatch: (event: string) => void;
-  on: Pick<WsServer, "on">["on"];
-  removeAllListeners: (event: "play-next") => void;
 }
 
-const wsServer: WsServer = new WebSocketServer({ noServer: true });
+const wsServer = new WebSocketServer({ noServer: true });
 
 const wss: WSS = {
   handleUpgrade: (
@@ -47,8 +30,6 @@ const wss: WSS = {
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ duration }))),
   dispatch: (event) =>
     wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ event }))),
-  on: (event, listener) => wsServer.on(event, listener),
-  removeAllListeners: (event) => wsServer.removeAllListeners(event),
 };
 
 export default wss;

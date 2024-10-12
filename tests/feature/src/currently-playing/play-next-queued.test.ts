@@ -14,7 +14,7 @@ describe("The playNextQueued function", () => {
 
     await playNextQueued();
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
   });
 
   it("can instruct the media player to play the next queued item", async () => {
@@ -26,7 +26,7 @@ describe("The playNextQueued function", () => {
     await play(playQueue1);
     await playNextQueued();
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
   });
 
   it("instruct the media player to play the first item in the play queue if the last item is currently playing", async () => {
@@ -38,7 +38,7 @@ describe("The playNextQueued function", () => {
     await play(playQueue2);
     await playNextQueued();
 
-    expect(mockedPlay).toHaveBeenCalledWith(medium?.url, 0, 0);
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
   });
 
   it("plays the chapter if it is associated with an item in the play queue", async () => {
