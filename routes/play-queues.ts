@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
+import { play } from "../src/currently-playing";
 import { i18n } from "./middlewares/i18n";
 
 interface HasPlayQueue extends Request {
@@ -82,5 +83,11 @@ router.put(
     res.sendStatus(205);
   },
 );
+
+router.get("/:playQueue/play", async (req: HasPlayQueue, res) => {
+  await play(req.playQueue);
+
+  res.set("HX-Trigger", "show-playing").sendStatus(205);
+});
 
 export default router;
