@@ -18,7 +18,11 @@
     )
 
     each item in items
-      li(class="hover:bg-gray-100 dark:hover:bg-gray-800", x-sort:item=item.id)
+      li(
+        class=`${current && current.id == item.id && "bg-gray-100 dark:bg-gray-800"}`,
+        class="hover:bg-gray-100 dark:hover:bg-gray-800",
+        x-sort:item=item.id
+      )
         .flex.items-center.gap-2.py-1.pr-2
           button.flex.items-center.gap-1.overflow-hidden.text-ellipsis.text-nowrap(
             hx-get=`/play-queues/${item.id}/play`,

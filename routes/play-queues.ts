@@ -4,7 +4,7 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import { play } from "../src/currently-playing";
+import { currentlyPlaying, play } from "../src/currently-playing";
 import { i18n } from "./middlewares/i18n";
 
 interface HasPlayQueue extends Request {
@@ -30,6 +30,7 @@ router.get("/", async (_req, res) => {
       include: [Medium, Chapter],
       order: [["order", "ASC"]],
     }),
+    current: currentlyPlaying.playQueue,
   });
 });
 

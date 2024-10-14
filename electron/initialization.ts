@@ -70,6 +70,7 @@ function setUpMediaEvent() {
   mediaPlayer.on("start", (duration) => {
     wss.duration(duration);
     wss.dispatch("track-started");
+    wss.dispatch("refresh-play-queues");
   });
   mediaPlayer.on("end", () => wss.dispatch("track-ended"));
   mediaPlayer.on("stop", () => wss.dispatch("track-stopped"));
