@@ -110,9 +110,21 @@ export async function playNextMedium() {
 }
 
 export async function playNextRandom() {
-  const medium = await Medium.findOne({
-    order: literal("random()"),
-  });
+  let playable: Medium | PlaylistItem | PlayQueue | null;
 
-  await play(medium);
+  if (currentlyPlaying.playlistItem)
+    playable = await PlaylistItem.findOne({
+      where: { playlistId: currentlyPlaying.playlist?.id },
+      order: literal("random()"),
+    });
+  else if (currentlyPlaying.playQueue)
+    playable = await PlayQueue.findOne({
+      order: literal("random()"),
+    });
+  else
+    playable = await Medium.findOne({
+      order: literal("random()"),
+    });
+
+  await play(playable);
 }

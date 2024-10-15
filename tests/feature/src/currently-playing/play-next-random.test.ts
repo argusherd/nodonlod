@@ -1,6 +1,11 @@
-import { playNextRandom } from "@/src/currently-playing";
+import { play, playNextRandom } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
-import { createMedium } from "../../setup/create-model";
+import {
+  createMedium,
+  createPlayQueue,
+  createPlaylist,
+  createPlaylistItem,
+} from "../../setup/create-model";
 
 describe("The playNextRandom function", () => {
   it("plays a random medium without any issues", async () => {
@@ -10,5 +15,32 @@ describe("The playNextRandom function", () => {
     await playNextRandom();
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url);
+  });
+
+  it("can play a random item from the playlist", async () => {
+    const playlist = await createPlaylist();
+    const playlistItem1 = await createPlaylistItem({ playlistId: playlist.id });
+    const playlistItem2 = await createPlaylistItem({ playlistId: playlist.id });
+    const medium = await playlistItem2.$get("medium");
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await play(playlistItem1);
+    await playlistItem1.destroy();
+    await playNextRandom();
+
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
+  });
+
+  it("can play a random item from the play queue", async () => {
+    const playQueue1 = await createPlayQueue();
+    const playQueue2 = await createPlayQueue();
+    const medium = await playQueue2.$get("medium");
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await play(playQueue1);
+    await playQueue1.destroy();
+    await playNextRandom();
+
+    expect(mockedPlay).toHaveBeenCalledWith(medium?.url);
   });
 });
