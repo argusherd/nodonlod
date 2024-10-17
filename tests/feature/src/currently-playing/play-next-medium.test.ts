@@ -1,4 +1,4 @@
-import { play, playNextMedium } from "@/src/currently-playing";
+import { play, playNextMedium, playStatus } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import dayjs from "dayjs";
 import { createMedium } from "../../setup/create-model";
@@ -41,5 +41,19 @@ describe("The playNextMedium function", () => {
     await playNextMedium();
 
     expect(mockedPlay).toHaveBeenCalledWith(latest.url);
+  });
+
+  it("indicates whether the current medium is the last one", async () => {
+    await createMedium();
+    await createMedium({
+      createdAt: dayjs().subtract(1, "day").toDate(),
+    });
+
+    await play(null);
+
+    await playNextMedium();
+    expect(playStatus.isLastOne).toBeFalsy();
+    await playNextMedium();
+    expect(playStatus.isLastOne).toBeTruthy();
   });
 });

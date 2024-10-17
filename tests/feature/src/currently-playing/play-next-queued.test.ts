@@ -1,4 +1,4 @@
-import { play, playNextQueued } from "@/src/currently-playing";
+import { play, playNextQueued, playStatus } from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import {
   createChapter,
@@ -55,5 +55,17 @@ describe("The playNextQueued function", () => {
     await playNextQueued();
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 30);
+  });
+
+  it("indicates whether the currently playing item is the last one", async () => {
+    await createPlayQueue({ order: 1 });
+    await createPlayQueue({ order: 2 });
+
+    await play(null);
+
+    await playNextQueued();
+    expect(playStatus.isLastOne).toBeFalsy();
+    await playNextQueued();
+    expect(playStatus.isLastOne).toBeTruthy();
   });
 });

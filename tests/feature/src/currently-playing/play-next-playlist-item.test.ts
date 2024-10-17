@@ -1,4 +1,8 @@
-import { play, playNextPlaylistItem } from "@/src/currently-playing";
+import {
+  play,
+  playNextPlaylistItem,
+  playStatus,
+} from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
 import { createPlaylist, createPlaylistItem } from "../../setup/create-model";
 
@@ -60,5 +64,22 @@ describe("The playNextPlaylistItem function", () => {
     await playNextPlaylistItem();
 
     expect(mockedPlay).not.toHaveBeenCalledWith(medium?.url);
+  });
+
+  it("indicates whether the current playlist item is the last one", async () => {
+    const playlist = await createPlaylist();
+    const firstItem = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 1,
+    });
+    await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 2,
+    });
+
+    await play(firstItem);
+    await playNextPlaylistItem();
+
+    expect(playStatus.isLastOne).toBeTruthy();
   });
 });

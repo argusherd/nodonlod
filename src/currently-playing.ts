@@ -6,6 +6,8 @@ import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
 import mediaPlayer from "./media-player";
 
+export const playStatus = { isLastOne: false };
+
 export const currentlyPlaying: {
   playlist: Playlist | null;
   playlistItem: PlaylistItem | null;
@@ -74,6 +76,8 @@ export async function playNextPlaylistItem() {
     order: [["order", "ASC"]],
   });
 
+  playStatus.isLastOne = lastOrder == playlistItem?.order;
+
   await play(playlistItem);
 }
 
@@ -90,6 +94,8 @@ export async function playNextQueued() {
     include: [Medium, Chapter],
   });
 
+  playStatus.isLastOne = lastOrder == queued?.order;
+
   await play(queued);
 }
 
@@ -105,6 +111,8 @@ export async function playNextMedium() {
     },
     order: [["createdAt", "DESC"]],
   });
+
+  playStatus.isLastOne = oldest?.id == medium?.id;
 
   await play(medium);
 }
