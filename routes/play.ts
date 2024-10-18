@@ -6,6 +6,7 @@ import {
   playNextPlaylistItem,
   playNextQueued,
   playNextRandom,
+  playStatus,
 } from "../src/currently-playing";
 
 const router = Router();
@@ -22,7 +23,12 @@ router.put("/next", async (req, res) => {
   else if (req.body.isRandom) await playNextRandom();
   else await playNextMedium();
 
-  res.set("HX-Trigger", "show-playing").sendStatus(205);
+  res
+    .set(
+      "HX-Trigger",
+      `show-playing, ${playStatus.isLastOne ? "last-one-played" : "not-last-one"}`,
+    )
+    .sendStatus(205);
 });
 
 export default router;
