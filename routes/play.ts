@@ -1,5 +1,4 @@
 import { Router } from "express";
-import PlayQueue from "../database/models/play-queue";
 import {
   currentlyPlaying,
   playNextMedium,
@@ -18,9 +17,9 @@ router.get("/", (_req, res) => {
 });
 
 router.put("/next", async (req, res) => {
-  if (currentlyPlaying.playlistItem) await playNextPlaylistItem();
-  else if (await PlayQueue.count()) await playNextQueued();
-  else if (req.body.isRandom) await playNextRandom();
+  if (req.body.isRandom) await playNextRandom();
+  else if (currentlyPlaying.playlistItem) await playNextPlaylistItem();
+  else if (currentlyPlaying.playQueue) await playNextQueued();
   else await playNextMedium();
 
   res

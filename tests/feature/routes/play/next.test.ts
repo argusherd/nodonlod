@@ -60,9 +60,9 @@ describe("The play next route", () => {
     expect(mockedPlayNextPlaylistItem).toHaveBeenCalled();
   });
 
-  it("plays the next item when there are still items in the play queue", async () => {
+  it("plays the next item when an item from the play queue is currently playing", async () => {
     playModule.currentlyPlaying.playlistItem = null;
-    await createPlayQueue();
+    playModule.currentlyPlaying.playQueue = await createPlayQueue();
 
     const mockedPlayNextQueued = jest
       .spyOn(playModule, "playNextQueued")
