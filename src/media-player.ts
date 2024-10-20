@@ -39,6 +39,7 @@ export interface MediaPlayer {
   seek: (time: number) => void;
   stop: () => void;
   replay: () => void;
+  volume: (value: number) => void;
   on: Pick<PlayerObserver, "on">["on"];
 }
 
@@ -193,6 +194,9 @@ const mediaPlayer: MediaPlayer = {
     ipcClient.write(commandPrompt(["seek", mediaInfo.startTime, "absolute"]));
     mediaPlayer.resume();
     playerObserver.emit("start", mediaInfo.duration);
+  },
+  volume: (value: number) => {
+    ipcClient.write(commandPrompt(["set_property", "volume", value]));
   },
   on: (event, listener) => {
     playerObserver.on(event, listener);
