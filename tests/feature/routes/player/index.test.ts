@@ -46,4 +46,16 @@ describe("The media player hook route", () => {
 
     expect(mockedReplay).toHaveBeenCalled();
   });
+
+  it("can instruct the player to set the volume", async () => {
+    const mockedVolume = jest.spyOn(mediaPlayer, "volume").mockImplementation();
+
+    await supertest(express)
+      .put("/player/volume")
+      .type("form")
+      .send({ volume: 69 })
+      .expect(205);
+
+    expect(mockedVolume).toHaveBeenCalledWith(69);
+  });
 });

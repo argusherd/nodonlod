@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
 import mediaPlayer from "../src/media-player";
 
 const router = Router();
@@ -25,6 +26,18 @@ router.put("/seek", (req, res) => {
 
 router.put("/replay", (_req, res) => {
   mediaPlayer.replay();
+  res.sendStatus(205);
+});
+
+router.put("/volume", body("volume").isNumeric(), (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    res.sendStatus(422);
+    return;
+  }
+
+  mediaPlayer.volume(Number(req.body.volume));
   res.sendStatus(205);
 });
 
