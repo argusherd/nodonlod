@@ -192,7 +192,11 @@ mixin controlIcon(iconClass="")
           @mouseleave="timeoutId = setTimeout(() => (show = false), 250)",
           @wheel.prevent="if ($event.deltaY < 0) volume += 2; else volume -= 2",
           x-data="{ maxVolume: 130, volume: 100, mute: false, show: false, timeoutId: null }",
-          x-effect="volume = Math.max(0, Math.min(maxVolume, volume)); if (volume) mute = false"
+          x-effect=`
+            volume = Math.max(0, Math.min(maxVolume, volume));
+            if (volume) mute = false;
+            $dispatch("set-volume");
+          `
         )
           .absolute.flex.origin-left.-translate-y-4.translate-x-3.-rotate-90.items-center.rounded-full.border.bg-white.p-2.shadow-md(
             @mouseenter="clearTimeout(timeoutId)",
@@ -203,6 +207,9 @@ mixin controlIcon(iconClass="")
             input.range-sm.h-1.cursor-pointer.appearance-none.rounded-lg.bg-gray-200(
               :max="maxVolume",
               class="dark:bg-gray-700",
+              hx-include="this",
+              hx-put="/player/volume",
+              hx-trigger="set-volume from:window",
               min="0",
               name="volume",
               step="1",
