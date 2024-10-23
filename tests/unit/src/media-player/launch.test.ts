@@ -2,7 +2,7 @@ import { Socket } from "net";
 import { commandPrompt, mediaPlayer } from "./setup";
 
 describe("The observations after the media player launched", () => {
-  it("sends observe property commands when launching the player", () => {
+  it("sends a series of commands when launching the player", () => {
     const mockedWrite = jest.fn();
 
     jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
@@ -16,9 +16,11 @@ describe("The observations after the media player launched", () => {
 
     const observeDuration = commandPrompt(["observe_property", 0, "duration"]);
     const observeTimePos = commandPrompt(["observe_property", 0, "time-pos"]);
+    const setVolume = commandPrompt(["set_property", "volume", 100]);
 
     expect(mockedWrite).toHaveBeenCalledWith(observeDuration);
     expect(mockedWrite).toHaveBeenCalledWith(observeTimePos);
+    expect(mockedWrite).toHaveBeenCalledWith(setVolume);
   });
 
   it("can observe the player duration event", () => {

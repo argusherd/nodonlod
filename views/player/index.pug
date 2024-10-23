@@ -195,7 +195,7 @@ mixin controlIcon(iconClass="")
           x-effect=`
             volume = Math.max(0, Math.min(maxVolume, volume));
             if (volume) mute = false;
-            $dispatch("set-volume");
+            $nextTick(() => $dispatch("set-volume"));
           `
         )
           .absolute.flex.origin-left.-translate-y-4.translate-x-3.-rotate-90.items-center.rounded-full.border.bg-white.p-2.shadow-md(

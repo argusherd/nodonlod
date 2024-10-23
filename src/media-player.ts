@@ -56,6 +56,7 @@ let ipcClient: Socket;
 let mpvPlayer: ChildProcess;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
+let volume = 100;
 let mediaInfo = {
   url: "",
   duration: Number.MAX_VALUE,
@@ -100,6 +101,7 @@ const socketOnConnect = () => {
 
   ipcClient.write(commandPrompt(["observe_property", 0, "duration"]));
   ipcClient.write(commandPrompt(["observe_property", 0, "time-pos"]));
+  ipcClient.write(commandPrompt(["set_property", "volume", volume]));
 
   while (commandQueue.length) {
     ipcClient.write(commandQueue.shift() ?? "");
@@ -196,7 +198,10 @@ const mediaPlayer: MediaPlayer = {
     playerObserver.emit("start", mediaInfo.duration);
   },
   volume: (value: number) => {
-    ipcClient.write(commandPrompt(["set_property", "volume", value]));
+    if (isConnected)
+      ipcClient.write(commandPrompt(["set_property", "volume", value]));
+
+    volume = value;
   },
   on: (event, listener) => {
     playerObserver.on(event, listener);
