@@ -8,6 +8,8 @@ interface PlayerObserver {
   emit(event: "current-time", currentTime: number): void;
   emit(event: "end"): void;
   emit(event: "stop"): void;
+  emit(event: "volume", value: number): void;
+  emit(event: "mute", value: boolean): void;
 
   /**
    * @param event
@@ -21,12 +23,14 @@ interface PlayerObserver {
   on(event: "current-time", listener: (currentTime: number) => void): void;
   on(event: "end", listener: () => void): void;
   on(event: "stop", listener: () => void): void;
+  on(event: "volume", listener: (value: number) => void): void;
+  on(event: "mute", listener: (mute: boolean) => void): void;
   on(event: string, listener: (...args: any[]) => void): void;
 }
 
 interface IpcMessage {
   event: "property-change" | "end-file";
-  name: "duration" | "time-pos";
+  name: "duration" | "time-pos" | "volume" | "mute";
   data?: any;
   request_id?: number;
 }
@@ -40,6 +44,7 @@ export interface MediaPlayer {
   stop: () => void;
   replay: () => void;
   volume: (value: number) => void;
+  mute: () => void;
   on: Pick<PlayerObserver, "on">["on"];
 }
 
@@ -57,6 +62,7 @@ let mpvPlayer: ChildProcess;
 let connectInterval: NodeJS.Timeout;
 let isConnected = false;
 let volume = 100;
+let mute = false;
 let mediaInfo = {
   url: "",
   duration: Number.MAX_VALUE,
@@ -101,7 +107,10 @@ const socketOnConnect = () => {
 
   ipcClient.write(commandPrompt(["observe_property", 0, "duration"]));
   ipcClient.write(commandPrompt(["observe_property", 0, "time-pos"]));
+  ipcClient.write(commandPrompt(["observe_property", 0, "volume"]));
+  ipcClient.write(commandPrompt(["observe_property", 0, "mute"]));
   ipcClient.write(commandPrompt(["set_property", "volume", volume]));
+  ipcClient.write(commandPrompt(["set_property", "mute", mute]));
 
   while (commandQueue.length) {
     ipcClient.write(commandQueue.shift() ?? "");
@@ -139,6 +148,16 @@ const socketOnData = (data: Buffer) => {
         );
 
       if (message.data >= mediaInfo.duration) playerObserver.emit("end");
+    }
+
+    if (message.name === "volume") {
+      volume = message.data;
+      playerObserver.emit("volume", volume);
+    }
+
+    if (message.name === "mute") {
+      mute = message.data;
+      playerObserver.emit("mute", mute);
     }
   }
 };
@@ -202,6 +221,12 @@ const mediaPlayer: MediaPlayer = {
       ipcClient.write(commandPrompt(["set_property", "volume", value]));
 
     volume = value;
+  },
+  mute: () => {
+    mute = !mute;
+
+    if (isConnected)
+      ipcClient.write(commandPrompt(["set_property", "mute", mute]));
   },
   on: (event, listener) => {
     playerObserver.on(event, listener);

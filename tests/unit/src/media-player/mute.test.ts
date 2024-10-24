@@ -1,8 +1,8 @@
 import { Socket } from "net";
 import { commandPrompt, mediaPlayer } from "./setup";
 
-describe("The volume feature in the media player", () => {
-  it("instructs the player to set the volume", () => {
+describe("The mute feature in the media player", () => {
+  it("instructs the player to toggle the mute property", () => {
     const mockedWrite = jest
       .mocked(Socket.prototype.write)
       .mockImplementation();
@@ -14,14 +14,14 @@ describe("The volume feature in the media player", () => {
     );
 
     mediaPlayer.launch();
-    mediaPlayer.volume(50);
+    mediaPlayer.mute();
 
-    const setVolume = commandPrompt(["set_property", "volume", 50]);
+    const setMute = commandPrompt(["set_property", "mute", true]);
 
-    expect(mockedWrite).toHaveBeenCalledWith(setVolume);
+    expect(mockedWrite).toHaveBeenCalledWith(setMute);
   });
 
-  it("only instructs the player to set the volume when the player is launched", () => {
+  it("only instructs the player to toggle the mute property when the player is launched", () => {
     const mockedWrite = jest
       .mocked(Socket.prototype.write)
       .mockImplementation();
@@ -32,10 +32,10 @@ describe("The volume feature in the media player", () => {
       }),
     );
 
-    mediaPlayer.volume(50);
+    mediaPlayer.mute();
 
-    const setVolume = commandPrompt(["set_property", "volume", 50]);
+    const setMute = commandPrompt(["set_property", "mute", true]);
 
-    expect(mockedWrite).not.toHaveBeenCalledWith(setVolume);
+    expect(mockedWrite).not.toHaveBeenCalledWith(setMute);
   });
 });

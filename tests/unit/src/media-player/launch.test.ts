@@ -16,11 +16,17 @@ describe("The observations after the media player launched", () => {
 
     const observeDuration = commandPrompt(["observe_property", 0, "duration"]);
     const observeTimePos = commandPrompt(["observe_property", 0, "time-pos"]);
+    const observeVolume = commandPrompt(["observe_property", 0, "volume"]);
+    const observeMute = commandPrompt(["observe_property", 0, "mute"]);
     const setVolume = commandPrompt(["set_property", "volume", 100]);
+    const setMute = commandPrompt(["set_property", "mute", false]);
 
     expect(mockedWrite).toHaveBeenCalledWith(observeDuration);
     expect(mockedWrite).toHaveBeenCalledWith(observeTimePos);
+    expect(mockedWrite).toHaveBeenCalledWith(observeVolume);
+    expect(mockedWrite).toHaveBeenCalledWith(observeMute);
     expect(mockedWrite).toHaveBeenCalledWith(setVolume);
+    expect(mockedWrite).toHaveBeenCalledWith(setMute);
   });
 
   it("can observe the player duration event", () => {
@@ -209,5 +215,51 @@ describe("The observations after the media player launched", () => {
     mediaPlayer.play("file:///C:/Users/user/Desktop/NGGYU.mp4");
 
     expect(endOfMedia).toBeFalsy();
+  });
+
+  it("can observe the player volume property", () => {
+    const ipcMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "volume",
+        data: 50,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(ipcMessage));
+      }),
+    );
+
+    let expectedVolume = 1000;
+
+    mediaPlayer.on("volume", (value) => (expectedVolume = value));
+    mediaPlayer.launch();
+
+    expect(expectedVolume).toEqual(50);
+  });
+
+  it("can observe the player mute property", () => {
+    const ipcMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "mute",
+        data: true,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(ipcMessage));
+      }),
+    );
+
+    let expectedMute = false;
+
+    mediaPlayer.on("mute", (value) => (expectedMute = value));
+    mediaPlayer.launch();
+
+    expect(expectedMute).toBeTruthy();
   });
 });
