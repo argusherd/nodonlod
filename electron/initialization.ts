@@ -68,13 +68,17 @@ export function setDatabaseLogging() {
 
 function setUpMediaEvent() {
   mediaPlayer.on("start", (duration) => {
-    wss.duration(duration);
-    wss.dispatch("track-started");
-    wss.dispatch("refresh-play-queues");
+    wss.json("duration", duration);
+    wss.json("event", "track-started");
+    wss.json("event", "refresh-play-queues");
   });
-  mediaPlayer.on("end", () => wss.dispatch("track-ended"));
-  mediaPlayer.on("stop", () => wss.dispatch("track-stopped"));
-  mediaPlayer.on("current-time", (currentTime) => wss.currentTime(currentTime));
+  mediaPlayer.on("end", () => wss.json("event", "track-ended"));
+  mediaPlayer.on("stop", () => wss.json("event", "track-stopped"));
+  mediaPlayer.on("current-time", (currentTime) =>
+    wss.json("currentTime", currentTime),
+  );
+  mediaPlayer.on("volume", (volume) => wss.json("volume", volume));
+  mediaPlayer.on("mute", (mute) => wss.json("mute", mute));
 }
 
 export async function onDevWatch() {

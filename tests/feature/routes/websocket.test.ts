@@ -16,29 +16,11 @@ describe("The websocket server", () => {
     httpServer.close();
   });
 
-  it("can broadcast the current play time of the media", () => {
-    client.on("message", (data) => {
-      expect(data.toString()).toContain(JSON.stringify({ currentTime: 30 }));
-    });
-
-    wss.currentTime(30);
-  });
-
-  it("can broadcast the duration of the media", () => {
+  it("can boardcast a json string", () => {
     client.on("message", (data) => {
       expect(data.toString()).toContain(JSON.stringify({ duration: 123 }));
     });
 
-    wss.duration(123);
-  });
-
-  it("notifies clients that a custom event should be triggered", () => {
-    client.on("message", (data) => {
-      expect(data.toString()).toContain(
-        JSON.stringify({ event: "refresh-list" }),
-      );
-    });
-
-    wss.dispatch("refresh-list");
+    wss.json("duration", 123);
   });
 });
