@@ -12,7 +12,7 @@ mixin controlIcon(iconClass="")
   x-data="{ show: true }",
   x-show="show"
 )
-  .relative.ml-16.rounded-xl.shadow-xl
+  .relative.ml-16.rounded-xl.shadow-xl(x-data="playingTrack")
     .absolute.right-2.top-2
       button.text-xl.text-slate-500(
         @click="show = false",
@@ -27,7 +27,7 @@ mixin controlIcon(iconClass="")
         hx-trigger="show-playing from:body"
       )
 
-      .space-y-2(x-data="playingTrack")
+      .space-y-2
         .group.relative(
           x-data=`{
             seeking: false,
@@ -190,13 +190,12 @@ mixin controlIcon(iconClass="")
         .relative.flex(
           @mouseenter="show = true",
           @mouseleave="timeoutId = setTimeout(() => (show = false), 250)",
-          @wheel.prevent="if ($event.deltaY < 0) volume += 2; else volume -= 2",
-          x-data="{ maxVolume: 130, volume: 100, mute: false, show: false, timeoutId: null }",
-          x-effect=`
-            volume = Math.max(0, Math.min(maxVolume, volume));
-            if (volume) mute = false;
+          @wheel.prevent=`
+            if ($event.deltaY < 0) volume = Math.min(maxVolume, volume + 2);
+            else volume = Math.max(0, volume - 2);
             $nextTick(() => $dispatch("set-volume"));
-          `
+          `,
+          x-data="{ maxVolume: 130, show: false, timeoutId: null }"
         )
           .absolute.flex.origin-left.-translate-y-4.translate-x-3.-rotate-90.items-center.rounded-full.border.bg-white.p-2.shadow-md(
             @mouseenter="clearTimeout(timeoutId)",
