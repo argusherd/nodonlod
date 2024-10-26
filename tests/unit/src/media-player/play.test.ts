@@ -189,4 +189,62 @@ describe("The play feature in the media player", () => {
 
     expect(mockedWrite).not.toHaveBeenCalledWith(pasueMedia);
   });
+
+  it("can observe the player has reached the specified end time", () => {
+    const durationMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "duration",
+        data: 123.123,
+      }) + "\n";
+
+    const currentTimeMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 30.01,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") {
+          listener(Buffer.from(durationMessage));
+          listener(Buffer.from(currentTimeMessage));
+        }
+      }),
+    );
+
+    let endOfChapter = false;
+
+    mediaPlayer.on("end", () => (endOfChapter = true));
+
+    mediaPlayer.play("https://www.youtube.com/watch?v=dQw4w9WgXcQ", 0, 30);
+
+    expect(endOfChapter).toBeTruthy();
+  });
+
+  it("only emits the player end event when there is a duration because local files sometimes do not callback the duration", () => {
+    const currentTimeMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "time-pos",
+        data: 30.01,
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(currentTimeMessage));
+      }),
+    );
+
+    let endOfMedia = false;
+
+    mediaPlayer.on("end", () => (endOfMedia = true));
+
+    mediaPlayer.play("file:///C:/Users/user/Desktop/NGGYU.mp4");
+
+    expect(endOfMedia).toBeFalsy();
+  });
 });
