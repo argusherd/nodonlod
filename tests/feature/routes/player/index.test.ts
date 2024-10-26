@@ -58,4 +58,12 @@ describe("The media player hook route", () => {
 
     expect(mockedVolume).toHaveBeenCalledWith(69);
   });
+
+  it("can instruct the player to toggle the mute", async () => {
+    const mockedMute = jest.spyOn(mediaPlayer, "mute").mockImplementation();
+
+    await supertest(express).put("/player/mute").expect(205);
+
+    expect(mockedMute).toHaveBeenCalled();
+  });
 });

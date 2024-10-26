@@ -205,7 +205,7 @@ mixin controlIcon(iconClass="")
           )
             input.range-sm.h-1.cursor-pointer.appearance-none.rounded-lg.bg-gray-200(
               :max="maxVolume",
-              class="dark:bg-gray-700",
+              class="dark:bg-gray-500",
               hx-include="this",
               hx-put="/player/volume",
               hx-trigger="set-volume from:window",
@@ -215,22 +215,19 @@ mixin controlIcon(iconClass="")
               type="range",
               x-model="volume"
             )
-          button.text-2xl(
-            @click="mute = true",
-            class="icon-[ic--sharp-volume-up]",
-            type="button",
-            x-show="!mute && volume"
+          button.flex.text-2xl(
+            @click="mute = !mute",
+            hx-put="/player/mute",
+            hx-swap="none",
+            type="button"
           )
-          button.text-2xl(
-            @click="mute = false",
-            class="icon-[ic--sharp-volume-off]",
-            type="button",
-            x-show="mute || !volume"
-          )
+            i(
+              :class="mute ? 'icon-[ic--sharp-volume-off]' : 'icon-[ic--sharp-volume-up]'"
+            )
           small.absolute.-bottom-5.mx-auto(
             class="left-1/2 -translate-x-1/2",
             x-show="show",
-            x-text="mute ? '0' : volume"
+            x-text="volume"
           )
 
         button.text-2xl(class="icon-[material-symbols--settings]", type="button")

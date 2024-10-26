@@ -150,12 +150,12 @@ const socketOnData = (data: Buffer) => {
       if (message.data >= mediaInfo.duration) playerObserver.emit("end");
     }
 
-    if (message.name === "volume") {
+    if (message.name === "volume" && message.data != volume) {
       volume = message.data;
       playerObserver.emit("volume", volume);
     }
 
-    if (message.name === "mute") {
+    if (message.name === "mute" && message.data != mute) {
       mute = message.data;
       playerObserver.emit("mute", mute);
     }
