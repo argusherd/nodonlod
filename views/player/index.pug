@@ -9,7 +9,7 @@ mixin controlIcon(iconClass="")
   @open-player.window="show = !show",
   class="left-1/2 -translate-x-1/2",
   hx-preserve,
-  x-data="{ show: true }",
+  x-data="{ show: false }",
   x-show="show"
 )
   .relative.ml-16.rounded-xl.shadow-xl(x-data="playingTrack")

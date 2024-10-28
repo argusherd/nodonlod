@@ -1,54 +1,72 @@
 - var eachSide = 2;
 - var totalPage = Math.ceil((count ?? 0) / perPage);
 
-mixin link(page)
-  a.px-2.py-1(
-    class={ "bg-gray-500 text-white": page == currentPage },
-    class="hover:bg-gray-500 hover:text-white",
-    href=`${path}?${qs.set('page', page).toString()}`
-  ) #{ page }
+mixin pageBtn(page, disabled = false)
+  a.rounded-m.flex.items-center.justify-center.rounded-md.px-4.py-2(
+    class="rtl:-scale-x-100",
+    class=`${disabled ? "text-gray-500 dark:text-gray-600" : "text-gray-700 dark:text-gray-200"}`,
+    class=`${disabled ? "pointer-events-none" : "hover:bg-blue-500 hover:text-white"}`,
+    class=`${disabled && "dark:hover:bg-blue-500 dark:hover:text-gray-200"}`,
+    class=`${currentPage == page && !disabled ? "dark:text-gray-200 dark:bg-blue-500" : "dark:bg-gray-800"}`,
+    class=`${currentPage == page && !disabled ? "text-white bg-blue-500": "bg-white"}`,
+    href=`${path}?${qs.set("page", page).toString()}`
+  )
+    block
 
-.flex.w-fit.flex-wrap.items-center.gap-1
-  .flex.w-fit.flex-wrap.divide-x.overflow-hidden.rounded.border
-    +link(1)
+.flex.justify-center.gap-1
+  +pageBtn(currentPage - 1, currentPage == 1)
+    i(class="icon-[mingcute--left-fill]")
+
+  .hidden.gap-1(class="sm:flex")
+    +pageBtn(1)
+      | 1
 
     if currentPage > eachSide + 2
-      span.px-2.py-1 ...
+      +pageBtn(0, true)
+        i(class="icon-[bi--three-dots]")
 
     - var i = Math.max(1, currentPage - eachSide);
-    while i < currentPage
-      if i != 1
-        +link(i++)
-      else
-        - i++;
+      while i < currentPage
+        if i != 1
+          +pageBtn(i)
+            | #{ i++ }
+        else
+          - i++;
 
-    if currentPage != 1 && currentPage != totalPage
-      +link(currentPage)
+      if currentPage != 1 && currentPage != totalPage
+        +pageBtn(i)
+          | #{ currentPage }
 
     - var i = Math.min(totalPage, currentPage + 1);
-    while i != totalPage && i <= currentPage + eachSide
-      +link(i++)
+      while i != totalPage && i <= currentPage + eachSide
+        +pageBtn(i)
+          | #{ i++ }
 
     if currentPage < totalPage - eachSide - 1
-      span.px-2.py-1 ...
+      +pageBtn(0, true)
+        i(class="icon-[bi--three-dots]")
 
     if totalPage > 1
-      +link(totalPage)
+      +pageBtn(totalPage)
+        | #{ totalPage }
 
-  form.divide-x.overflow-hidden.rounded.border(
-    action=`${path}?${qs.omit("page").toString()}`,
-    method="get"
+  +pageBtn(currentPage + 1, currentPage == totalPage)
+    i(class="icon-[mingcute--right-fill]")
+
+form.divide-x.overflow-hidden.rounded.border(
+  action=`${path}?${qs.omit("page").toString()}`,
+  method="get"
+)
+  input.px-2.py-1.text-gray-300(
+    class="focus:text-black",
+    max=totalPage,
+    min="1",
+    name="page",
+    type="number",
+    value=currentPage
   )
-    input.px-2.py-1.text-gray-300(
-      class="focus:text-black",
-      max=totalPage,
-      min="1",
-      name="page",
-      type="number",
-      value=currentPage
-    )
-    button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
+  button.px-2.py-1(class="hover:bg-gray-500 hover:text-white") #{ __("Go") }
 
-  - var from = (currentPage - 1) * perPage + 1;
-  - var to = Math.min(currentPage * perPage, count);
-  small.text-gray-700 #{ from }-#{ to } (#{ count })
+- var from = (currentPage - 1) * perPage + 1;
+- var to = Math.min(currentPage * perPage, count);
+small.text-gray-700 #{ from }-#{ to } (#{ count })
