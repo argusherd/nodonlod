@@ -9,6 +9,18 @@ mixin copyIcon(copyContent)
     x-data="{ copy: false }"
   )
 
+mixin breadcrumb(href, icon, pageName = "")
+  i.text-xl(class="icon-[mingcute--right-line]")
+
+  a.flex.items-center.gap-2.text-gray-600(
+    class="last:text-blue-600 hover:underline dark:text-gray-200 last:dark:text-blue-400",
+    href=href
+  )
+    i(class=icon)
+
+    if pageName
+      span #{ pageName }
+
 doctype html
 html(lang=`${getLocale()}`)
   head
@@ -28,7 +40,17 @@ html(lang=`${getLocale()}`)
   )
     include _sidebar.pug
 
-    .ml-16.p-2
+    .ml-16.px-2
+      .sticky.top-0.z-10.bg-white.py-2(class="sm:py-4")
+        .flex.flex-wrap.items-center.gap-2
+          block breadcrumb
+            a.flex.items-center.gap-2.text-gray-600(
+              class="hover:underline dark:text-gray-200",
+              href="/"
+            )
+              i(class="icon-[heroicons--home]")
+              span #{ __("Home") }
+
       block body
 
     include player/index.pug
