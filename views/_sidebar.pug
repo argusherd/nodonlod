@@ -27,7 +27,11 @@ aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border
 
     <hr class="border-gray-200 dark:border-gray-600" />
 
-    button.relative(@click="$dispatch('open-play-queues')")
+    button.relative(
+      @click="$dispatch('open-slide-over')",
+      hx-get="/play-queues",
+      hx-target="#slide-over-container"
+    )
       +navitem({ icon: "icon-[ph--stack-light]", label: __("Play Queue") })
 
       #play-queues-count.absolute.-bottom-2.-right-1(hx-preserve)

@@ -1,5 +1,5 @@
-#play-queues-slide-over.relative.z-10.h-auto.w-auto(
-  @open-play-queues.window="$dispatch('refresh-play-queues'); show = true",
+#slide-over.relative.z-10.h-auto.w-auto(
+  @open-slide-over.window="show = true",
   hx-preserve,
   x-data="{ show: false }"
 )
@@ -13,7 +13,7 @@
 
     .fixed.inset-0.overflow-hidden
       .absolute.inset-0.overflow-hidden
-        .fixed.inset-y-0.right-0.flex.max-w-full.pl-10
+        .fixed.inset-y-0.right-0.flex.max-w-full
           .w-screen.max-w-md(
             @click.away="show = false",
             x-show="show",
@@ -53,11 +53,4 @@
 
               .relative.mt-4.flex-1.px-4(class="sm:px-5")
                 .absolute.inset-0.px-4(class="sm:px-5")
-                  .relative.h-full.overflow-y-auto.rounded-md.border.border-dashed.border-neutral-300
-                    #refresh-play-queues(
-                      hx-get="/play-queues",
-                      hx-swap="outerHTML",
-                      hx-target="#play-queues",
-                      hx-trigger="load, refresh-play-queues from:body"
-                    )
-                    #play-queues
+                  #slide-over-container.relative.h-full.overflow-y-auto.rounded-md.border.border-dashed.border-neutral-300
