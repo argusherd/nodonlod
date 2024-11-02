@@ -24,33 +24,6 @@
             x-transition:leave-end="translate-x-full",
             x-transition:leave-start="translate-x-0"
           )
-            .flex.h-full.flex-col.overflow-y-auto.border-l.bg-white.py-5.shadow-lg(
+            #slide-over-container.flex.h-full.flex-col.overflow-y-auto.border-l.bg-white.py-5.shadow-lg(
               class="border-neutral-100/70 dark:border-neutral-900/70 dark:bg-gray-900"
             )
-              .px-4(class="sm:px-5")
-                .flex.items-center.justify-between
-                  h2.text-base.font-semibold.leading-6.text-gray-900(
-                    class="dark:text-gray-200"
-                  ) #{ __("Play Queue") }
-
-                  .flex.flex-wrap-reverse.items-center.justify-end.gap-2.overflow-hidden.bg-white(
-                    class="rtl:flex-row-reverse dark:bg-gray-900"
-                  )
-                    button.flex.items-center.gap-x-2.rounded-lg.border.px-4.py-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-                      class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800",
-                      hx-delete="/play-queues"
-                    )
-                      i.text-3xl(
-                        class="icon-[material-symbols-light--delete-sweep-outline]"
-                      )
-                      span #{ __("Clear") }
-                    button.flex.items-center.gap-x-2.rounded-lg.border.px-4.py-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-                      @click="show = false",
-                      class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-                    )
-                      i.text-3xl(class="icon-[iconamoon--close-thin]")
-                      span #{ __("Close") }
-
-              .relative.mt-4.flex-1.px-4(class="sm:px-5")
-                .absolute.inset-0.px-4(class="sm:px-5")
-                  #slide-over-container.relative.h-full.overflow-y-auto.rounded-md.border.border-dashed.border-neutral-300

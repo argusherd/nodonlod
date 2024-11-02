@@ -34,9 +34,6 @@ aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border
     )
       +navitem({ icon: "icon-[ph--stack-light]", label: __("Play Queue") })
 
-      #play-queues-count.absolute.-bottom-2.-right-1(hx-preserve)
-        include play-queues/_count.pug
-
     button(@click="$dispatch('open-player')")
       +navitem({ icon: "icon-[fluent--headphones-sound-wave-48-regular]", label: __("Open Player") })
 
