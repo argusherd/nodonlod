@@ -39,6 +39,10 @@ express.get("/", async (_req, res) => {
   res.render("home");
 });
 
+express.get("/sidebar", (_req, res) =>
+  res.render("_sidebar", { fromBackend: true }),
+);
+
 express.use("/extractions", extractionRouter);
 express.use("/media", mediumRouter);
 express.use("/playlists", playlistRouter);

@@ -7,12 +7,12 @@ mixin controlIcon(iconClass="")
 
 #player.fixed.bottom-8(
   @open-player.window="show = !show",
-  class="left-1/2 -translate-x-1/2",
+  class="left-1/2 w-11/12 -translate-x-1/2 sm:w-auto",
   hx-preserve,
   x-data="{ show: false }",
   x-show="show"
 )
-  .relative.ml-16.rounded-xl.shadow-xl(x-data="playingTrack")
+  .relative.rounded-xl.shadow-xl(class="sm:ml-16", x-data="playingTrack")
     .absolute.right-2.top-2
       button.text-xl.text-slate-500(
         @click="show = false",

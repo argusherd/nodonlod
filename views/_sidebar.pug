@@ -1,13 +1,16 @@
 mixin navitem({ icon, label })
-  .group.rounded-lg.transition-colors.duration-200(
+  .group.flex.gap-2.rounded-lg.transition-colors.duration-200(
+    @click="show = false",
     @mouseover="$refs.label.style.top = $el.getBoundingClientRect().top + 'px'",
     class="focus:outline-nones p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800",
     x-data=""
   )
     i.block.text-2xl(class=icon || "icon-[ph--placeholder]")
 
-    span.invisible.fixed.left-20.translate-y-1.rounded.bg-gray-900.px-2.text-xs.font-medium.text-white(
-      class="py-1.5 group-hover:visible dark:bg-gray-200 dark:text-gray-900",
+    span(class="sm:hidden") #{ label }
+
+    span.invisible.fixed.left-20.hidden.translate-y-1.rounded.bg-gray-900.px-2.text-xs.font-medium.text-white(
+      class="py-1.5 group-hover:visible sm:block dark:bg-gray-200 dark:text-gray-900",
       x-ref="label"
     ) #{ label || "LABEL" }
 
@@ -15,10 +18,14 @@ mixin navlink({ href, icon, label })
   a(href=href || "")
     +navitem({ icon, label })
 
-aside.fixed.z-10.flex.h-screen.w-16.flex-col.items-center.overflow-y-auto.border-r.bg-white.py-6.text-gray-700(
-  class="rtl:border-l rtl:border-r-0 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+aside.fixed.z-10.h-screen.w-full.flex-col.overflow-y-auto.border-r.bg-white.px-4.py-6.text-gray-700(
+  class="sm:block sm:w-16 sm:items-center sm:px-0 rtl:border-l rtl:border-r-0 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200",
+  class=fromBackend ? "flex" : "hidden sm:flex"
 )
   nav.flex.flex-1.flex-col.gap-4
+    button(class="sm:hidden")
+      +navitem({ icon: "icon-[iconamoon--close-light]", label: __("Close") })
+
     +navlink({ href: "/", icon: "icon-[heroicons--home]", label: __("Home") })
     +navlink({ href: "/media", icon: "icon-[ph--play]", label: __("Media") })
     +navlink({ href: "/playlists", icon: "icon-[mage--playlist]", label: __("Playlist") })
