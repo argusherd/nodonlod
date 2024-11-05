@@ -16,38 +16,6 @@ block body
 
   .mb-2.flex.flex-col.gap-4
     each medium in media
-      .flex.gap-4.text-gray-600(class="dark:text-gray-300")
-        a.shrink-0(href=`/media/${medium.id}`)
-          img.size-20.rounded-lg.bg-black.object-cover(
-            alt=medium.title,
-            class="sm:size-40",
-            src=medium.thumbnail
-          )
-
-        .flex.flex-col.gap-2
-          a.font-bold.text-gray-800(
-            class="text-lg/tight dark:text-gray-300",
-            href=`/media/${medium.id}`
-          ) #{ medium.title }
-
-          p.line-clamp-3.text-gray-700(class="mt-0.5 dark:text-gray-400") #{ medium.description }
-
-          .mt-auto.flex.w-fit.divide-x.overflow-hidden.rounded-lg.border.bg-white(
-            class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
-          )
-            button.flex.items-center.gap-x-3.p-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-              class="hover:bg-gray-100 sm:p-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
-              hx-get=`/media/${medium.id}/play`,
-              hx-swap="none",
-              title=__("Play")
-            )
-              i.text-2xl(class="icon-[teenyicons--play-solid]")
-            button.flex.items-center.gap-x-3.px-2.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-              class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
-              hx-post=`/media/${medium.id}/queue`,
-              hx-swap="none",
-              title=__("Add to The Queue")
-            )
-              i.text-2xl(class="icon-[ph--stack-light]")
+      include _widget.pug
 
   != paginator({ path: "/media", qs: qs(), count })
