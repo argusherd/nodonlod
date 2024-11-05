@@ -1,14 +1,12 @@
 a.shrink-0(
   href=playlist ? `/playlists/${playlist.id}` : medium ? `/media/${medium.id}` : ""
 )
-  img.flex-none.rounded-lg.bg-slate-100(
-    alt="",
+  img.size-20.flex-none.rounded-lg.bg-slate-100.object-cover(
+    alt=medium.title,
     class="dark:bg-slate-700",
     decoding="async",
-    height="88",
     loading="lazy",
-    src=playlist ? playlist.thumbnail : medium ? medium.thumbnail : "",
-    width="88"
+    src=playlist ? playlist.thumbnail : medium ? medium.thumbnail : ""
   )
 .min-w-0.flex-auto.space-y-1.font-semibold
   if chapter
