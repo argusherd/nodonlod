@@ -6,7 +6,7 @@ import PlayQueue, {
 } from "../database/models/play-queue";
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
-import mediaPlayer from "../src/media-player";
+import { play } from "../src/currently-playing";
 import { i18n } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 
@@ -52,25 +52,14 @@ router.get("/:playlist", async (req: PlaylistRequest, res) => {
 });
 
 router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
-  const playlistItems = await PlaylistItem.findAll({
+  const firstItem = await PlaylistItem.findOne({
     order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
   });
 
-  if (!playlistItems.length) {
-    res.sendStatus(202);
-    return;
-  }
+  await play(firstItem);
 
-  const medium = (await playlistItems[0]?.$get("medium")) as Medium;
-  const chapter = (await playlistItems[0]?.$get("chapter")) ?? undefined;
-  const { startTime, endTime } = chapter || {};
-
-  mediaPlayer.play(medium.url, startTime, endTime);
-
-  await queue(playlistItems);
-
-  res.set("HX-Trigger", "refresh-play-queues").sendStatus(202);
+  res.sendStatus(202);
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
