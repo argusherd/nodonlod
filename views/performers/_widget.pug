@@ -1,0 +1,15 @@
+.flex.gap-4.text-gray-600(class="dark:text-gray-300")
+  a.shrink-0(href=`/performers/${performer.id}`)
+    img.size-20.rounded-lg.bg-black.object-cover(
+      alt=performer.name,
+      class="sm:size-40",
+      src=performer.thumbnail
+    )
+
+  .flex.flex-col.gap-2
+    a.font-bold.text-gray-800(
+      class="text-lg/tight dark:text-gray-300",
+      href=`/performers/${performer.id}`
+    ) #{ performer.name }
+
+    p.line-clamp-3.text-gray-700(class="mt-0.5 dark:text-gray-400") #{ performer.description }

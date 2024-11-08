@@ -1,19 +1,22 @@
 extends ../_layout.pug
 
+block append breadcrumb
+  +breadcrumb('/performers', "icon-[fluent--people-team-20-regular]",__("Performer"))
+
 block body
-  .mb-2.flex.flex-wrap.items-center.justify-between
-    h1.text-xl.font-bold #{ __("Performers") }
-    button.flex.items-center.gap-1.rounded.border.px-2.py-1(
+  .mb-4.flex.w-fit.divide-x.overflow-hidden.rounded-lg.border.bg-white(
+    class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
+  )
+    button.flex.items-center.gap-x-3.px-4.py-2.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 sm:px-6 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
       hx-get="/performers/create",
       hx-target="#modal"
     )
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
-  .mb-2
+  .mb-4.flex.flex-col.gap-4
     each performer, index in performers
-      .flex.flex-col.gap-2.p-2(class={ "bg-gray-100": index % 2 })
-        img(src=performer.thumbnail)
-        a(href=`/performers/${performer.id}`) #{ performer.name }
+      include _widget.pug
 
   != paginator({ path: "/performers", qs: qs(), count })
