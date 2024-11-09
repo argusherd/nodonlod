@@ -1,14 +1,55 @@
 extends ../_layout.pug
 
-block body
-  .mb-2
-    each uploader, index in uploaders
-      .flex.flex-col.gap-2.p-2(class={ "bg-gray-100": index % 2 })
-        a(href=`/uploaders/${uploader.id}`) #{ uploader.name } (#{ uploader.get('mediaCount') })
+block append breadcrumb
+  +breadcrumb("/uploaders", "icon-[iconoir--upload-data-window]", __("Uploader"))
 
-        .flex.gap-2
-          p.overflow-hidden.break-words #{ uploader.url }
-          button.flex.items-center.text-lg
-            +copyIcon(uploader.url)
+block body
+  .mb-4.overflow-x-auto
+    table.min-w-full.divide-y-2.divide-gray-200.bg-white.text-sm(
+      class="dark:divide-gray-700 dark:bg-gray-900"
+    )
+      thead(class="ltr:text-left rtl:text-right")
+        tr.text-left
+          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
+            class="dark:text-white"
+          ) #{ __("Name") }
+          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
+            class="dark:text-white"
+          ) #{ __("Media Count") }
+          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
+            class="dark:text-white"
+          ) #{ __("External Link") }
+      tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")
+        each uploader in uploaders
+          tr(class="odd:bg-gray-50 dark:odd:bg-gray-800/50")
+            td.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
+              class="dark:text-white"
+            )
+              a(href=`/uploaders/${uploader.id}`) #{ uploader.name }
+            td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200") #{ uploader.get('mediaCount') }
+            td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200")
+              .flex.w-fit.divide-x.overflow-hidden.rounded-lg.border.bg-white(
+                class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
+              )
+                a.flex.items-center.gap-x-3.p-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
+                  class="hover:bg-gray-100 sm:p-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+                  href=uploader.url,
+                  target="_blank",
+                  title=__("Open")
+                )
+                  i.text-2xl(class="icon-[gridicons--external]")
+                button.flex.items-center.gap-x-3.px-2.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
+                  @click=`
+                    copy = true;
+                    navigator.clipboard.writeText('${uploader.url}');
+                    setTimeout(() => (copy = false), 1000)
+                  `,
+                  class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+                  title=__("Copy"),
+                  x-data="{ copy: false }"
+                )
+                  i.text-2xl(
+                    :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+                  )
 
   != paginator({ path: "/playlists", qs: qs(), count })
