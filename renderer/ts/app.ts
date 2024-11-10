@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 import "htmx.org/dist/ext/alpine-morph";
 import "htmx.org/dist/ext/ws";
 import neatDuration from "../../src/neat-duration";
+import clipboard from "./clipboard";
 import playingTrack from "./playing-track";
 import { HTMXEvent } from "./renderer";
 import wsEvent from "./ws-event";
@@ -22,6 +23,7 @@ Alpine.plugin(sort);
 Alpine.plugin(persist);
 Alpine.data("playingTrack", playingTrack);
 Alpine.data("wsEvent", wsEvent);
+Alpine.data("clipboard", clipboard);
 Alpine.start();
 
 document.addEventListener("htmx:beforeSwap", (event: HTMXEvent) => {

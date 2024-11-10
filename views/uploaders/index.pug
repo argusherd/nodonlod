@@ -39,17 +39,13 @@ block body
                 )
                   i.text-2xl(class="icon-[gridicons--external]")
                 button.flex.items-center.gap-x-3.px-2.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-                  @click=`
-                    copy = true;
-                    navigator.clipboard.writeText('${uploader.url}');
-                    setTimeout(() => (copy = false), 1000)
-                  `,
                   class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
                   title=__("Copy"),
-                  x-data="{ copy: false }"
+                  x-bind="writeText",
+                  x-data=`clipboard("${uploader.url}")`
                 )
                   i.text-2xl(
-                    :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+                    :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
                   )
 
   != paginator({ path: "/playlists", qs: qs(), count })
