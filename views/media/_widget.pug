@@ -14,18 +14,18 @@
 
     p.line-clamp-3.text-gray-700(class="mt-0.5 dark:text-gray-400") #{ medium.description }
 
-    .mt-auto.flex.w-fit.divide-x.overflow-hidden.rounded-lg.border.bg-white(
+    .mt-auto.flex.w-fit.divide-x.rounded-lg.border.bg-white(
       class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
     )
-      button.flex.items-center.gap-x-3.p-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-        class="hover:bg-gray-100 sm:p-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+      button.flex.items-center.gap-x-2.p-1.text-sm.text-gray-600.transition-colors.duration-200(
+        class="hover:bg-gray-100 sm:px-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
         hx-get=`/media/${medium.id}/play`,
         hx-swap="none",
         title=__("Play")
       )
         i.text-2xl(class="icon-[teenyicons--play-solid]")
-      button.flex.items-center.gap-x-3.px-2.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-        class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+      button.flex.items-center.gap-x-2.p-1.text-sm.text-gray-600.transition-colors.duration-200(
+        class="hover:bg-gray-100 sm:px-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
         hx-post=`/media/${medium.id}/queue`,
         hx-swap="none",
         title=__("Add to The Queue")
