@@ -1,3 +1,5 @@
+include /_mixin.pug
+
 #refresh-play-queues(
   hx-get="/play-queues",
   hx-target="#slide-over-container",
@@ -8,20 +10,13 @@
   .flex.items-center.justify-between
     h2.text-base.font-semibold.leading-6.text-gray-900(class="dark:text-gray-200") #{ __("Play Queue") }
 
-    .flex.flex-wrap-reverse.items-center.justify-end.gap-2.overflow-hidden.bg-white(
-      class="rtl:flex-row-reverse dark:bg-gray-900"
-    )
-      button.flex.items-center.gap-x-2.rounded-lg.border.px-4.py-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-        class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800",
-        hx-delete="/play-queues"
-      )
+    +buttonGroup
+      +buttonInGroup(hx-delete="/play-queues")
         i.text-3xl(class="icon-[material-symbols-light--delete-sweep-outline]")
         span #{ __("Clear") }
 
-      button.flex.items-center.gap-x-2.rounded-lg.border.px-4.py-1.text-sm.font-medium.text-gray-600.transition-colors.duration-200(
-        @click="show = false",
-        class="hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-      )
+      - var attributes = { "@click": "show = false" };
+      +buttonInGroup&attributes(attributes)
         i.text-3xl(class="icon-[iconamoon--close-thin]")
         span #{ __("Close") }
 

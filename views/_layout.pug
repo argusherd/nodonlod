@@ -1,25 +1,4 @@
-mixin copyIcon(copyContent)
-  i(
-    :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'",
-    @click=`
-      copy = true;
-      navigator.clipboard.writeText('${copyContent}');
-      setTimeout(() => (copy = false), 1000)
-    `,
-    x-data="{ copy: false }"
-  )
-
-mixin breadcrumb(href, icon, pageName = "")
-  i.text-xl(class="icon-[mingcute--right-line]")
-
-  a.flex.items-center.gap-2(
-    class="last:text-blue-600 hover:underline last:dark:text-blue-400",
-    href=href
-  )
-    i(class=icon)
-
-    if pageName
-      span #{ pageName }
+include _mixin.pug
 
 doctype html
 html(lang=`${getLocale()}`)

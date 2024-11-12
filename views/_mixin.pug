@@ -1,0 +1,40 @@
+mixin copyIcon(copyContent)
+  i(
+    :class="copy ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'",
+    @click=`
+      copy = true;
+      navigator.clipboard.writeText('${copyContent}');
+      setTimeout(() => (copy = false), 1000)
+    `,
+    x-data="{ copy: false }"
+  )
+
+mixin breadcrumb(href, icon, pageName = "")
+  i.text-xl(class="icon-[mingcute--right-line]")
+
+  a.flex.items-center.gap-2(
+    class="last:text-blue-600 hover:underline last:dark:text-blue-400",
+    href=href
+  )
+    i(class=icon)
+
+    if pageName
+      span #{ pageName }
+
+mixin buttonGroup
+  .flex.w-fit.divide-x.rounded-lg.border.bg-white(
+    class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
+  )&attributes(attributes)
+    block
+
+mixin buttonInGroup
+  if attributes.href
+    a.flex.shrink-0.items-center.gap-x-2.px-4.py-2.text-sm.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
+    )&attributes(attributes)
+      block
+  else
+    button.flex.shrink-0.items-center.gap-x-2.px-4.py-2.text-sm.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
+    )&attributes(attributes)
+      block

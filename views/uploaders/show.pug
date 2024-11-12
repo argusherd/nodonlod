@@ -8,26 +8,23 @@ block body
 
   p.mb-2.overflow-hidden.break-words(class="dark:text-gray-300") #{ uploader.url }
 
-  .mb-4.flex.w-fit.flex-col.divide-y.rounded-lg.border.bg-white(
-    class="sm:flex-row sm:divide-x sm:divide-y-0 rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
-  )
-    a.flex.items-center.gap-x-2.p-2.text-sm.text-gray-600.transition-colors.duration-200(
-      class="hover:bg-gray-100 sm:px-4 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+  +buttonGroup.mb-4.flex-wrap
+    +buttonInGroup(
       href=uploader.url,
-      target="_blank"
+      target="_blank",
+      title=__("Open External Link")
     )
       i.text-2xl(class="icon-[gridicons--external]")
-      span #{ __("Open External Link") }
-    button.flex.items-center.gap-x-2.p-2.text-sm.text-gray-600.transition-colors.duration-200(
-      class="hover:bg-gray-100 sm:px-4 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
-      title=__("Copy"),
+      span.hidden(class="sm:inline") #{ __("Open External Link") }
+    +buttonInGroup(
+      title=__("Copy Uploader's Link"),
       x-bind="writeText",
       x-data=`clipboard("${uploader.url}")`
     )
       i.text-2xl(
         :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
       )
-      span #{ __("Copy Uploader's Link") }
+      span.hidden(class="sm:inline") #{ __("Copy Uploader's Link") }
 
   .mb-4.flex.gap-4
     each medium in media
