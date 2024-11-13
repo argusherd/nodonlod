@@ -1,7 +1,14 @@
 extends ../_layout.pug
 
+block append breadcrumb
+  +breadcrumb('/media', "icon-[ph--play]", __("Media"))
+  +breadcrumb('/media', "icon-[gridicons--create]", __("Create"))
+
 block body
-  h1.mb-2.text-xl.font-bold #{ __("Extractions") }
+  +buttonGroup.mb-4
+    +buttonInGroup
+      i.text-2xl(class="icon-[material-symbols--delete-outline]")
+      span #{ __("Delete All") }
 
   include _create.pug
 
