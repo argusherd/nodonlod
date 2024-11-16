@@ -12,7 +12,9 @@
       href=`/playlists/${playlist.id}`
     ) #{ playlist.title }
 
-    p.line-clamp-3.text-gray-700(class="mt-0.5 dark:text-gray-400") #{ playlist.description }
+    p.line-clamp-3.whitespace-break-spaces.break-all.text-gray-700(
+      class="mt-0.5 dark:text-gray-400"
+    ) #{ playlist.description }
 
     +buttonGroup.mt-auto
       +buttonInGroup(

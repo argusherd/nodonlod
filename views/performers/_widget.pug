@@ -12,4 +12,6 @@
       href=`/performers/${performer.id}`
     ) #{ performer.name }
 
-    p.line-clamp-3.text-gray-700(class="mt-0.5 dark:text-gray-400") #{ performer.description }
+    p.line-clamp-3.whitespace-break-spaces.break-all.text-gray-700(
+      class="mt-0.5 dark:text-gray-400"
+    ) #{ performer.description }
