@@ -1,8 +1,9 @@
 extends ../_layout.pug
 
-block body
-  h1.mb-2.text-xl.font-bold #{ __("Playlists") }
+block append breadcrumb
+  +breadcrumb("/playlists", "icon-[mage--playlist]", __("Playlist"))
 
+block body
   .mb-4.flex.flex-col.gap-4
     each playlist in playlists
       include _widget.pug
