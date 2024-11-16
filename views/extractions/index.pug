@@ -5,11 +5,15 @@ block append breadcrumb
   +breadcrumb('/media', "icon-[gridicons--create]", __("Create"))
 
 block body
+  include _create.pug
+
+  hr.mb-2
+
+  h1.mb-2.text-2xl.text-gray-700(class="dark:text-gray-200") #{ __("History") }
+
   +buttonGroup.mb-4
     +buttonInGroup
       i.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete All") }
-
-  include _create.pug
 
   include _list.pug
