@@ -38,3 +38,16 @@ mixin buttonInGroup
       class="hover:bg-gray-100 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
     )&attributes(attributes)
       block
+
+mixin list
+  .flow-root.rounded-lg.border.border-gray-100.py-3.shadow-sm(
+    class="dark:border-gray-700"
+  )
+    dl.-my-3.divide-y.divide-gray-100.text-sm(class="dark:divide-gray-700")
+      block
+
+mixin listItem(title="")
+  .grid.grid-cols-1.gap-1.p-3(class="sm:grid-cols-4 sm:gap-4")&attributes(attributes)
+    dt.font-medium.text-gray-900(class="dark:text-white") #{ title }
+    dd.text-gray-700(class="sm:col-span-3 dark:text-gray-200")
+      block
