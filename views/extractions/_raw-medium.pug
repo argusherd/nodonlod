@@ -59,42 +59,79 @@ form(
       ) #{ rawMedium.description }
 
     +listItem(__("Thumbnail"))
-      input.w-full.rounded-lg.border.border-gray-200.bg-white.px-5.text-gray-700(
-        class="py-2.5 placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
-        name="thumbnail",
-        required,
-        value=rawMedium.thumbnail || ""
+      .flex.flex-col.gap-2(
+        @image-gallery-next.window="imageGalleryNext()",
+        @image-gallery-prev.window="imageGalleryPrev()",
+        @keyup.left.window="imageGalleryPrev()",
+        @keyup.right.window="imageGalleryNext()",
+        x-data=`{
+          thumbnails: ${JSON.stringify((rawMedium.thumbnails || []).map(payload => payload.url))},
+          thumbnail: "",
+          show: false,
+          imageGalleryImageIndex: 0,
+          imageGalleryOpen(event) {
+            this.thumbnail = this.thumbnails.at(this.imageGalleryImageIndex);
+            this.show = true;
+          },
+          imageGalleryNext(){
+            this.imageGalleryImageIndex = Math.min(this.imageGalleryImageIndex + 1, this.thumbnails.length - 1);
+            this.thumbnail = this.thumbnails.at(this.imageGalleryImageIndex);
+          },
+          imageGalleryPrev() {
+            this.imageGalleryImageIndex = Math.max(0, this.imageGalleryImageIndex - 1);
+            this.thumbnail = this.thumbnails.at(this.imageGalleryImageIndex);
+          }
+        }`,
+        x-init="thumbnail = thumbnails.at(0)"
       )
-
-  .flex.flex-wrap.items-center.gap-1(
-    x-data=`{ thumbnail: "${rawMedium.thumbnail || ''}", show: false }`
-  )
-    label.w-full.cursor-pointer(class="sm:w-2/12", for=`thumbnail-${rawMedium.id}`) #{ __("Thumbnail") }
-    .flex.grow.items-center.rounded.border
-      input.w-full.rounded.px-2.py-1(
-        id=`thumbnail-${rawMedium.id}`,
-        name="thumbnail",
-        type="url",
-        x-model="thumbnail"
-      )
-      if rawMedium.thumbnails
-        button.shrink-0.text-3xl(
-          @click="show = !show",
-          class="icon-[material-symbols--preview]",
-          title=__("Preview"),
-          type="button"
+        input.w-full.rounded-lg.border.border-gray-200.bg-white.px-5.text-gray-700(
+          class="py-2.5 placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
+          name="thumbnail",
+          required,
+          x-model="thumbnail"
         )
-    if rawMedium.thumbnail
-      div(x-show="show")
-        img.m-auto(:src="thumbnail", alt="preview")
-        .flex.flex-wrap.justify-center
-          each thumbnail in rawMedium.thumbnails
-            div(class="w-4/12 sm:w-1/12")
-              img.h-full.w-full.cursor-pointer.object-cover(
-                @click=`thumbnail = '${thumbnail.url}'`,
-                alt="candidate",
-                src=thumbnail.url
+
+        img.size-fit.cursor-zoom-in.bg-black.object-cover(
+          :src="thumbnail",
+          @click="imageGalleryOpen()",
+          alt="thumbnail"
+        )
+
+        template(x-teleport="body")
+          .fixed.inset-0.flex.cursor-zoom-out.select-none.items-center.justify-center.bg-black.bg-opacity-50(
+            @click="show = false",
+            @keydown.window.escape="show = false",
+            class="z-[99]",
+            x-cloak="",
+            x-show="show",
+            x-transition:enter="transition ease-in-out duration-300",
+            x-transition:enter-start="opacity-0",
+            x-transition:leave="transition ease-in-in duration-300",
+            x-transition:leave-end="opacity-0"
+          )
+            .relative.flex.items-center.justify-center(class="h-11/12 w-11/12 xl:w-4/5")
+              .absolute.left-0.flex.h-14.w-14.translate-x-10.cursor-pointer.items-center.justify-center.rounded-full.text-white(
+                :class="imageGalleryImageIndex == 0 && 'cursor-not-allowed'",
+                @click="$event.stopPropagation(); $dispatch('image-gallery-prev')",
+                class="bg-white/35 hover:bg-white/50 xl:-translate-x-24 2xl:-translate-x-32"
               )
+                i.text-2xl(class="icon-[mingcute--left-fill]")
+              img.h-full.w-full.cursor-zoom-out.select-none.object-contain.object-center(
+                :src="thumbnail",
+                alt="",
+                style="display: none",
+                x-show="show",
+                x-transition:enter="transition ease-in-out duration-300",
+                x-transition:enter-start="opacity-0 transform scale-50",
+                x-transition:leave="transition ease-in-in duration-300",
+                x-transition:leave-end="opacity-0 transform scale-50"
+              )
+              .absolute.right-0.flex.h-14.w-14.-translate-x-10.cursor-pointer.items-center.justify-center.rounded-full.text-white(
+                :class="imageGalleryImageIndex == Math.max(0, thumbnails.length - 1) && 'cursor-not-allowed'",
+                @click="$event.stopPropagation(); $dispatch('image-gallery-next')",
+                class="bg-white/35 hover:bg-white/50 xl:translate-x-24 2xl:translate-x-32"
+              )
+                i.text-2xl(class="icon-[mingcute--right-fill]")
 
   button.ml-auto.rounded.border.px-2.py-1(
     title=__("Convert extracted infomation to playable media"),
