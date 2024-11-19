@@ -1,0 +1,63 @@
+.fixed.inset-0.z-10.flex.cursor-zoom-out.select-none.items-center.justify-center.bg-black.bg-opacity-50(
+  @click="imageGalleryClose()",
+  @keydown.window.escape="imageGalleryClose()",
+  @keyup.left.window="imageGalleryPrev()",
+  @keyup.right.window="imageGalleryNext()",
+  @open-gallery.window="imageGalleryOpen($event.detail)",
+  x-cloak="",
+  x-data=`{
+    images: [],
+    image: "",
+    receiverId: null,
+    show: false,
+    imageIndex: 0,
+    imageGalleryOpen({ receiverId, images, image }) {
+      this.receiverId = receiverId;
+      this.images = images;
+      this.imageIndex = this.images.indexOf(image);
+      this.image = image;
+      this.show = true;
+    },
+    imageGalleryClose() {
+      this.$dispatch("gallery-closed", { receiverId: this.receiverId, image: this.image });
+      this.show = false;
+    },
+    imageGalleryNext(){
+      this.imageIndex = Math.min(this.imageIndex + 1, this.images.length - 1);
+      this.image = this.images.at(this.imageIndex);
+    },
+    imageGalleryPrev() {
+      this.imageIndex = Math.max(0, this.imageIndex - 1);
+      console.log(this.imageIndex)
+      this.image = this.images.at(this.imageIndex);
+    }
+  }`,
+  x-show="show",
+  x-transition:enter="transition ease-in-out duration-300",
+  x-transition:enter-start="opacity-0",
+  x-transition:leave="transition ease-in-in duration-300",
+  x-transition:leave-end="opacity-0"
+)
+  .relative.flex.items-center.justify-center(class="h-11/12 w-11/12 xl:w-4/5")
+    .absolute.left-0.flex.h-14.w-14.translate-x-10.items-center.justify-center.rounded-full.text-white(
+      :class="imageIndex == 0 ? 'cursor-not-allowed' : 'cursor-pointer'",
+      @click="$event.stopPropagation(); imageGalleryPrev()",
+      class="bg-white/35 hover:bg-white/50 xl:-translate-x-24 2xl:-translate-x-32"
+    )
+      i.text-2xl(class="icon-[mingcute--left-fill]")
+    img.h-full.w-full.cursor-zoom-out.select-none.object-contain.object-center(
+      :src="image",
+      alt="",
+      style="display: none",
+      x-show="show",
+      x-transition:enter="transition ease-in-out duration-300",
+      x-transition:enter-start="opacity-0 transform scale-50",
+      x-transition:leave="transition ease-in-in duration-300",
+      x-transition:leave-end="opacity-0 transform scale-50"
+    )
+    .absolute.right-0.flex.h-14.w-14.-translate-x-10.items-center.justify-center.rounded-full.text-white(
+      :class="imageIndex == Math.max(0, images.length - 1) ? 'cursor-not-allowed' : 'cursor-pointer'",
+      @click="$event.stopPropagation(); imageGalleryNext()",
+      class="bg-white/35 hover:bg-white/50 xl:translate-x-24 2xl:translate-x-32"
+    )
+      i.text-2xl(class="icon-[mingcute--right-fill]")

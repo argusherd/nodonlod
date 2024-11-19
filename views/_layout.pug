@@ -40,6 +40,8 @@ html(lang=`${getLocale()}`)
 
     include _slide-over.pug
 
+    include _gallery.pug
+
     #modal-container(
       @open-modal.window="show = true",
       x-data="{ show: false }"
