@@ -75,11 +75,12 @@ form(
           x-model="thumbnail"
         )
 
-        img.size-fit.max-w-3xl.cursor-zoom-in.bg-black.object-cover(
-          :src="thumbnail",
-          @click="$dispatch('open-gallery', { receiverId, images: thumbnails, image: thumbnail })",
-          alt="thumbnail"
-        )
+        .max-w-3xl
+          img.size-fit.cursor-zoom-in.bg-black.object-cover(
+            :src="thumbnail",
+            @click="$dispatch('open-gallery', { receiverId, images: thumbnails, image: thumbnail })",
+            alt="thumbnail"
+          )
 
   button.ml-auto.rounded.border.px-2.py-1(
     title=__("Convert extracted infomation to playable media"),
