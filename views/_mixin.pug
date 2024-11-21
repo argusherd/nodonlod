@@ -51,3 +51,8 @@ mixin listItem(title="")
     dt.font-medium.text-gray-900(class="dark:text-white") #{ title }
     dd.text-gray-700(class="sm:col-span-3 dark:text-gray-200")
       block
+
+mixin input
+  input.rounded-lg.border.border-gray-200.bg-white.px-3.py-2.text-gray-700(
+    class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+  )&attributes(attributes)

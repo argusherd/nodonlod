@@ -56,10 +56,5 @@ form.mb-4.flex.flex-col.gap-2(
         p.text-red-600(class="dark:text-red-500", x-show="show") #{ __("Be aware of very long playlists or channels.") }
 
       label.flex.items-center.gap-2(for="page", x-show="!show") #{ __("Extract the given playlist from page") }:
-        input#page.h-8.w-20.rounded.border.border-gray-200.px-2(
-          class="[-moz-appearance:_textfield] sm:text-sm dark:border-gray-700 dark:bg-gray-800 dark:text-white [&::-webkit-inner-spin-button]:m-0 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0 [&::-webkit-outer-spin-button]:appearance-none",
-          name="page",
-          type="number",
-          value="1"
-        )
+        +input#page.h-8.w-20(name="page", type="number", value="1")
         small #{ __("10 items per page") }

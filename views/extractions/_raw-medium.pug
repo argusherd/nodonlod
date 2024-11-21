@@ -7,12 +7,7 @@ form(
   input(name="resourceId", type="hidden", value=rawMedium.id)
   +list
     +listItem(__("Title"))
-      input.w-full.rounded-lg.border.border-gray-200.bg-white.px-5.text-gray-700(
-        class="py-2.5 placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
-        name="title",
-        required,
-        value=rawMedium.title || ""
-      )
+      +input.w-full(name="title", required, value=rawMedium.title || "")
 
     +listItem(__("Duration"))
       span #{ dayjs.neatDuration(rawMedium.duration) }
@@ -44,8 +39,7 @@ form(
             )
 
     +listItem(__("Age limit"))
-      input.rounded-lg.border.border-gray-200.bg-white.px-5.text-gray-700(
-        class="py-2.5 placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
+      +input.w-24(
         name="ageLimit",
         type="number",
         value=rawMedium.age_limit || 0
@@ -68,12 +62,7 @@ form(
         }`,
         x-init="thumbnail = thumbnails.at(0)"
       )
-        input.w-full.rounded-lg.border.border-gray-200.bg-white.px-5.text-gray-700(
-          class="py-2.5 placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
-          name="thumbnail",
-          required,
-          x-model="thumbnail"
-        )
+        +input(name="thumbnail", required, x-model="thumbnail")
 
         .max-w-3xl
           img.size-fit.cursor-zoom-in.bg-black.object-cover(
