@@ -6,30 +6,8 @@ mixin raw-info(rawInfo)
     include _raw-playlist.pug
 
     if rawPlaylist.entries
-      .flex.flex-col
-        each entry, index in rawPlaylist.entries
-          .flex.min-h-12(x-data="{ show: true }")
-            .relative.shrink-0(class="sm:basis-6")
-              if index != rawPlaylist.entries.length - 1
-                .absolute.bottom-0.right-0.hidden.border-l.border-dashed.border-gray-300(
-                  class="h-1/2 w-1/2 sm:block"
-                )
-              .absolute.right-0.top-0.box-content.hidden.cursor-pointer.rounded-bl-lg.border-b.border-l.border-gray-300(
-                @click="show = !show",
-                class="h-1/2 w-1/2 hover:border-b-2 hover:border-l-2 sm:block"
-              )
-
-              .absolute.top-0.flex.bg-white(
-                class="right-1/2 -translate-y-1/2 translate-x-1/2"
-              )
-                i.cursor-pointer.text-xl(
-                  :class="show ? 'icon-[material-symbols-light--collapse-all]' : 'icon-[material-symbols-light--expand-all]'",
-                  @click="show = !show"
-                )
-            .grow.pt-2(x-show="show")
-              +raw-info(entry)
-            .grow.cursor-pointer.pt-2(@click="show = !show", x-show="!show")
-              small.rounded.border.px-2 #{ entry._type == 'playlist' ? __("Playlist") : __("Medium") }
+      each entry, index in rawPlaylist.entries
+        +raw-info(entry)
   else
     - var rawMedium = rawInfo;
     include _raw-medium.pug
@@ -44,10 +22,6 @@ block body
       i.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete") }
 
-  .mb-4.flex.items-center.gap-2
-    include _badge.pug
-    h1.text-gray-700(class="dark:text-gray-200") #{ extraction.url }
-
   if extraction.isProcessing || (!extraction.content && !extraction.error)
     #refresh-extraction(
       hx-get=`/extractions/${extraction.id}`,
@@ -60,5 +34,5 @@ block body
       class="gap-x-1.5 py-1.5 dark:bg-red-800/30 dark:text-red-500"
     ) #{ extraction.error }
 
-  if extraction.content
+  else
     +raw-info(extraction.content)

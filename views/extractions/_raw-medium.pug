@@ -1,10 +1,11 @@
-form(
+form.mb-4(
   action=`/extractions/${extraction.id}/convert`,
   hx-swap="outerHTML show:none",
   hx-target="find [type='submit']",
   method="post"
 )
   input(name="resourceId", type="hidden", value=rawMedium.id)
+
   +list
     +listItem(__("Title"))
       +input.w-full(name="title", required, value=rawMedium.title || "")

@@ -1,4 +1,4 @@
-form.flex.flex-col.gap-2(
+form.mb-4(
   action=`/extractions/${extraction.id}/convert`,
   hx-swap="outerHTML show:none",
   hx-target="find [type='submit']",
@@ -6,68 +6,32 @@ form.flex.flex-col.gap-2(
 )
   input(name="resourceId", type="hidden", value=rawPlaylist.id)
 
-  .flex.flex-wrap.items-center.gap-1
-    label.w-full(class="sm:w-2/12") #{ __("Type") }
-    span.break-all.rounded.border.border-blue-400.px-1.text-blue-500 #{ __("Playlist") }
+  +list
+    +listItem(__("Title"))
+      +input.w-full(name="title", required, value=rawPlaylist.title || "")
 
-  .flex.flex-wrap.items-center.gap-1
-    label.w-full(class="sm:w-2/12") #{ __("URL") }
-    span.break-all #{ rawPlaylist.webpage_url }
+    +listItem(__("Description"))
+      textarea.max-h-60.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
+        class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
+        name="description",
+        rows="5"
+      ) #{ rawPlaylist.description }
 
-  .flex.items-center.gap-2
-    small #{ __("Overwrite") }
-    hr.grow
-
-  .flex.flex-wrap.items-center.gap-1
-    label.w-full.cursor-pointer(class="sm:w-2/12", for=`title-${rawPlaylist.id}`) #{ __("Title") }
-    input.max-w-full.grow.rounded.border.px-2.py-1(
-      id=`title-${rawPlaylist.id}`,
-      name="title",
-      type="text",
-      value=rawPlaylist.title
-    )
-
-  .flex.flex-wrap.gap-1
-    label.w-full.cursor-pointer.pt-1(
-      class="sm:w-2/12",
-      for=`description-${rawPlaylist.id}`
-    ) #{ __("Description") }
-    textarea.grow.rounded.border.p-2(
-      id=`description-${rawPlaylist.id}`,
-      name="description"
-    ) #{ rawPlaylist.description }
-
-  .flex.flex-wrap.items-center.gap-1(
-    x-data=`{ thumbnail: "${rawPlaylist.thumbnails ? rawPlaylist.thumbnails.at(0).url : ''}", show: false }`
-  )
-    label.w-full.cursor-pointer(class="sm:w-2/12", for=`thumbnail-${rawPlaylist.id}`) #{ __("Thumbnail") }
-    .flex.grow.items-center.rounded.border
-      input.w-full.rounded.px-2.py-1(
-        id=`thumbnail-${rawPlaylist.id}`,
-        name="thumbnail",
-        type="url",
-        x-model="thumbnail"
+    +listItem(__("Thumbnail"))
+      .flex.flex-col.gap-2(
+        @gallery-closed.window="if ($event.detail.receiverId == receiverId) thumbnail = $event.detail.image",
+        x-data=`{
+          thumbnails: ${JSON.stringify((rawPlaylist.thumbnails || []).map(payload => payload.url))},
+          thumbnail: "",
+          receiverId: Math.random() * 1000
+        }`,
+        x-init="thumbnail = thumbnails.at(0)"
       )
-      if rawPlaylist.thumbnails
-        button.shrink-0.text-3xl(
-          @click="show = !show",
-          class="icon-[material-symbols--preview]",
-          title=__("Preview"),
-          type="button"
-        )
-    if rawPlaylist.thumbnails
-      div(x-show="show")
-        img.m-auto(:src="thumbnail", alt="preview")
-        .flex.flex-wrap.justify-center
-          each thumbnail in rawPlaylist.thumbnails
-            div(class="w-4/12 sm:w-1/12")
-              img.h-full.w-full.cursor-pointer.object-cover(
-                @click=`thumbnail = '${thumbnail.url}'`,
-                alt="candidate",
-                src=thumbnail.url
-              )
+        +input(name="thumbnail", required, x-model="thumbnail")
 
-  button.ml-auto.rounded.border.px-2.py-1(
-    title=__("Save the extracted playlist information"),
-    type="submit"
-  ) #{ __("Save") }
+        .max-w-3xl
+          img.size-fit.cursor-zoom-in.object-cover(
+            :alt=`thumbnail ? thumbnail : "${__("No thumbnail")}"`,
+            :src="thumbnail",
+            @click="$dispatch('open-gallery', { receiverId, images: thumbnails, image: thumbnail })"
+          )
