@@ -6,6 +6,10 @@ form.mb-4(
 )
   input(name="resourceId", type="hidden", value=rawPlaylist.id)
 
+  .mb-2.flex.items-center.gap-2
+    +playlistBadget
+    p.text-gray-900(class="dark:text-gray-200") #{ rawPlaylist.webpage_url }
+
   +list
     +listItem(__("Title"))
       +input.w-full(name="title", required, value=rawPlaylist.title || "")

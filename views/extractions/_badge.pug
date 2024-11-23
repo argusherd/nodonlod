@@ -1,20 +1,28 @@
-if extraction.isProcessing
-  span.inline-flex.items-center.rounded-full.bg-yellow-100.px-3.text-xs.font-medium.text-yellow-800(
-    class="gap-x-1.5 py-1.5 dark:bg-yellow-800/30 dark:text-yellow-500"
-  ) #{ __("Processing") }
-else if extraction.error
-  span.inline-flex.items-center.rounded-full.bg-red-100.px-3.text-xs.font-medium.text-red-800(
-    class="gap-x-1.5 py-1.5 dark:bg-red-800/30 dark:text-red-500"
-  ) #{ __("Error") }
-else if extraction.content && extraction.content._type == "playlist"
-  span.inline-flex.items-center.rounded-full.bg-blue-100.px-3.text-xs.font-medium.text-blue-800(
-    class="gap-x-1.5 py-1.5 dark:bg-blue-800/30 dark:text-blue-500"
-  ) #{ __("Playlist") }
-else if extraction.content
-  span.inline-flex.items-center.rounded-full.bg-teal-100.px-3.text-xs.font-medium.text-teal-800(
-    class="gap-x-1.5 py-1.5 dark:bg-teal-800/30 dark:text-teal-500"
-  ) #{ __("Medium") }
-else
-  span.inline-flex.items-center.rounded-full.bg-gray-50.px-3.text-xs.font-medium.text-gray-500(
-    class="gap-x-1.5 py-1.5 dark:bg-white/10 dark:text-white"
-  ) #{ __("Pending") }
+mixin _badget
+  span.inline-flex.items-center.rounded-full.px-3.text-xs.font-medium(
+    class="gap-x-1.5 py-1.5"
+  )&attributes(attributes)
+    block
+
+mixin playlistBadget
+  +_badget.bg-blue-100.text-blue-800(class="dark:bg-blue-800/30 dark:text-blue-500") #{ __("Playlist") }
+
+mixin mediumBadget
+  +_badget.bg-teal-100.text-teal-800(class="dark:bg-teal-800/30 dark:text-teal-500") #{ __("Medium") }
+
+mixin errorBadget
+  +_badget.bg-red-100.text-red-800(class="dark:bg-red-800/30 dark:text-red-500") #{ __("Error") }
+
+mixin extractionBadget(extraction)
+  if extraction.isProcessing
+    +_badget.bg-yellow-100.text-yellow-800(
+      class="dark:bg-yellow-800/30 dark:text-yellow-500"
+    ) #{ __("Processing") }
+  else if extraction.error
+    +errorBadget
+  else if extraction.content && extraction.content._type == "playlist"
+    +playlistBadget
+  else if extraction.content
+    +mediumBadget
+  else
+    +_badget.bg-gray-50.text-gray-500(class="dark:bg-white/10 dark:text-white") #{ __("Pending") }

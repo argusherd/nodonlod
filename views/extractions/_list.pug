@@ -1,4 +1,5 @@
 include /_mixin.pug
+include _badge.pug
 
 #extractions.flex.flex-col.gap-2
   #refresh-extractions(
@@ -43,7 +44,7 @@ include /_mixin.pug
           td.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
             class="dark:text-white"
           )
-            include _badge.pug
+            +extractionBadget(extraction)
           td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200")
             | #{ extraction.page }
           td.px-4.py-2.text-gray-700(class="dark:text-gray-200")
