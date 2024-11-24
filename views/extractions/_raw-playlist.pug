@@ -10,7 +10,7 @@ form.mb-4(
     +playlistBadget
     p.text-gray-900(class="dark:text-gray-200") #{ rawPlaylist.webpage_url }
 
-  +list
+  +list.mb-2
     +listItem(__("Title"))
       +input.w-full(name="title", required, value=rawPlaylist.title || "")
 
@@ -39,3 +39,8 @@ form.mb-4(
             :src="thumbnail",
             @click="$dispatch('open-gallery', { receiverId, images: thumbnails, image: thumbnail })"
           )
+
+  +buttonGroup.ml-auto
+    +buttonInGroup(type="submit")
+      i.text-2xl(class="icon-[material-symbols--save-outline]")
+      span #{ __("Save") }
