@@ -20,28 +20,29 @@ form.mb-4(
     +listItem(__("Upload Date"))
       span #{ dayjs(rawMedium.upload_date).format("YYYY-MM-DD") }
 
-    +listItem(__("Uploader"))
-      - var uploader = rawMedium.channel ?? rawMedium.uploader;
-      - var uploaderUrl = rawMedium.channel_url ?? rawMedium.uploader_url;
-      .flex.gap-4
-        span.text-gray-700(class="dark:text-gray-200") #{ uploader }
-        +buttonGroup
-          +buttonInGroup(
-            href=uploaderUrl,
-            target="_blank",
-            title=__("Open External Link"),
-            type="button"
-          )
-            i.text-xl(class="icon-[gridicons--external]")
-          +buttonInGroup(
-            title=__("Copy Uploader's Link"),
-            type="button",
-            x-bind="writeText",
-            x-data=`clipboard("${uploaderUrl}")`
-          )
-            i.text-xl(
-              :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+    - var uploader = rawMedium.channel ?? rawMedium.uploader;
+    - var uploaderUrl = rawMedium.channel_url ?? rawMedium.uploader_url;
+    if uploader
+      +listItem(__("Uploader"))
+        .flex.gap-4
+          span.text-gray-700(class="dark:text-gray-200") #{ uploader }
+          +buttonGroup
+            +buttonInGroup(
+              href=uploaderUrl,
+              target="_blank",
+              title=__("Open External Link"),
+              type="button"
             )
+              i.text-xl(class="icon-[gridicons--external]")
+            +buttonInGroup(
+              title=__("Copy Uploader's Link"),
+              type="button",
+              x-bind="writeText",
+              x-data=`clipboard("${uploaderUrl}")`
+            )
+              i.text-xl(
+                :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+              )
 
     +listItem(__("Age limit"))
       +input.w-24(
