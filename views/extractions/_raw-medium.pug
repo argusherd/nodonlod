@@ -68,13 +68,14 @@ form.mb-4(
         }`,
         x-init="thumbnail = thumbnails.at(0)"
       )
-        +input(name="thumbnail", required, x-model="thumbnail")
+        +input(name="thumbnail", x-model="thumbnail")
 
         .max-w-3xl
-          img.size-fit.cursor-zoom-in.bg-black.object-cover(
+          img.size-fit.cursor-zoom-in.object-cover(
             :src="thumbnail",
             @click="$dispatch('open-gallery', { receiverId, images: thumbnails, image: thumbnail })",
-            alt="thumbnail"
+            alt="thumbnail",
+            x-show="thumbnail"
           )
 
   +buttonGroup.ml-auto

@@ -65,13 +65,15 @@
     .absolute.left-0.flex.h-14.w-14.translate-x-10.items-center.justify-center.rounded-full.text-white(
       :class="imageIndex == 0 ? 'cursor-not-allowed' : 'cursor-pointer'",
       @click="$event.stopPropagation(); imageGalleryPrev()",
-      class="top-1/2 -translate-y-1/2 bg-white/35 hover:bg-white/50 xl:-translate-x-24 2xl:-translate-x-32"
+      class="top-1/2 -translate-y-1/2 bg-white/35 hover:bg-white/50 xl:-translate-x-24 2xl:-translate-x-32",
+      x-show="images.length"
     )
       i.text-2xl(class="icon-[mingcute--left-fill]")
 
     .absolute.right-0.flex.h-14.w-14.-translate-x-10.items-center.justify-center.rounded-full.text-white(
       :class="imageIndex == Math.max(0, images.length - 1) ? 'cursor-not-allowed' : 'cursor-pointer'",
       @click="$event.stopPropagation(); imageGalleryNext()",
-      class="top-1/2 -translate-y-1/2 bg-white/35 hover:bg-white/50 xl:translate-x-24 2xl:translate-x-32"
+      class="top-1/2 -translate-y-1/2 bg-white/35 hover:bg-white/50 xl:translate-x-24 2xl:translate-x-32",
+      x-show="images.length"
     )
       i.text-2xl(class="icon-[mingcute--right-fill]")
