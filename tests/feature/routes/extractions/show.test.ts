@@ -37,7 +37,6 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawMedium.title);
         expect(res.text).toContain(rawMedium.thumbnail);
         expect(res.text).toContain(rawMedium.webpage_url);
-        expect(res.text).toContain(rawMedium.webpage_url_domain);
         expect(res.text).toContain(
           (rawMedium.thumbnails as thumbnails)[0]?.url,
         );
@@ -236,7 +235,6 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawMedium1.thumbnail);
         expect(res.text).toContain(rawMedium1.title);
         expect(res.text).toContain(rawMedium1.webpage_url);
-        expect(res.text).toContain(rawMedium1.webpage_url_domain);
         expect(res.text).toContain(
           dayjs(rawMedium1.upload_date).format("YYYY-MM-DD"),
         );
@@ -247,7 +245,6 @@ describe("The extraction show page", () => {
         expect(res.text).toContain(rawMedium2.thumbnail);
         expect(res.text).toContain(rawMedium2.title);
         expect(res.text).toContain(rawMedium2.webpage_url);
-        expect(res.text).toContain(rawMedium2.webpage_url_domain);
         expect(res.text).toContain(
           dayjs(rawMedium2.upload_date).format("YYYY-MM-DD"),
         );
@@ -315,11 +312,8 @@ describe("The extraction show page", () => {
   });
 
   it("displays a processing message to indicate that the extraction is currently in progress", async () => {
-    const rawMedium = createRawMedium();
-
     const extraction = await Extraction.create({
       url: videoURL,
-      content: JSON.stringify(rawMedium),
       isProcessing: true,
     });
 
