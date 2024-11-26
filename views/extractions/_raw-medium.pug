@@ -58,6 +58,14 @@ form.mb-4(
         rows="5"
       ) #{ rawMedium.description }
 
+    if rawMedium.tags && rawMedium.tags.length
+      +listItem(__("Tag"))
+        .line-clamp-2.flex.flex-wrap.gap-1
+          each tag in rawMedium.tags
+            span.inline-flex.items-center.rounded-md.border.border-gray-200.bg-white.px-3.text-xs.text-gray-800.shadow-sm(
+              class="gap-x-1.5 py-1.5 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+            ) #{ tag }
+
     +listItem(__("Thumbnail"))
       .flex.flex-col.gap-2(
         @gallery-closed.window="if ($event.detail.receiverId == receiverId) thumbnail = $event.detail.image",
