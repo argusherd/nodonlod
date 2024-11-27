@@ -71,7 +71,7 @@ form.mb-4(
         @gallery-closed.window="if ($event.detail.receiverId == receiverId) thumbnail = $event.detail.image",
         x-data=`{
           thumbnails: ${JSON.stringify((rawMedium.thumbnails || []).map(payload => payload.url))},
-          thumbnail: "${rawMedium.thumbnail}",
+          thumbnail: "${rawMedium.thumbnail || ''}",
           receiverId: Math.random() * 1000
         }`
       )

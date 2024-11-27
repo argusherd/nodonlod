@@ -12,7 +12,7 @@ block body
   h1.mb-2.text-2xl.text-gray-700(class="dark:text-gray-200") #{ __("History") }
 
   +buttonGroup.mb-4
-    +buttonInGroup
+    +buttonInGroup(hx-delete="/extractions/confirm", hx-target="#modal")
       i.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete All") }
 
