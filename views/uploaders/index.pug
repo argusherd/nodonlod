@@ -5,41 +5,31 @@ block append breadcrumb
 
 block body
   .mb-4.overflow-x-auto
-    table.min-w-full.divide-y-2.divide-gray-200.bg-white.text-sm(
-      class="dark:divide-gray-700 dark:bg-gray-900"
-    )
-      thead(class="ltr:text-left rtl:text-right")
-        tr.text-left
-          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-            class="dark:text-white"
-          ) #{ __("Name") }
-          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-            class="dark:text-white"
-          ) #{ __("Media Count") }
-          th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-            class="dark:text-white"
-          ) #{ __("External Link") }
-      tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")
+    +table.min-w-full.text-sm
+      +thead
+        +th
+          | #{ __("Name") }
+        +th
+          | #{ __("Media Count") }
+        +th
+          | #{ __("External Link") }
+      +tbody
         each uploader in uploaders
-          tr(class="odd:bg-gray-50 dark:odd:bg-gray-800/50")
-            td.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-              class="dark:text-white"
-            )
+          +tr
+            +td
               a(href=`/uploaders/${uploader.id}`) #{ uploader.name }
-            td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200") #{ uploader.get('mediaCount') }
-            td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200")
-              .flex.w-fit.divide-x.rounded-lg.border.bg-white(
-                class="rtl:flex-row-reverse dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
-              )
-                a.flex.items-center.gap-x-2.p-1.text-sm.text-gray-600.transition-colors.duration-200(
-                  class="hover:bg-gray-100 sm:px-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+            +td
+              | #{ uploader.get('mediaCount') }
+            +td
+              +buttonGroup
+                +buttonInGroup(
                   href=uploader.url,
                   target="_blank",
                   title=__("Open")
                 )
                   i.text-2xl(class="icon-[gridicons--external]")
-                button.flex.items-center.gap-x-2.p-1.text-sm.text-gray-600.transition-colors.duration-200(
-                  class="hover:bg-gray-100 sm:px-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800",
+
+                +buttonInGroup(
                   title=__("Copy"),
                   x-bind="writeText",
                   x-data=`clipboard("${uploader.url}")`
