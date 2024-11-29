@@ -58,9 +58,47 @@ form.mb-4(
         rows="5"
       ) #{ rawMedium.description }
 
+    if rawMedium.chapters
+      +listItem(__("Chapter"))
+        .flex.gap-2(x-data=`{ show: ${rawMedium.chapters.length <= 3} }`)
+          .grow.overflow-x-auto
+            +table.w-full
+              +thead
+                +th= __("Title")
+                +th= __("Start Time")
+                +th= __("End Time")
+              +tbody(x-show="show")
+                each chapter in rawMedium.chapters
+                  +tr
+                    +td= chapter.title
+                    +td= dayjs.neatDuration(chapter.start_time)
+                    +td= dayjs.neatDuration(chapter.end_time)
+
+              if rawMedium.chapters.length > 3
+                - var i = -1;
+                +tbody(x-show="!show")
+                  while i++ < 2
+                    +tr
+                      +td= rawMedium.chapters[i].title
+                      +td= dayjs.neatDuration(rawMedium.chapters[i].start_time)
+                      +td= dayjs.neatDuration(rawMedium.chapters[i].end_time)
+                  +tr
+                    +td.cursor-pointer.text-center.text-xs(
+                      @click="show = true",
+                      class="hover:underline",
+                      colspan="3"
+                    )= "..." + __("And More")
+          if rawMedium.chapters.length > 3
+            .shrink-0.pt-2
+              i.sticky.top-24.cursor-pointer.text-xl(
+                :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'",
+                @click="show = !show",
+                class="sm:text-2xl"
+              )
+
     if rawMedium.tags && rawMedium.tags.length
       +listItem(__("Tag"))
-        .line-clamp-2.flex.flex-wrap.gap-1
+        .flex.flex-wrap.gap-1
           each tag in rawMedium.tags
             span.inline-flex.items-center.rounded-md.border.border-gray-200.bg-white.px-3.text-xs.text-gray-800.shadow-sm(
               class="gap-x-1.5 py-1.5 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"

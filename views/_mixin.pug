@@ -58,11 +58,11 @@ mixin thead
       block
 
 mixin th
-  th.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")
+  th.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")&attributes(attributes)
     block
 
 mixin tbody
-  tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")
+  tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")&attributes(attributes)
     block
 
 mixin tr
@@ -70,5 +70,5 @@ mixin tr
     block
 
 mixin td
-  td.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")
+  td.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")&attributes(attributes)
     block
