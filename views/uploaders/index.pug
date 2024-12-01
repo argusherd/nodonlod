@@ -1,7 +1,7 @@
 extends ../_layout.pug
 
 block append breadcrumb
-  +breadcrumb("/uploaders", "icon-[iconoir--upload-data-window]", __("Uploader"))
+  +breadcrumb({ href: "/uploaders", icon: "icon-[iconoir--upload-data-window]", name: __("Uploader") })
 
 block body
   .mb-4.overflow-x-auto

@@ -1,7 +1,7 @@
 extends ../_layout.pug
 
 block append breadcrumb
-  +breadcrumb('/media', "icon-[ph--play]", __("Media"))
+  +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 
 block body
   +buttonGroup.mb-4

@@ -1,8 +1,8 @@
 extends ../_layout.pug
 
 block append breadcrumb
-  +breadcrumb('/media', "icon-[ph--play]", __("Media"))
-  +breadcrumb('/media', "icon-[gridicons--create]", __("Create"))
+  +breadcrumb({ href: '/media', icon:'icon-[ph--play]', name: __("Media") })
+  +breadcrumb({ href: '/extractions', icon:'icon-[gridicons--create]', name: __("Create") })
 
 block body
   include _create.pug

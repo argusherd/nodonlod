@@ -15,8 +15,8 @@ mixin raw-info(rawInfo)
     include _raw-medium.pug
 
 block append breadcrumb
-  +breadcrumb('/media', "icon-[ph--play]", __("Media"))
-  +breadcrumb('/extractions', "icon-[gridicons--create]", __("Create"))
+  +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
+  +breadcrumb({ href: '/extractions', icon: "icon-[gridicons--create]", name: __("Create") })
 
 block body
   +buttonGroup.mb-4

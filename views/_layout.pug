@@ -31,8 +31,8 @@ html(lang=`${getLocale()}`)
 
           block breadcrumb
             a.flex.items-center.gap-2(class="hover:underline", href="/")
-              i(class="icon-[heroicons--home]")
-              span #{ __("Home") }
+              i.text-xl(class="icon-[heroicons--home]")
+              span.hidden(class="sm:inline-block") #{ __("Home") }
 
       block body
 
