@@ -1,0 +1,11 @@
+#modal-container(@open-modal.window="show = true", x-data="{ show: false }")
+  .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
+    @click="show = false",
+    class="dark:bg-white dark:bg-opacity-20",
+    x-show="show"
+  )
+  .fixed.z-10.rounded-lg.bg-white.p-2(
+    class="left-1/2 top-1/2 w-11/12 -translate-x-1/2 -translate-y-1/2 sm:w-2/3 dark:bg-gray-900",
+    x-show="show"
+  )
+    #modal
