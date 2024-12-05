@@ -1,7 +1,8 @@
+include /_mixin.pug
+
 - var route = chapter ? { "hx-put": `/chapters/${chapter.id}` } : { "hx-post": `/media/${medium.id}/chapters` };
 
 form#chapter-form.flex.flex-col.gap-2(
-  hx-swap="outerHTML",
   x-data=`{
     startTime: dayjs.duration(${chapter ? chapter.startTime : 0}, 'seconds'),
     endTime: dayjs.duration(${chapter ? chapter.endTime : medium.duration}, 'seconds'),
@@ -24,92 +25,56 @@ form#chapter-form.flex.flex-col.gap-2(
   input(name="startTime", type="hidden", x-model="startTime.asSeconds()")
   input(name="endTime", type="hidden", x-model="endTime.asSeconds()")
 
-  h2.mb-2.text-lg.font-bold #{ chapter ? __("Edit the chapter") : __("Create a new chapter") }
+  h2.mb-2.text-lg.font-bold.text-gray-700(class="dark:text-gray-300") #{ chapter ? __("Edit the chapter") : __("Create a new chapter") }
 
-  .flex.flex-wrap.items-center.gap-2
-    label.min-w-20 #{ __("Title") }
-    input.rounded.border.px-2.py-1(
-      name="title",
-      required,
-      type="text",
-      value=chapter ? chapter.title : ""
-    )
+  +list
+    +listItem(__("Title"))
+      +input.w-full(
+        name="title",
+        required,
+        type="text",
+        value=chapter ? chapter.title : ""
+      )
 
-  .flex.flex-wrap.items-center.gap-2
-    .flex.items-center.gap-2(class="sm:flex-col")
-      label.min-w-20 #{ __("Start Time") }
-      small(x-text="dayjs.neatDuration(startTime.asSeconds())")
-
-    .flex.flex-wrap.gap-1
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="sHours"
-        )
-        small #{ __("Hour") }
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="sMinutes"
-        )
-        small #{ __("Minute") }
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="sSeconds"
-        )
-        small #{ __("Second") }
-      .flex.flex-col
+    +listItem(__("Start Time"))
+      .mb-2.flex.flex-wrap.items-center.gap-1
+        +input.w-16(min="0", type="number", x-model="sHours")
+        | :
+        +input.w-16(min="0", type="number", x-model="sMinutes")
+        | :
+        +input.w-16(min="0", type="number", x-model="sSeconds")
         - var ogStartTime = dayjs.duration(chapter ? chapter.startTime : 0, "seconds");
-        button.rounded.border.px-2.py-1(
+        +button#reset-1(
           @click=`
-            sHours = ${ogStartTime.hours()};
-            sMinutes = ${ogStartTime.minutes()};
-            sSeconds = ${ogStartTime.seconds()};
-          `,
+              sHours = ${ogStartTime.hours()};
+              sMinutes = ${ogStartTime.minutes()};
+              sSeconds = ${ogStartTime.seconds()};
+            `,
           type="button"
-        ) #{ __("Reset") }
+        )
+          i.text-xl(class="icon-[lucide--timer-reset]")
+          span= __("Reset")
+      span(x-text="dayjs.neatDuration(startTime.asSeconds())")
 
-  .flex.flex-wrap.items-center.gap-2
-    .flex.items-center.gap-2(class="sm:flex-col")
-      label.min-w-20 #{ __("End Time") }
-      small(x-text="dayjs.neatDuration(endTime.asSeconds())")
-
-    .flex.flex-wrap.gap-1
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="eHours"
-        )
-        small #{ __("Hour") }
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="eMinutes"
-        )
-        small #{ __("Minute") }
-      .flex.flex-col.items-end
-        input.w-16.rounded.border.p-1.text-right(
-          min="0",
-          type="number",
-          x-model="eSeconds"
-        )
-        small #{ __("Second") }
-      .flex.flex-col
+    +listItem(__("End Time"))
+      .mb-2.flex.flex-wrap.items-center.gap-1
+        +input.w-16(min="0", type="number", x-model="eHours")
+        | :
+        +input.w-16(min="0", type="number", x-model="eMinutes")
+        | :
+        +input.w-16(min="0", type="number", x-model="eSeconds")
         - var ogEndTime = dayjs.duration(chapter ? chapter.endTime : medium.duration, "seconds");
-        button.rounded.border.px-2.py-1(
+        +button#reset-2(
           @click=`
-            eHours = ${ogEndTime.hours()};
-            eMinutes = ${ogEndTime.minutes()};
-            eSeconds = ${ogEndTime.seconds()};
-          `,
+              eHours = ${ogEndTime.hours()};
+              eMinutes = ${ogEndTime.minutes()};
+              eSeconds = ${ogEndTime.seconds()};
+            `,
           type="button"
-        ) #{ __("Reset") }
+        )
+          i.text-xl(class="icon-[lucide--timer-reset]")
+          span= __("Reset")
+      span(x-text="dayjs.neatDuration(endTime.asSeconds())")
 
   .flex.flex-wrap.items-center.justify-end.gap-2
     span.text-right.text-red-400(
@@ -126,11 +91,17 @@ form#chapter-form.flex.flex-col.gap-2(
     if error
       span.text-right.text-red-400 #{ error }
 
-    button.rounded.border.px-2.py-1(
-      :disabled=`
-        startTime.asSeconds() >= endTime.asSeconds() ||
-        startTime.asSeconds() >= ${medium.duration} ||
-        endTime.asSeconds() > ${medium.duration}
-      `,
-      class="disabled:cursor-not-allowed disabled:bg-gray-100"
-    ) #{ __("Save") }
+    +buttonGroup
+      +buttonInGroup#save(
+        :disabled=`
+          startTime.asSeconds() >= endTime.asSeconds() ||
+          startTime.asSeconds() >= ${medium.duration} ||
+          endTime.asSeconds() > ${medium.duration}
+        `,
+        type="submit"
+      )
+        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        span= __("Save")
+      +buttonInGroup#cancel(@click="show = false", type="button")
+        i.text-2xl(class="icon-[iconoir--cancel]")
+        span= __("Cancel")

@@ -16,13 +16,25 @@ mixin buttonGroup
 
 mixin buttonInGroup
   if attributes.href
-    a.flex.shrink-0.items-center.gap-x-2.px-2.py-1.text-sm.text-gray-600.transition-colors.duration-200(
+    a.flex.shrink-0.items-center.gap-x-2.p-2.text-sm.text-gray-600.transition-colors.duration-200(
       class="hover:bg-gray-100 sm:px-4 sm:py-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
     )&attributes(attributes)
       block
   else
-    button.flex.shrink-0.items-center.gap-x-2.px-2.py-1.text-sm.text-gray-600.transition-colors.duration-200(
-      class="hover:bg-gray-100 sm:px-4 sm:py-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
+    button.flex.shrink-0.items-center.gap-x-2.p-2.text-sm.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 disabled:cursor-not-allowed sm:px-4 sm:py-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
+    )&attributes(attributes)
+      block
+
+mixin button
+  if attributes.href
+    a.flex.shrink-0.items-center.gap-x-2.rounded-lg.border.bg-white.p-2.text-sm.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 sm:px-4 sm:py-2 sm:text-base dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
+    )&attributes(attributes)
+      block
+  else
+    button.flex.shrink-0.items-center.gap-x-2.rounded-lg.border.bg-white.p-2.text-sm.text-gray-600.transition-colors.duration-200(
+      class="hover:bg-gray-100 disabled:cursor-not-allowed sm:px-4 sm:py-2 sm:text-base dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:hover:bg-gray-800"
     )&attributes(attributes)
       block
 
