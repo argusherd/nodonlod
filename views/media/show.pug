@@ -28,7 +28,6 @@ block body
     +listItem(__("Chapter"))
       +buttonGroup
         +buttonInGroup#create(
-          @click="$dispatch('open-modal')",
           hx-get=`/media/${medium.id}/chapters/create`,
           hx-target="#modal",
           type="button"
@@ -66,7 +65,7 @@ block body
                         i.text-xl(class="icon-[ph--stack-light]")
                       +buttonInGroup(
                         hx-delete=`/chapters/${chapter.id}/confirm`,
-                        hx-swap="none",
+                        hx-target="#modal",
                         type="button"
                       )
                         i.text-xl(class="icon-[material-symbols--delete-outline]")
@@ -74,7 +73,7 @@ block body
                 +td.cursor-pointer.text-xs(
                   @click="show = true",
                   class="hover:underline",
-                  colspan="3"
+                  colspan="4"
                 )= "..." + __("And More")
         if chapters.length > 3
           .shrink-0.pt-2

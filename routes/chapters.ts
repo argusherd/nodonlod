@@ -49,7 +49,7 @@ router.get("/media/:medium/chapters", async (req: MediumRequest, res) => {
 
 router.get("/media/:medium/chapters/create", (req: MediumRequest, res) => {
   res
-    .set("HX-Trigger", "show-chapter-form")
+    .set("HX-Trigger", "open-modal")
     .render("chapters/_form.pug", { medium: req.medium });
 });
 
@@ -100,7 +100,7 @@ router.post(
 );
 
 router.get("/chapters/:chapter/edit", async (req: ChapterRequest, res) => {
-  res.set("HX-Trigger", "show-chapter-form").render("chapters/_form.pug", {
+  res.set("HX-Trigger", "open-modal").render("chapters/_form.pug", {
     chapter: req.chapter,
     medium: await req.chapter.$get("medium"),
   });
@@ -175,9 +175,12 @@ router.post("/chapters/:chapter/queue", async (req: ChapterRequest, res) => {
 
 router.delete("/chapters/:chapter/confirm", (req: ChapterRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
-    message: i18n.__(`Are you sure you want to delete the chapter {{title}}?`, {
-      title: req.chapter.title,
-    }),
+    message: i18n.__(
+      `Are you sure you want to delete the chapter: "{{title}}"?`,
+      {
+        title: req.chapter.title,
+      },
+    ),
     route: `/chapters/${req.chapter.id}`,
   });
 });
