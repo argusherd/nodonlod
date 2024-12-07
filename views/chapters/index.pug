@@ -1,27 +1,49 @@
-#chapter-list.flex.flex-col.border-t.py-2(x-show="show")
-  template(
-    hx-get=`/media/${medium.id}/chapters`,
-    hx-swap="outerHTML",
-    hx-target="#chapter-list",
-    hx-trigger="refresh-chapters from:body"
-  )
+include /_mixin.pug
 
-  if (chapters || []).length == 0
-    p.px-2.text-gray-500 #{ __("There are currently no chapters available.") }
-
-  each chapter in chapters || []
-    .flex.flex-wrap.items-center.gap-2.px-2.py-1(class="hover:bg-gray-100")
-      .grow
-        include ../chapters/_widget.pug
-
-      button.text-2xl(
-        class="icon-[lucide--edit]",
-        hx-get=`/chapters/${chapter.id}/edit`,
-        hx-target="#chapter-form-container"
-      )
-
-      button.text-2xl(
-        class="icon-[material-symbols--delete-outline]",
-        hx-delete=`/chapters/${chapter.id}/confirm`,
-        hx-target="#modal"
-      )
+.grow.overflow-x-auto.overflow-y-hidden
+  +table.w-full
+    +thead
+      +th= __("Title")
+      +th= __("Start Time")
+      +th= __("End Time")
+      +th= __("Operation")
+    +tbody
+      each chapter, index in chapters
+        +tr(x-show=`${index < 3} || show`)
+          +td= chapter.title
+          +td= dayjs.neatDuration(chapter.startTime)
+          +td= dayjs.neatDuration(chapter.endTime)
+          +td
+            +buttonGroup
+              +buttonInGroup(
+                hx-get=`/chapters/${chapter.id}/play`,
+                hx-swap="none",
+                type="button"
+              )
+                i.text-xl(class="icon-[teenyicons--play-solid]")
+              +buttonInGroup(
+                hx-post=`/chapters/${chapter.id}/queue`,
+                hx-swap="none",
+                type="button"
+              )
+                i.text-xl(class="icon-[ph--stack-light]")
+              +buttonInGroup(
+                hx-delete=`/chapters/${chapter.id}/confirm`,
+                hx-target="#modal",
+                type="button"
+              )
+                i.text-xl(class="icon-[material-symbols--delete-outline]")
+      if chapters.length > 3
+        +tr(x-show="!show")
+          +td.cursor-pointer.text-xs(
+            @click="show = true",
+            class="hover:underline",
+            colspan="4"
+          )= "..." + __("And More")
+if chapters.length > 3
+  .shrink-0.pt-2
+    i.sticky.top-20.cursor-pointer.text-xl(
+      :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'",
+      @click="show = !show",
+      class="sm:text-2xl"
+    )

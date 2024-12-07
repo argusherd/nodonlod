@@ -95,7 +95,7 @@ router.post(
       endTime,
     });
 
-    res.set("HX-Trigger", "refresh-chapters").sendStatus(201);
+    res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(201);
   },
 );
 

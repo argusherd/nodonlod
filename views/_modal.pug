@@ -1,4 +1,8 @@
-#modal-container(@open-modal.window="show = true", x-data="{ show: false }")
+#modal-container(
+  @close-modal.window="show = false",
+  @open-modal.window="show = true",
+  x-data="{ show: false }"
+)
   .fixed.left-0.top-0.z-10.h-full.w-full.bg-black.bg-opacity-20(
     @click="show = false",
     class="dark:bg-white dark:bg-opacity-20",
