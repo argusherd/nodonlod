@@ -33,6 +33,29 @@ include /_mixin.pug
                 type="button"
               )
                 i.text-xl(class="icon-[material-symbols--delete-outline]")
+              +buttonInGroup.relative(
+                @click=`
+                  show = !show;
+                  $nextTick(() => {
+                    let rect = $el.getBoundingClientRect();
+                    let bodyRect = document.body.getBoundingClientRect();
+                    $refs.dropdown.style.right = (bodyRect.right - rect.right) + 'px';
+                    $refs.dropdown.style.top = (rect.bottom - bodyRect.top) + 'px';
+                  });
+                `,
+                x-data=`{
+                  show: false,
+                }`
+              )
+                span Open
+
+                template(x-teleport="body")
+                  .absolute.z-10.size-48.rounded-lg.bg-white(
+                    @click.away="show = false",
+                    x-ref="dropdown",
+                    x-show="show"
+                  )
+
       if chapters.length > 3
         +tr(x-show="!show")
           +td.cursor-pointer.text-xs(
