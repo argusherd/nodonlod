@@ -10,6 +10,12 @@
   )
   .fixed.z-10.max-h-screen.w-full.overflow-y-auto.rounded-lg.bg-white.p-4(
     class="left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 sm:w-2/3 dark:bg-gray-900",
-    x-show="show"
+    x-show="show",
+    x-transition:enter="transition ease-out duration-100",
+    x-transition:enter-end="opacity-100 scale-100",
+    x-transition:enter-start="opacity-0 scale-90",
+    x-transition:leave="transition ease-in duration-100",
+    x-transition:leave-end="opacity-0 scale-90",
+    x-transition:leave-start="opacity-100 scale-100"
   )
     #modal

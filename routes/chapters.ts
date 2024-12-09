@@ -153,7 +153,7 @@ router.put(
 
     await chpater.update({ title, startTime, endTime });
 
-    res.set("HX-Trigger", "refresh-chapters").sendStatus(205);
+    res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(205);
   },
 );
 

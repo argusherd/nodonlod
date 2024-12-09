@@ -27,34 +27,50 @@ include /_mixin.pug
                 type="button"
               )
                 i.text-xl(class="icon-[ph--stack-light]")
-              +buttonInGroup(
-                hx-delete=`/chapters/${chapter.id}/confirm`,
-                hx-target="#modal",
-                type="button"
-              )
-                i.text-xl(class="icon-[material-symbols--delete-outline]")
               +buttonInGroup.relative(
                 @click=`
                   show = !show;
                   $nextTick(() => {
                     let rect = $el.getBoundingClientRect();
                     let bodyRect = document.body.getBoundingClientRect();
-                    $refs.dropdown.style.right = (bodyRect.right - rect.right) + 'px';
-                    $refs.dropdown.style.top = (rect.bottom - bodyRect.top) + 'px';
+                    $refs.dropdown.style.right = Math.max(bodyRect.right - rect.right, 10) + 'px';
+                    $refs.dropdown.style.top = (rect.bottom - bodyRect.top + 4) + 'px';
                   });
                 `,
                 x-data=`{
                   show: false,
                 }`
               )
-                span Open
+                i.text-xl(class="icon-[mdi--more-vert]")
 
-                template(x-teleport="body")
-                  .absolute.z-10.size-48.rounded-lg.bg-white(
+                template(x-teleport="#dropdown-teleport")
+                  +verticalButtonGroup.absolute.z-10.shadow-xl(
                     @click.away="show = false",
+                    class="dark:shadow-gray-400/10",
                     x-ref="dropdown",
-                    x-show="show"
+                    x-show="show",
+                    x-transition:enter="transition ease-out duration-100",
+                    x-transition:enter-end="opacity-100 scale-100",
+                    x-transition:enter-start="opacity-0 scale-90",
+                    x-transition:leave="transition ease-in duration-100",
+                    x-transition:leave-end="opacity-0 scale-90",
+                    x-transition:leave-start="opacity-100 scale-100"
                   )
+                    +buttonInGroup.relative(
+                      @click="show = false",
+                      hx-get=`/chapters/${chapter.id}/edit`,
+                      hx-target="#modal",
+                      type="button"
+                    )
+                      i.text-xl(class="icon-[material-symbols--edit]")
+                      span= __("Edit")
+                    +buttonInGroup.relative(
+                      hx-delete=`/chapters/${chapter.id}/confirm`,
+                      hx-target="#modal",
+                      type="button"
+                    )
+                      i.text-xl(class="icon-[material-symbols--delete-outline]")
+                      span= __("Delete")
 
       if chapters.length > 3
         +tr(x-show="!show")
@@ -70,3 +86,5 @@ if chapters.length > 3
       @click="show = !show",
       class="sm:text-2xl"
     )
+
+#dropdown-teleport

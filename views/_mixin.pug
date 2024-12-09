@@ -14,6 +14,12 @@ mixin buttonGroup
   )&attributes(attributes)
     block
 
+mixin verticalButtonGroup
+  .flex.w-fit.flex-col.divide-y.rounded-lg.border.bg-white(
+    class="dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900"
+  )&attributes(attributes)
+    block
+
 mixin buttonInGroup
   if attributes.href
     a.flex.shrink-0.items-center.gap-x-2.p-2.text-sm.text-gray-600.transition-colors.duration-200(
