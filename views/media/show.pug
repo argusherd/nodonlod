@@ -4,87 +4,110 @@ block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 
 block body
-  +buttonGroup.mb-4
-    +buttonInGroup(hx-get=`/media/${medium.id}/play`, hx-swap="none")
-      i.text-2xl(class="icon-[teenyicons--play-solid]")
-      span= __("Play")
-    +buttonInGroup(hx-post=`/media/${medium.id}/queue`, hx-swap="none")
-      i.text-2xl(class="icon-[ph--stack-light]")
-      span= __("Queue")
-    +buttonInGroup(
-      hx-delete=`/media/${medium.id}/confirm`,
-      hx-target="#modal"
-    )
-      i.text-2xl(class="icon-[material-symbols--delete-outline]")
-      span= __("Delete")
-
-  +list.mb-4
-    +listItem(__("Title"))
-      +input.w-full(value=medium.title)
-    +listItem(__("URL"))
-      +input.w-full(value=medium.url)
-    +listItem(__("Duration"))
-      span= dayjs.neatDuration(medium.duration)
-    +listItem(__("Chapter"))
-      +buttonGroup
-        +buttonInGroup#create(
-          hx-get=`/media/${medium.id}/chapters/create`,
-          hx-target="#modal",
-          type="button"
-        )
-          i.text-xl(class="icon-[gridicons--create]")
-          span= __("Create")
-
-      template(
-        hx-get=`/media/${medium.id}/chapters`,
-        hx-target="#chapter-list",
-        hx-trigger="refresh-chapters from:body"
+  .sticky.top-10.z-10.bg-white.pb-4(class="sm:top-14 dark:bg-gray-900")
+    +buttonGroup
+      +buttonInGroup(
+        hx-get=`/media/${medium.id}/play`,
+        hx-swap="none",
+        title=__("Play")
       )
-      #chapter-list.flex.gap-2(x-data=`{ show: ${chapters.length <= 3} }`)
-        include /chapters/index.pug
+        i.text-2xl(class="icon-[teenyicons--play-solid]")
+        span.hidden(class="sm:inline-block")= __("Play")
+      +buttonInGroup(
+        hx-post=`/media/${medium.id}/queue`,
+        hx-swap="none",
+        title=__("Add to The Queue")
+      )
+        i.text-2xl(class="icon-[ph--stack-light]")
+        span.hidden(class="sm:inline-block")= __("Queue")
+      +buttonInGroup#save-btn(
+        @click="$dispatch('save-medium')",
+        title=__("Save")
+      )
+        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        span.hidden(class="sm:inline-block") #{ __("Save") }
+      +buttonInGroup(
+        hx-delete=`/media/${medium.id}/confirm`,
+        hx-target="#modal",
+        title=__("Delete"),
+        type="button"
+      )
+        i.text-2xl(class="icon-[material-symbols--delete-outline]")
+        span.hidden(class="sm:inline-block")= __("Delete")
 
-    +listItem(__("Description"))
-      textarea.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
-        class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
-        name="description",
-        rows="5"
-      ) #{ medium.description }
-    if uploader
-      +listItem(__("Uploader"))
+  form.mb-4(hx-put=`/media/${medium.id}`, hx-trigger="save-medium from:body")
+    +list.mb-4
+      +listItem(__("Title"))
+        +input.w-full(value=medium.title)
+      +listItem(__("URL"))
+        +input.w-full(value=medium.url)
+      +listItem(__("Thumbnail"))
+        .flex.flex-col.gap-2(x-data=`{ thumbnail: '${medium.thumbnail}' }`)
+          +input.w-full(x-model="thumbnail")
+          .max-w-3xl
+            img.size-fit.object-cover(:src="thumbnail", alt="thumbnail")
+      +listItem(__("Duration"))
+        span= dayjs.neatDuration(medium.duration)
+      +listItem(__("Chapter"))
         +buttonGroup
-          +buttonInGroup(href=`/uploaders/${uploader.id}`)= uploader.name
-          +buttonInGroup(
-            href=uploader.url,
-            target="_blank",
-            title=__("Open External Link"),
+          +buttonInGroup#create(
+            hx-get=`/media/${medium.id}/chapters/create`,
+            hx-target="#modal",
             type="button"
           )
-            i.text-xl(class="icon-[gridicons--external]")
-          +buttonInGroup(
-            title=__("Copy Uploader's Link"),
-            type="button",
-            x-bind="writeText",
-            x-data=`clipboard("${uploader.url}")`
-          )
-            i.text-xl(
-              :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+            i.text-xl(class="icon-[gridicons--create]")
+            span= __("Create")
+
+        template(
+          hx-get=`/media/${medium.id}/chapters`,
+          hx-target="#chapter-list",
+          hx-trigger="refresh-chapters from:body"
+        )
+        #chapter-list.flex.gap-2(x-data=`{ show: ${chapters.length <= 3} }`)
+          include /chapters/index.pug
+
+      +listItem(__("Description"))
+        textarea.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
+          class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
+          name="description",
+          rows="5"
+        ) #{ medium.description }
+      if uploader
+        +listItem(__("Uploader"))
+          +buttonGroup
+            +buttonInGroup(href=`/uploaders/${uploader.id}`)= uploader.name
+            +buttonInGroup(
+              href=uploader.url,
+              target="_blank",
+              title=__("Open External Link"),
+              type="button"
             )
-    +listItem(__("Upload Date"))
-      span= dayjs(medium.uploadDate).format("YYYY-MM-DD")
-    +listItem(__("Created At"))
-      span= dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss")
-    +listItem(__("Updated At"))
-      span= dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+              i.text-xl(class="icon-[gridicons--external]")
+            +buttonInGroup(
+              title=__("Copy Uploader's Link"),
+              type="button",
+              x-bind="writeText",
+              x-data=`clipboard("${uploader.url}")`
+            )
+              i.text-xl(
+                :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
+              )
+      +listItem(__("Upload Date"))
+        span= dayjs(medium.uploadDate).format("YYYY-MM-DD")
+      +listItem(__("Created At"))
+        span= dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss")
+      +listItem(__("Updated At"))
+        span= dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss")
 
-    if performers.length
-      +listItem(__("Performer"))
-        each performer in performers
-          a.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm(
-            href=`/performers/${performer.id}`
-          ) #{ performer.name }
+      if performers.length
+        +listItem(__("Performer"))
+          each performer in performers
+            a.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm(
+              href=`/performers/${performer.id}`
+            ) #{ performer.name }
 
-    each labels, category in categorized
-      +listItem(__(category))
-        .flex.flex-wrap
-          each label in labels
-            span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ label.text }
+      each labels, category in categorized
+        +listItem(__(category))
+          .flex.flex-wrap
+            each label in labels
+              span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ label.text }
