@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
 import Category from "../database/models/category";
 import Label from "../database/models/label";
 import Medium from "../database/models/medium";
@@ -72,6 +73,29 @@ router.get("/:medium", async (req: MediumRequest, res) => {
     performers: await req.medium.$get("performers"),
   });
 });
+
+router.put(
+  "/:medium",
+  body("title").notEmpty(),
+  body("url").notEmpty(),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      res.sendStatus(422);
+      return;
+    }
+
+    await req.medium.update({
+      title: req.body.title,
+      url: req.body.url,
+      thumbnail: req.body.thumbnail,
+      description: req.body.description,
+    });
+
+    res.sendStatus(205);
+  },
+);
 
 router.get("/:medium/play", async (req: MediumRequest, res) => {
   await play(req.medium);
