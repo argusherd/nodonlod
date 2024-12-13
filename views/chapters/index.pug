@@ -30,16 +30,19 @@ include /_mixin.pug
               +buttonInGroup.relative(
                 @click=`
                   show = !show;
-                  $nextTick(() => {
+                  $nextTick(updateDropdownPosition);
+                `,
+                type="button",
+                x-data=`{
+                  show: false,
+                  updateDropdownPosition() {
                     let rect = $el.getBoundingClientRect();
                     let bodyRect = document.body.getBoundingClientRect();
                     $refs.dropdown.style.right = Math.max(bodyRect.right - rect.right, 10) + 'px';
                     $refs.dropdown.style.top = (rect.bottom - bodyRect.top + 4) + 'px';
-                  });
-                `,
-                x-data=`{
-                  show: false,
-                }`
+                  }
+                }`,
+                x-init="$nextTick(updateDropdownPosition)"
               )
                 i.text-xl(class="icon-[mdi--more-vert]")
 
@@ -59,6 +62,7 @@ include /_mixin.pug
                     +buttonInGroup.relative(
                       @click="show = false",
                       hx-get=`/chapters/${chapter.id}/edit`,
+                      hx-swap="innerHTML",
                       hx-target="#modal",
                       type="button"
                     )
@@ -66,6 +70,7 @@ include /_mixin.pug
                       span= __("Edit")
                     +buttonInGroup.relative(
                       hx-delete=`/chapters/${chapter.id}/confirm`,
+                      hx-swap="innerHTML",
                       hx-target="#modal",
                       type="button"
                     )

@@ -24,7 +24,15 @@ block body
         @click="$dispatch('save-medium')",
         title=__("Save")
       )
-        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        .relative(
+          @medium-changed.window="show = true",
+          @medium-saved.window="show = false",
+          x-data="{ show: false }"
+        )
+          i.text-2xl(class="icon-[material-symbols--save-outline]")
+          span.absolute.right-0.top-0.rounded-full.bg-red-500.p-1(
+            x-show="show"
+          )
         span.hidden(class="sm:inline-block") #{ __("Save") }
       +buttonInGroup(
         hx-delete=`/media/${medium.id}/confirm`,
@@ -35,15 +43,30 @@ block body
         i.text-2xl(class="icon-[material-symbols--delete-outline]")
         span.hidden(class="sm:inline-block")= __("Delete")
 
-  form.mb-4(hx-put=`/media/${medium.id}`, hx-trigger="save-medium from:body")
+  form.mb-4(
+    hx-put=`/media/${medium.id}`,
+    hx-swap="none",
+    hx-trigger="save-medium from:body"
+  )
     +list.mb-4
       +listItem(__("Title"))
-        +input.w-full(value=medium.title)
+        +input.w-full(
+          @input="$dispatch('medium-changed')",
+          name="title",
+          value=medium.title
+        )
       +listItem(__("URL"))
-        +input.w-full(value=medium.url)
+        +input.w-full(
+          @input="$dispatch('medium-changed')",
+          name="url",
+          value=medium.url
+        )
       +listItem(__("Thumbnail"))
-        .flex.flex-col.gap-2(x-data=`{ thumbnail: '${medium.thumbnail}' }`)
-          +input.w-full(x-model="thumbnail")
+        .flex.flex-col.gap-2(
+          @input="$dispatch('medium-changed')",
+          x-data=`{ thumbnail: '${medium.thumbnail}' }`
+        )
+          +input.w-full(name="thumbnail", x-model="thumbnail")
           .max-w-3xl
             img.size-fit.object-cover(:src="thumbnail", alt="thumbnail")
       +listItem(__("Duration"))
@@ -52,6 +75,7 @@ block body
         +buttonGroup
           +buttonInGroup#create(
             hx-get=`/media/${medium.id}/chapters/create`,
+            hx-swap="innerHTML",
             hx-target="#modal",
             type="button"
           )
@@ -68,6 +92,7 @@ block body
 
       +listItem(__("Description"))
         textarea.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
+          @input="$dispatch('medium-changed')",
           class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
           name="description",
           rows="5"
