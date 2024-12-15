@@ -1,0 +1,33 @@
+.grow.overflow-x-auto.overflow-y-hidden
+  +table.w-full
+    +tbody
+      each playlist, index in playlists
+        +tr(x-show=`${index < 3} || show`)
+          +td.flex
+            a(href=`/playlists/${playlist.id}`)
+              img.size-20.rounded-lg.bg-black.object-cover(
+                alt=playlist.title,
+                src=playlist.thumbnail
+              )
+          +td= playlist.title
+          +td
+            +buttonGroup
+              +buttonInGroup(
+                hx-get=`/playlists/${playlist.id}/play`,
+                hx-swap="none",
+                type="button"
+              )
+                i.text-xl(class="icon-[teenyicons--play-solid]")
+              +buttonInGroup(
+                hx-post=`/playlists/${playlist.id}/queue`,
+                hx-swap="none",
+                type="button"
+              )
+                i.text-xl(class="icon-[ph--stack-light]")
+
+if playlists.length > 3
+  .shrink-0.pt-2
+    +button.sticky.top-40(@click="show = !show", class="sm:px-2", type="button")
+      i.text-xl(
+        :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'"
+      )

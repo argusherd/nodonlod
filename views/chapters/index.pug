@@ -86,10 +86,9 @@ include /_mixin.pug
           )= "..." + __("And More")
 if chapters.length > 3
   .shrink-0.pt-2
-    i.sticky.top-20.cursor-pointer.text-xl(
-      :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'",
-      @click="show = !show",
-      class="sm:text-2xl"
-    )
+    +button.sticky.top-40(@click="show = !show", class="sm:px-2", type="button")
+      i.text-xl(
+        :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'"
+      )
 
 #dropdown-teleport
