@@ -4,6 +4,20 @@ block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 
 block body
+  +tab.mb-4
+    +tabItem(true)(href=`/media/${medium.id}`)
+      i.text-2xl(class="icon-[material-symbols--info-outline]")
+      span= __("Info")
+    +tabItem(false)(href=`/media/${medium.id}/chapters`)
+      i.text-2xl(class="icon-[material-symbols--book-outline]")
+      span= __("Chapter")
+    +tabItem(false)(href=`/media/${medium.id}/categories`)
+      i.text-2xl(class="icon-[material-symbols--category-outline]")
+      span= __("Category")
+    +tabItem(false)(href=`/media/${medium.id}/playlists`)
+      i.text-2xl(class="icon-[mage--playlist]")
+      span= __("Playlist")
+
   .sticky.top-10.z-10.bg-white.pb-4(class="sm:top-14 dark:bg-gray-900")
     +buttonGroup
       +buttonInGroup(
@@ -24,7 +38,7 @@ block body
         @click="$dispatch('save-medium')",
         title=__("Save")
       )
-        .relative(
+        .relative.flex.items-center(
           @medium-changed.window="show = true",
           @medium-saved.window="show = false",
           x-data="{ show: false }"
@@ -64,11 +78,15 @@ block body
       +listItem(__("Thumbnail"))
         .flex.flex-col.gap-2(
           @input="$dispatch('medium-changed')",
-          x-data=`{ thumbnail: '${medium.thumbnail}' }`
+          x-data=`{ thumbnail: '${medium.thumbnail || ''}' }`
         )
           +input.w-full(name="thumbnail", x-model="thumbnail")
           .max-w-3xl
-            img.size-fit.object-cover(:src="thumbnail", alt="thumbnail")
+            img.size-fit.object-cover(
+              :src="thumbnail",
+              alt="thumbnail",
+              x-show="thumbnail"
+            )
       +listItem(__("Duration"))
         span= dayjs.neatDuration(medium.duration)
       +listItem(__("Chapter"))

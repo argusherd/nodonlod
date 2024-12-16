@@ -88,3 +88,18 @@ mixin tr
 mixin td
   td.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")&attributes(attributes)
     block
+
+mixin tab
+  .flex.overflow-x-auto.overflow-y-hidden.whitespace-nowrap.border-b.border-gray-200(
+    class="dark:border-gray-700"
+  )&attributes(attributes)
+    block
+
+mixin tabItem(activate = false)
+  - var inactivated = "text-gray-700 dark:text-white hover:border-gray-400";
+  - var activated = "text-blue-600 dark:text-blue-300 border-blue-500 dark:border-blue-400";
+  a.-px-1.-mb-px.inline-flex.h-10.items-center.gap-2.whitespace-nowrap.border-b-2.border-transparent.bg-transparent.px-2.py-2.text-center(
+    class="focus:outline-none sm:px-4",
+    class=activate ? activated : inactivated
+  )&attributes(attributes)
+    block
