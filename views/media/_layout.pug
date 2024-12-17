@@ -1,0 +1,19 @@
+extends ../_layout.pug
+
+block append breadcrumb
+  +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
+
+block body
+  +tab.mb-4
+    +tabItem(true)(href=`/media/${medium.id}`)
+      i.text-2xl(class="icon-[material-symbols--info-outline]")
+      span= __("Info")
+    +tabItem(false)(href=`/media/${medium.id}/chapters`)
+      i.text-2xl(class="icon-[material-symbols--book-outline]")
+      span= __("Chapter")
+    +tabItem(false)(href=`/media/${medium.id}/categories`)
+      i.text-2xl(class="icon-[material-symbols--category-outline]")
+      span= __("Category")
+    +tabItem(false)(href=`/media/${medium.id}/playlists`)
+      i.text-2xl(class="icon-[mage--playlist]")
+      span= __("Playlist")

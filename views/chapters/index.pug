@@ -1,94 +1,97 @@
-include /_mixin.pug
+extends /media/_layout.pug
 
-.grow.overflow-x-auto.overflow-y-hidden
-  +table.w-full
-    +thead
-      +th= __("Title")
-      +th= __("Start Time")
-      +th= __("End Time")
-      +th= __("Operation")
-    +tbody
-      each chapter, index in chapters
-        +tr(x-show=`${index < 3} || show`)
-          +td= chapter.title
-          +td= dayjs.neatDuration(chapter.startTime)
-          +td= dayjs.neatDuration(chapter.endTime)
-          +td
-            +buttonGroup
-              +buttonInGroup(
-                hx-get=`/chapters/${chapter.id}/play`,
-                hx-swap="none",
-                type="button"
-              )
-                i.text-xl(class="icon-[teenyicons--play-solid]")
-              +buttonInGroup(
-                hx-post=`/chapters/${chapter.id}/queue`,
-                hx-swap="none",
-                type="button"
-              )
-                i.text-xl(class="icon-[ph--stack-light]")
-              +buttonInGroup.relative(
-                @click=`
-                  show = !show;
-                  $nextTick(updateDropdownPosition);
-                `,
-                type="button",
-                x-data=`{
-                  show: false,
-                  updateDropdownPosition() {
-                    let rect = $el.getBoundingClientRect();
-                    let bodyRect = document.body.getBoundingClientRect();
-                    $refs.dropdown.style.right = Math.max(bodyRect.right - rect.right, 10) + 'px';
-                    $refs.dropdown.style.top = (rect.bottom - bodyRect.top + 4) + 'px';
-                  }
-                }`,
-                x-init="$nextTick(updateDropdownPosition)"
-              )
-                i.text-xl(class="icon-[mdi--more-vert]")
+block append body
+  +buttonGroup.mb-4
+    +buttonInGroup#create(
+      hx-get=`/media/${medium.id}/chapters/create`,
+      hx-swap="innerHTML",
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-xl(class="icon-[gridicons--create]")
+      span= __("Create")
 
-                template(x-teleport="#dropdown-teleport")
-                  +verticalButtonGroup.absolute.z-10.shadow-xl(
-                    @click.away="show = false",
-                    class="dark:shadow-gray-400/10",
-                    x-ref="dropdown",
-                    x-show="show",
-                    x-transition:enter="transition ease-out duration-100",
-                    x-transition:enter-end="opacity-100 scale-100",
-                    x-transition:enter-start="opacity-0 scale-90",
-                    x-transition:leave="transition ease-in duration-100",
-                    x-transition:leave-end="opacity-0 scale-90",
-                    x-transition:leave-start="opacity-100 scale-100"
-                  )
-                    +buttonInGroup.relative(
-                      @click="show = false",
-                      hx-get=`/chapters/${chapter.id}/edit`,
-                      hx-swap="innerHTML",
-                      hx-target="#modal",
-                      type="button"
+  template(
+    hx-get=`/media/${medium.id}/chapters`,
+    hx-target="body",
+    hx-trigger="refresh-chapters from:body"
+  )
+
+  .grow.overflow-x-auto.overflow-y-hidden
+    +table.w-full
+      +thead
+        +th= __("Title")
+        +th= __("Start Time")
+        +th= __("End Time")
+        +th= __("Operation")
+      +tbody
+        each chapter, index in chapters
+          +tr
+            +td= chapter.title
+            +td= dayjs.neatDuration(chapter.startTime)
+            +td= dayjs.neatDuration(chapter.endTime)
+            +td
+              +buttonGroup
+                +buttonInGroup(
+                  hx-get=`/chapters/${chapter.id}/play`,
+                  hx-swap="none",
+                  type="button"
+                )
+                  i.text-xl(class="icon-[teenyicons--play-solid]")
+                +buttonInGroup(
+                  hx-post=`/chapters/${chapter.id}/queue`,
+                  hx-swap="none",
+                  type="button"
+                )
+                  i.text-xl(class="icon-[ph--stack-light]")
+                +buttonInGroup.relative(
+                  @click=`
+                    show = !show;
+                    $nextTick(updateDropdownPosition);
+                  `,
+                  type="button",
+                  x-data=`{
+                    show: false,
+                    updateDropdownPosition() {
+                      let rect = $el.getBoundingClientRect();
+                      let bodyRect = document.body.getBoundingClientRect();
+                      $refs.dropdown.style.right = Math.max(bodyRect.right - rect.right, 10) + 'px';
+                      $refs.dropdown.style.top = (rect.bottom - bodyRect.top + 4) + 'px';
+                    }
+                  }`,
+                  x-init="$nextTick(updateDropdownPosition)"
+                )
+                  i.text-xl(class="icon-[mdi--more-vert]")
+
+                  template(x-teleport="#dropdown-teleport")
+                    +verticalButtonGroup.absolute.z-10.shadow-xl(
+                      @click.away="show = false",
+                      class="dark:shadow-gray-400/10",
+                      x-ref="dropdown",
+                      x-show="show",
+                      x-transition:enter="transition ease-out duration-100",
+                      x-transition:enter-end="opacity-100 scale-100",
+                      x-transition:enter-start="opacity-0 scale-90",
+                      x-transition:leave="transition ease-in duration-100",
+                      x-transition:leave-end="opacity-0 scale-90",
+                      x-transition:leave-start="opacity-100 scale-100"
                     )
-                      i.text-xl(class="icon-[material-symbols--edit]")
-                      span= __("Edit")
-                    +buttonInGroup.relative(
-                      hx-delete=`/chapters/${chapter.id}/confirm`,
-                      hx-swap="innerHTML",
-                      hx-target="#modal",
-                      type="button"
-                    )
-                      i.text-xl(class="icon-[material-symbols--delete-outline]")
-                      span= __("Delete")
+                      +buttonInGroup.relative(
+                        @click="show = false",
+                        hx-get=`/chapters/${chapter.id}/edit`,
+                        hx-swap="innerHTML",
+                        hx-target="#modal",
+                        type="button"
+                      )
+                        i.text-xl(class="icon-[material-symbols--edit]")
+                        span= __("Edit")
+                      +buttonInGroup.relative(
+                        hx-delete=`/chapters/${chapter.id}/confirm`,
+                        hx-swap="innerHTML",
+                        hx-target="#modal",
+                        type="button"
+                      )
+                        i.text-xl(class="icon-[material-symbols--delete-outline]")
+                        span= __("Delete")
 
-      if chapters.length > 3
-        +tr(x-show="!show")
-          +td.cursor-pointer.text-xs(
-            @click="show = true",
-            class="hover:underline",
-            colspan="4"
-          )= "..." + __("And More")
-if chapters.length > 3
-  .shrink-0.pt-2
-    +button.sticky.top-40(@click="show = !show", class="sm:px-2", type="button")
-      i.text-xl(
-        :class="show ? 'icon-[material-symbols--collapse-all]' : 'icon-[material-symbols--expand-all]'"
-      )
-
-#dropdown-teleport
+  #dropdown-teleport
