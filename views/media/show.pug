@@ -119,11 +119,3 @@ block append body
           .flex.flex-wrap
             each label in labels
               span.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm #{ label.text }
-
-      +listItem(__("Playlist")).flex.gap-2
-        +buttonGroup
-          +buttonInGroup#create(type="button")
-            i.text-xl(class="icon-[material-symbols--playlist-add]")
-            span= __("Add")
-
-        include _playlist.pug

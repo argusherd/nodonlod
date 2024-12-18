@@ -67,8 +67,6 @@ router.get("/:medium", async (req: MediumRequest, res) => {
   res.render("media/show", {
     medium: req.medium,
     uploader: await req.medium.$get("uploader"),
-    chapters: await req.medium.$get("chapters"),
-    playlists: await req.medium.$get("playlists"),
     categorized,
     performers: await req.medium.$get("performers"),
   });
@@ -123,6 +121,13 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
   await req.medium.destroy();
 
   res.set("HX-Location", "/media").sendStatus(204);
+});
+
+router.get("/:medium/playlists", async (req: MediumRequest, res) => {
+  res.render("media/playlists/index", {
+    medium: req.medium,
+    playlists: await req.medium.$get("playlists"),
+  });
 });
 
 router.put(
