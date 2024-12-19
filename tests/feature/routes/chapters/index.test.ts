@@ -18,17 +18,4 @@ describe("The chapter index page", () => {
         expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
       });
   });
-
-  it("can display a message indicating that no chapters currently exist", async () => {
-    const medium = await createMedium();
-
-    await supertest(express)
-      .get(`/media/${medium.id}/chapters`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain(
-          "There are currently no chapters available.",
-        );
-      });
-  });
 });

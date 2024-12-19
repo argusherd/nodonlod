@@ -27,6 +27,6 @@ describe("The chapter edit page", () => {
     await supertest(express)
       .get(`/chapters/${chapter.id}/edit`)
       .expect(200)
-      .expect("HX-Trigger", "show-chapter-form");
+      .expect("HX-Trigger", "open-modal");
   });
 });

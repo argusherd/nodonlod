@@ -91,7 +91,7 @@ router.put(
       description: req.body.description,
     });
 
-    res.sendStatus(205);
+    res.set("HX-Trigger", "medium-saved").sendStatus(205);
   },
 );
 

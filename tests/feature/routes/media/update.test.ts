@@ -15,7 +15,8 @@ describe("The medium update route", () => {
         thumbnail: "thumbnail",
         description: "description",
       })
-      .expect(205);
+      .expect(205)
+      .expect("HX-Trigger", "medium-saved");
 
     await medium.reload();
 

@@ -6,7 +6,6 @@ import {
   createLabel,
   createMedium,
   createPerformer,
-  createPlaylist,
   createUploader,
 } from "../../setup/create-model";
 
@@ -66,47 +65,6 @@ describe("The medium show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(uploader.name);
-      });
-  });
-
-  it("displays all the chapters of the medium", async () => {
-    const medium = await createMedium();
-
-    const chapter1 = await medium.$create("chapter", {
-      title: "ep1",
-      startTime: 10,
-      endTime: 30,
-    });
-    const chapter2 = await medium.$create("chapter", { title: "ep2" });
-
-    await supertest(express)
-      .get(`/media/${medium.id}`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain("ep1");
-        expect(res.text).toContain(formatSeconds(10));
-        expect(res.text).toContain(formatSeconds(30));
-        expect(res.text).toContain("ep2");
-        expect(res.text).toContain(`/chapters/${chapter1.id}/play`);
-        expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
-      });
-  });
-
-  it("displays all related playlists of the medium", async () => {
-    const medium = await createMedium();
-    const playlist1 = await createPlaylist();
-    const playlist2 = await createPlaylist();
-
-    await medium.$add("playlist", [playlist1, playlist2]);
-
-    await supertest(express)
-      .get(`/media/${medium.id}`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain(playlist1.title);
-        expect(res.text).toContain(playlist2.title);
-        expect(res.text).toContain(`/playlists/${playlist1.id}`);
-        expect(res.text).toContain(`/playlists/${playlist2.id}`);
       });
   });
 

@@ -148,6 +148,6 @@ describe("The chapter update route", () => {
       .type("form")
       .send({ title: "foo", startTime: 0, endTime: 1 })
       .expect(205)
-      .expect("HX-Trigger", "refresh-chapters");
+      .expect("HX-Trigger", "refresh-chapters, close-modal");
   });
 });

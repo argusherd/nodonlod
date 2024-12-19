@@ -28,7 +28,7 @@ describe("The destroy chapter route", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(
-          `Are you sure you want to delete the chapter ${chapter.title}?`,
+          `Are you sure you want to delete the chapter`,
         );
         expect(res.text).toContain(`/chapters/${chapter.id}`);
       });

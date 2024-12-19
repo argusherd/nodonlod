@@ -23,6 +23,6 @@ describe("The create a chapter page", () => {
     await supertest(express)
       .get(`/media/${medium.id}/chapters/create`)
       .expect(200)
-      .expect("HX-Trigger", "show-chapter-form");
+      .expect("HX-Trigger", "open-modal");
   });
 });

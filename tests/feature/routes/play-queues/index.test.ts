@@ -8,8 +8,8 @@ describe("The play queue index page", () => {
     const medium1 = await createMedium();
     const medium2 = await createMedium();
 
-    await PlayQueue.create({ mediumId: medium1.id });
-    await PlayQueue.create({ mediumId: medium2.id });
+    const playQyeye1 = await PlayQueue.create({ mediumId: medium1.id });
+    const playQyeye2 = await PlayQueue.create({ mediumId: medium2.id });
 
     await supertest(express)
       .get("/play-queues")
@@ -17,8 +17,8 @@ describe("The play queue index page", () => {
       .expect((res) => {
         expect(res.text).toContain(medium1.title);
         expect(res.text).toContain(medium2.title);
-        expect(res.text).toContain(`/media/${medium1.id}/play`);
-        expect(res.text).toContain(`/media/${medium2.id}/play`);
+        expect(res.text).toContain(`/play-queues/${playQyeye1.id}/play`);
+        expect(res.text).toContain(`/play-queues/${playQyeye2.id}/play`);
       });
   });
 
@@ -26,11 +26,11 @@ describe("The play queue index page", () => {
     const chapter1 = await createChapter();
     const chapter2 = await createChapter();
 
-    await PlayQueue.create({
+    const playQueue1 = await PlayQueue.create({
       mediumId: chapter1.mediumId,
       chapterId: chapter1.id,
     });
-    await PlayQueue.create({
+    const playQueue2 = await PlayQueue.create({
       mediumId: chapter2.mediumId,
       chapterId: chapter2.id,
     });
@@ -41,8 +41,8 @@ describe("The play queue index page", () => {
       .expect((res) => {
         expect(res.text).toContain(chapter1.title);
         expect(res.text).toContain(chapter2.title);
-        expect(res.text).toContain(`/chapters/${chapter1.id}/play`);
-        expect(res.text).toContain(`/chapters/${chapter2.id}/play`);
+        expect(res.text).toContain(`/play-queues/${playQueue1.id}/play`);
+        expect(res.text).toContain(`/play-queues/${playQueue2.id}/play`);
       });
   });
 

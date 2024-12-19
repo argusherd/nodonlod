@@ -18,7 +18,9 @@ block append body
         i.text-2xl(class="icon-[ph--stack-light]")
         span.hidden(class="sm:inline-block")= __("Queue")
       +buttonInGroup#save-btn(
-        @click="$dispatch('save-medium')",
+        hx-include="#form",
+        hx-put=`/media/${medium.id}`,
+        hx-swap="none",
         title=__("Save")
       )
         .relative.flex.items-center(
@@ -40,11 +42,7 @@ block append body
         i.text-2xl(class="icon-[material-symbols--delete-outline]")
         span.hidden(class="sm:inline-block")= __("Delete")
 
-  form.mb-4(
-    hx-put=`/media/${medium.id}`,
-    hx-swap="none",
-    hx-trigger="save-medium from:body"
-  )
+  #form.mb-4
     +list.mb-4
       +listItem(__("Title"))
         +input.w-full(
@@ -100,8 +98,9 @@ block append body
               i.text-xl(
                 :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
               )
-      +listItem(__("Upload Date"))
-        span= dayjs(medium.uploadDate).format("YYYY-MM-DD")
+      if medium.uploadDate
+        +listItem(__("Upload Date"))
+          span= dayjs(medium.uploadDate).format("YYYY-MM-DD")
       +listItem(__("Created At"))
         span= dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss")
       +listItem(__("Updated At"))

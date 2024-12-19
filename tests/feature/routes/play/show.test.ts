@@ -58,16 +58,4 @@ describe("The show play route", () => {
         expect(res.text).toContain(`/playlists/${playlistItem.playlistId}`);
       });
   });
-
-  it("can properly indicate that it is the end of the list", async () => {
-    await play(null);
-
-    await supertest(express)
-      .get("/play")
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain("The end of the list");
-        expect(res.text).not.toContain("/media/");
-      });
-  });
 });

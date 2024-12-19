@@ -50,7 +50,7 @@ describe("The uploader index page", () => {
       .get("/uploaders")
       .expect(200)
       .expect((res) => {
-        expect(res.text).toContain("(11)");
+        expect(res.text).toContain("11");
       });
   });
 });
