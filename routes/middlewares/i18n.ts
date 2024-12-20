@@ -10,6 +10,8 @@ export const i18n = new I18n({
   updateFiles: false,
 });
 
+export const { __ } = i18n;
+
 const router = Router();
 
 router.use((req, res, next) => {

@@ -6,7 +6,7 @@ import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import { play } from "../src/currently-playing";
-import { i18n } from "./middlewares/i18n";
+import { __ } from "./middlewares/i18n";
 
 interface ChapterRequest extends Request {
   chapter: Chapter;
@@ -72,13 +72,13 @@ router.post(
     let error = errors.array().at(0)?.msg;
 
     if (exists)
-      error = i18n.__(
+      error = __(
         "The given start time and end time already exist for the medium.",
       );
     else if (startTime >= endTime)
-      error = i18n.__("The end time should be greater than the start time.");
+      error = __("The end time should be greater than the start time.");
     else if (endTime > medium.duration)
-      error = i18n.__(
+      error = __(
         "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
         { duration: dayjs.neatDuration(medium.duration) },
       );
@@ -131,13 +131,13 @@ router.put(
     let error = errors.array().at(0)?.msg;
 
     if (exists)
-      error = i18n.__(
+      error = __(
         "The given start time and end time already exist for the medium.",
       );
     else if (startTime >= endTime)
-      error = i18n.__("The end time should be greater than the start time.");
+      error = __("The end time should be greater than the start time.");
     else if (endTime > medium.duration)
-      error = i18n.__(
+      error = __(
         "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
         { duration: dayjs.neatDuration(medium.duration) },
       );
@@ -175,12 +175,9 @@ router.post("/chapters/:chapter/queue", async (req: ChapterRequest, res) => {
 
 router.delete("/chapters/:chapter/confirm", (req: ChapterRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
-    message: i18n.__(
-      `Are you sure you want to delete the chapter: "{{title}}"?`,
-      {
-        title: req.chapter.title,
-      },
-    ),
+    message: __(`Are you sure you want to delete the chapter: "{{title}}"?`, {
+      title: req.chapter.title,
+    }),
     route: `/chapters/${req.chapter.id}`,
   });
 });

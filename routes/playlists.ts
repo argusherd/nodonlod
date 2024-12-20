@@ -7,7 +7,7 @@ import PlayQueue, {
 import Playlist from "../database/models/playlist";
 import PlaylistItem from "../database/models/playlist-item";
 import { play } from "../src/currently-playing";
-import { i18n } from "./middlewares/i18n";
+import { __ } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 
 interface PlaylistRequest extends HasPageRequest {
@@ -75,7 +75,7 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
 
 router.delete("/:playlist/confirm", (req: PlaylistRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
-    message: i18n.__("Are you sure you want to delete this playlist?"),
+    message: __("Are you sure you want to delete this playlist?"),
     route: `/playlists/${req.playlist.id}`,
   });
 });

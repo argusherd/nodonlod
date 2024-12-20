@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { join } from "path";
 import { renderFile } from "pug";
 import neatDuration from "../src/neat-duration";
-import { i18n } from "./middlewares/i18n";
+import { __ } from "./middlewares/i18n";
 
 dayjs.extend(neatDuration);
 
@@ -13,7 +13,7 @@ const render = (filename: string, params?: object) =>
   renderFile(join(__dirname, relativePath, filename), {
     ...params,
     dayjs,
-    __: i18n.__,
+    __,
   });
 
 export default render;

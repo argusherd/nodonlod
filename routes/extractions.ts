@@ -7,7 +7,7 @@ import {
   RawPlaylist,
   SubRawMedium,
 } from "../src/raw-info-extractor";
-import { i18n } from "./middlewares/i18n";
+import { __ } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 
 interface ExtractionRequest extends HasPageRequest {
@@ -69,7 +69,7 @@ router.post(
 
 router.delete("/confirm", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
-    message: i18n.__("Are you sure you want to delete all extractions?"),
+    message: __("Are you sure you want to delete all extractions?"),
     route: "/extractions",
   });
 });
