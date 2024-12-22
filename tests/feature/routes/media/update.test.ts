@@ -15,7 +15,7 @@ describe("The medium update route", () => {
         thumbnail: "thumbnail",
         description: "description",
       })
-      .expect(205)
+      .expect(200)
       .expect("HX-Trigger", "medium-saved");
 
     await medium.reload();
@@ -37,7 +37,10 @@ describe("The medium update route", () => {
         thumbnail: "thumbnail",
         description: "description",
       })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain("The title is missing");
+      });
   });
 
   it("was necessary to update the medium with the url", async () => {
@@ -51,6 +54,9 @@ describe("The medium update route", () => {
         thumbnail: "thumbnail",
         description: "description",
       })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain("The URL is missing");
+      });
   });
 });

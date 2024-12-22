@@ -74,24 +74,30 @@ router.get("/:medium", async (req: MediumRequest, res) => {
 
 router.put(
   "/:medium",
-  body("title").notEmpty(),
-  body("url").notEmpty(),
+  body("title").notEmpty().withMessage(__("The title is missing.")),
+  body("url").notEmpty().withMessage(__("The URL is missing.")),
   async (req: MediumRequest, res) => {
     const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      res.sendStatus(422);
-      return;
+    if (errors.isEmpty()) {
+      await req.medium.update({
+        title: req.body.title,
+        url: req.body.url,
+        thumbnail: req.body.thumbnail,
+        description: req.body.description,
+      });
+
+      res.set("HX-Trigger", "medium-saved");
+    } else {
+      res.set("HX-Trigger", "medium-failed").status(422);
     }
 
-    await req.medium.update({
-      title: req.body.title,
-      url: req.body.url,
-      thumbnail: req.body.thumbnail,
-      description: req.body.description,
+    res.render("media/_info.pug", {
+      medium: req.medium,
+      uploader: await req.medium.$get("uploader"),
+      performers: await req.medium.$get("performers"),
+      errors: errors.mapped(),
     });
-
-    res.set("HX-Trigger", "medium-saved").sendStatus(205);
   },
 );
 

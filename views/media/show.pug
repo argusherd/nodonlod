@@ -20,17 +20,38 @@ block append body
       +buttonInGroup#save-btn(
         hx-include="#form",
         hx-put=`/media/${medium.id}`,
-        hx-swap="none",
+        hx-target="#form",
         title=__("Save")
       )
         .relative.flex.items-center(
-          @medium-changed.window="show = true",
-          @medium-saved.window="show = false",
-          x-data="{ show: false }"
+          @medium-changed.window="showHint = true",
+          @medium-failed.window=`
+            showError = true;
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => showError = false, 1500);
+          `,
+          @medium-saved.window=`
+            showHint = false;
+            showError = false;
+            showSuccess = true;
+            if (timeoutId) clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => showSuccess = false, 1500);
+          `,
+          x-data=`{
+            showHint: false,
+            showError: false,
+            showSuccess: false,
+            timeoutId: null,
+          }`
         )
-          i.text-2xl(class="icon-[material-symbols--save-outline]")
+          i.text-2xl(
+            class="icon-[material-symbols--save-outline]",
+            x-show="!showError && !showSuccess"
+          )
+          i.text-2xl(class="icon-[heroicons-outline--exclamation]", x-show="showError")
+          i.text-2xl(class="icon-[material-symbols--check]", x-show="showSuccess")
           span.absolute.right-0.top-0.rounded-full.bg-red-500.p-1(
-            x-show="show"
+            x-show="showHint"
           )
         span.hidden(class="sm:inline-block") #{ __("Save") }
       +buttonInGroup(
