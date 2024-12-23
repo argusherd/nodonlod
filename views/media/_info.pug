@@ -2,10 +2,11 @@ include /_mixin.pug
 
 +list.mb-4
   +listItem(__("Title"))
+    - var title = "title" in old ? old.title : medium.title;
     +input.w-full(
       @input="$dispatch('medium-changed')",
       name="title",
-      value=medium.title
+      value=title
     )
     if errors && errors.title
       span.text-red-500= errors.title.msg
@@ -17,18 +18,20 @@ include /_mixin.pug
       ) #{ performer.name }
 
   +listItem(__("URL"))
+    - var url = "url" in old ? old.url : medium.url;
     +input.w-full(
       @input="$dispatch('medium-changed')",
       name="url",
-      value=medium.url
+      value=url
     )
     if errors && errors.url
       span.text-red-500= errors.url.msg
 
   +listItem(__("Thumbnail"))
+    - var thumbnail = "thumbnail" in old ? old.thumbnail : medium.thumbnail;
     .flex.flex-col.gap-2(
       @input="$dispatch('medium-changed')",
-      x-data=`{ thumbnail: '${medium.thumbnail || ''}' }`
+      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
     )
       +input.w-full(name="thumbnail", x-model="thumbnail")
       .max-w-3xl
@@ -41,12 +44,13 @@ include /_mixin.pug
     span= dayjs.neatDuration(medium.duration)
 
   +listItem(__("Description"))
+    - var description = "description" in old ? old.description : medium.description;
     textarea.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
       @input="$dispatch('medium-changed')",
       class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300",
       name="description",
       rows="5"
-    ) #{ medium.description }
+    ) #{ description }
   if uploader
     +listItem(__("Uploader"))
       +buttonGroup

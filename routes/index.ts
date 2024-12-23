@@ -8,6 +8,7 @@ import electronRouter from "./electron";
 import extractionRouter from "./extractions";
 import mediumRouter from "./media";
 import i18nMiddleware from "./middlewares/i18n";
+import oldInputs from "./middlewares/old-inputs";
 import pagination from "./middlewares/pagination";
 import queryString from "./middlewares/query-string";
 import performerRouter from "./performers";
@@ -31,6 +32,7 @@ express.use(cookieParser());
 express.use(i18nMiddleware);
 express.use(queryString);
 express.use(pagination);
+express.use(oldInputs);
 
 express.locals.basedir = join(__dirname, relativePath);
 express.locals.dayjs = dayjs;
