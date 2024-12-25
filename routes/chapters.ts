@@ -55,47 +55,58 @@ router.get("/media/:medium/chapters/create", (req: MediumRequest, res) => {
 
 router.post(
   "/media/:medium/chapters",
-  body("title").notEmpty(),
-  body("startTime").isNumeric({ no_symbols: true }),
-  body("endTime").isNumeric({ no_symbols: true }),
+  body("title")
+    .trim()
+    .notEmpty()
+    .withMessage(__("The title is missing."))
+    .custom(async (value, { req }) => {
+      const duplicated = await Chapter.count({
+        where: {
+          startTime: value,
+          endTime: req.body.endTime,
+          mediumId: req.medium.id,
+        },
+      });
+
+      if (duplicated)
+        throw new Error(
+          __("The given start time and end time already exist for the medium."),
+        );
+    }),
+  body("startTime")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage(__("The start time is missing."))
+    .toInt()
+    .isNumeric({ no_symbols: true })
+    .withMessage("The start time should be a positive integer."),
+  body("endTime")
+    .notEmpty()
+    .withMessage(__("The end time is missing."))
+    .toInt()
+    .isNumeric({ no_symbols: true })
+    .withMessage("The end time should be a positive integer.")
+    .custom((value, { req }) => value > req.body.startTime)
+    .withMessage(__("The end time should be greater than the start time."))
+    .custom((value, { req }) => value <= req.medium.duration)
+    .withMessage(__("The end time should fall within the duration.")),
   async (req: MediumRequest, res) => {
-    const medium = req.medium;
     const errors = validationResult(req);
-    const startTime = isNaN(req.body.startTime)
-      ? 0
-      : Number(req.body.startTime);
-    const endTime = isNaN(req.body.endTime) ? 0 : Number(req.body.endTime);
-    const exists = await Chapter.count({
-      where: { startTime, endTime, mediumId: medium.id },
-    });
 
-    let error = errors.array().at(0)?.msg;
+    if (errors.isEmpty()) {
+      await Chapter.create({
+        mediumId: req.medium.id,
+        title: req.body.title,
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+      });
 
-    if (exists)
-      error = __(
-        "The given start time and end time already exist for the medium.",
-      );
-    else if (startTime >= endTime)
-      error = __("The end time should be greater than the start time.");
-    else if (endTime > medium.duration)
-      error = __(
-        "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
-        { duration: dayjs.neatDuration(medium.duration) },
-      );
-
-    if (error) {
-      res.status(422).render("chapters/_form.pug", { medium, error });
-      return;
+      res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(201);
+    } else {
+      res.status(422).render("chapters/_form.pug", {
+        medium: req.medium,
+        errors: errors.mapped(),
+      });
     }
-
-    await Chapter.create({
-      mediumId: req.medium.id,
-      title: req.body.title,
-      startTime,
-      endTime,
-    });
-
-    res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(201);
   },
 );
 

@@ -4,8 +4,8 @@ include /_mixin.pug
 
 form#chapter-form.flex.flex-col.gap-2(
   x-data=`{
-    startTime: dayjs.duration(${chapter ? chapter.startTime : 0}, 'seconds'),
-    endTime: dayjs.duration(${chapter ? chapter.endTime : medium.duration}, 'seconds'),
+    startTime: dayjs.duration(${ old.startTime || (chapter ? chapter.startTime : 0) }, 'seconds'),
+    endTime: dayjs.duration(${ old.endTime || (chapter ? chapter.endTime : medium.duration) }, 'seconds'),
     sHours: 0, sMinutes: 0, sSeconds: 0,
     eHours: 0, eMinutes: 0, eSeconds: 1,
   }`,
@@ -33,8 +33,10 @@ form#chapter-form.flex.flex-col.gap-2(
         name="title",
         required,
         type="text",
-        value=chapter ? chapter.title : ""
+        value=old.title || (chapter ? chapter.title : "")
       )
+      if errors && errors.title
+        span.text-red-500= errors.title.msg
 
     +listItem(__("Start Time"))
       .mb-2.flex.flex-wrap.items-center.gap-1
@@ -56,6 +58,9 @@ form#chapter-form.flex.flex-col.gap-2(
           span= __("Reset")
       span(x-text="dayjs.neatDuration(startTime.asSeconds())")
 
+      if errors && errors.startTime
+        .text-red-500= errors.startTime.msg
+
     +listItem(__("End Time"))
       .mb-2.flex.flex-wrap.items-center.gap-1
         +input.w-16(min="0", type="number", x-model="eHours")
@@ -76,30 +81,12 @@ form#chapter-form.flex.flex-col.gap-2(
           span= __("Reset")
       span(x-text="dayjs.neatDuration(endTime.asSeconds())")
 
+      if errors && errors.endTime
+        .text-red-500= errors.endTime.msg
+
   .flex.flex-wrap.items-center.justify-end.gap-2
-    span.text-right.text-red-400(
-      x-show="startTime.asSeconds() >= endTime.asSeconds()"
-    ) #{ __("The end time should be greater than the start time.") }
-
-    span.text-right.text-red-400(
-      x-show=`
-      startTime.asSeconds() >= ${medium.duration} ||
-      endTime.asSeconds() > ${medium.duration}
-    `
-    ) #{ __("The start time and the end time should fall within the duration ({{duration}}) of the medium.", { duration: dayjs.neatDuration(medium.duration) }) }
-
-    if error
-      span.text-right.text-red-400 #{ error }
-
     +buttonGroup
-      +buttonInGroup#save(
-        :disabled=`
-          startTime.asSeconds() >= endTime.asSeconds() ||
-          startTime.asSeconds() >= ${medium.duration} ||
-          endTime.asSeconds() > ${medium.duration}
-        `,
-        type="submit"
-      )
+      +buttonInGroup#save(type="submit")
         i.text-2xl(class="icon-[material-symbols--save-outline]")
         span= __("Save")
       +buttonInGroup#cancel(@click="show = false", type="button")
