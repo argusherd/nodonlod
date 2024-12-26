@@ -28,7 +28,10 @@ describe("The chapter update route", () => {
       .put(`/chapters/${chapter.id}`)
       .type("form")
       .send({ startTime: 12, endTime: 23 })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain("The title is missing.");
+      });
   });
 
   it("requires a numeric start time and a numeric end time", async () => {
@@ -38,13 +41,21 @@ describe("The chapter update route", () => {
       .put(`/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo" })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain("The start time is missing.");
+      });
 
     await supertest(express)
       .put(`/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: "bar", endTime: "baz" })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The start time should be a positive integer.",
+        );
+      });
   });
 
   it("requires a positive start time and a positive end time", async () => {
@@ -54,7 +65,12 @@ describe("The chapter update route", () => {
       .put(`/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: -10, endTime: -30 })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The start time should be a positive integer.",
+        );
+      });
   });
 
   it("requires the end time to be greater than the start time", async () => {

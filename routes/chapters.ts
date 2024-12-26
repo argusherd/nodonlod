@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
@@ -17,6 +16,54 @@ interface MediumRequest extends Request {
 }
 
 const router = Router();
+
+const validateTitle = () =>
+  body("title").trim().notEmpty().withMessage(__("The title is missing."));
+
+const validateStartTime = () =>
+  body("startTime")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage(__("The start time is missing."))
+    .toInt()
+    .isNumeric({ no_symbols: true })
+    .withMessage("The start time should be a positive integer.");
+
+const validateEndTime = () =>
+  body("endTime")
+    .notEmpty()
+    .withMessage(__("The end time is missing."))
+    .toInt()
+    .isNumeric({ no_symbols: true })
+    .withMessage("The end time should be a positive integer.")
+    .custom((value, { req }) => value > req.body.startTime)
+    .withMessage(__("The end time should be greater than the start time."))
+    .custom(async (value, { req }) => {
+      const medium: Medium = req.medium || (await req.chapter.$get("medium"));
+
+      if (value > medium.duration)
+        throw new Error(
+          __(
+            "The start time and the end time should fall within the duration.",
+          ),
+        );
+    });
+
+const validateDuplicate = () =>
+  body("startTime").custom(async (_value, { req }) => {
+    const duplicated = await Chapter.count({
+      where: {
+        startTime: req.body.startTime,
+        endTime: req.body.endTime,
+        ...(req.medium && { mediumId: req.medium.id }),
+        ...(req.chapter && { id: { [Op.ne]: req.chapter.id } }),
+      },
+    });
+
+    if (duplicated)
+      throw new Error(
+        __("The given start time and end time already exist for the medium."),
+      );
+  });
 
 router.param("chapter", async (req: ChapterRequest, res, next) => {
   const chapter = await Chapter.findByPk(req.params.chapter);
@@ -55,40 +102,10 @@ router.get("/media/:medium/chapters/create", (req: MediumRequest, res) => {
 
 router.post(
   "/media/:medium/chapters",
-  body("title")
-    .trim()
-    .notEmpty()
-    .withMessage(__("The title is missing."))
-    .custom(async (value, { req }) => {
-      const duplicated = await Chapter.count({
-        where: {
-          startTime: value,
-          endTime: req.body.endTime,
-          mediumId: req.medium.id,
-        },
-      });
-
-      if (duplicated)
-        throw new Error(
-          __("The given start time and end time already exist for the medium."),
-        );
-    }),
-  body("startTime")
-    .notEmpty({ ignore_whitespace: true })
-    .withMessage(__("The start time is missing."))
-    .toInt()
-    .isNumeric({ no_symbols: true })
-    .withMessage("The start time should be a positive integer."),
-  body("endTime")
-    .notEmpty()
-    .withMessage(__("The end time is missing."))
-    .toInt()
-    .isNumeric({ no_symbols: true })
-    .withMessage("The end time should be a positive integer.")
-    .custom((value, { req }) => value > req.body.startTime)
-    .withMessage(__("The end time should be greater than the start time."))
-    .custom((value, { req }) => value <= req.medium.duration)
-    .withMessage(__("The end time should fall within the duration.")),
+  validateTitle(),
+  validateStartTime(),
+  validateEndTime(),
+  validateDuplicate(),
   async (req: MediumRequest, res) => {
     const errors = validationResult(req);
 
@@ -119,52 +136,28 @@ router.get("/chapters/:chapter/edit", async (req: ChapterRequest, res) => {
 
 router.put(
   "/chapters/:chapter",
-  body("title").notEmpty(),
-  body("startTime").isNumeric({ no_symbols: true }),
-  body("endTime").isNumeric({ no_symbols: true }),
+  validateTitle(),
+  validateStartTime(),
+  validateEndTime(),
+  validateDuplicate(),
   async (req: ChapterRequest, res) => {
-    const chpater = req.chapter;
-    const medium = (await chpater.$get("medium")) as Medium;
+    const chapter = req.chapter;
+    const medium = (await chapter.$get("medium")) as Medium;
     const errors = validationResult(req);
-    const startTime = isNaN(req.body.startTime)
-      ? 0
-      : Number(req.body.startTime);
-    const endTime = isNaN(req.body.endTime) ? 0 : Number(req.body.endTime);
-    const exists = await Chapter.count({
-      where: {
-        startTime,
-        endTime,
-        mediumId: medium.id,
-        id: { [Op.ne]: chpater.id },
-      },
-    });
 
-    let error = errors.array().at(0)?.msg;
+    if (errors.isEmpty()) {
+      const { title, startTime, endTime } = req.body;
 
-    if (exists)
-      error = __(
-        "The given start time and end time already exist for the medium.",
-      );
-    else if (startTime >= endTime)
-      error = __("The end time should be greater than the start time.");
-    else if (endTime > medium.duration)
-      error = __(
-        "The start time and the end time should fall within the duration ({{duration}}) of the medium.",
-        { duration: dayjs.neatDuration(medium.duration) },
-      );
+      await chapter.update({ title, startTime, endTime });
 
-    if (error) {
-      res
-        .status(422)
-        .render("chapters/_form.pug", { medium, error, chapter: chpater });
-      return;
+      res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(205);
+    } else {
+      res.status(422).render("chapters/_form.pug", {
+        medium,
+        chapter,
+        errors: errors.mapped(),
+      });
     }
-
-    const title = req.body.title;
-
-    await chpater.update({ title, startTime, endTime });
-
-    res.set("HX-Trigger", "refresh-chapters, close-modal").sendStatus(205);
   },
 );
 
