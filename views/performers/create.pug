@@ -1,3 +1,5 @@
+include /_mixin.pug
+
 h3.text-lg #{ __("Create a new performer") }
 
 form(action="/performers", hx-target="#modal", method="post")
@@ -8,11 +10,6 @@ form(action="/performers", hx-target="#modal", method="post")
   input#thumbnail(name="thumbnail", placeholder=__("Thumbnail"), type="url")
 
   label(for="description")
-  textarea#description(
-    cols="30",
-    name="description",
-    placeholder=__("description"),
-    rows="10"
-  )
+  +textarea#description(name="description")
 
   button #{ __("Submit") }
