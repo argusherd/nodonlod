@@ -1,15 +1,31 @@
 include /_mixin.pug
 
-h3.text-lg #{ __("Create a new performer") }
-
 form(action="/performers", hx-target="#modal", method="post")
-  label(for="name")
-  input#name(name="name", placeholder=__("Name"), type="text")
+  h2.mb-4.text-lg.font-bold.text-gray-700(class="dark:text-gray-300")= __("Create a new performer")
 
-  label(for="thumbnail")
-  input#thumbnail(name="thumbnail", placeholder=__("Thumbnail"), type="url")
+  +list.mb-4
+    +listItem(__("Name"))
+      +input.w-full(name="name", type="text")
 
-  label(for="description")
-  +textarea#description(name="description")
+    +listItem(__("Thumbnail"))
+      .flex.flex-col.gap-2(x-data="{ thumbnail: '' }")
+        +input(name="thumbnail", x-model="thumbnail")
 
-  button #{ __("Submit") }
+        .max-w-3xl
+          img.size-fit.cursor-zoom-in.object-cover(
+            :src="thumbnail",
+            alt="thumbnail",
+            x-show="thumbnail"
+          )
+
+    +listItem(__("Description"))
+      +textarea#description(name="description")
+
+  +buttonGroup.ml-auto
+    +buttonGroup
+      +buttonInGroup#save(type="submit")
+        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        span= __("Save")
+      +buttonInGroup#cancel(@click="show = false", type="button")
+        i.text-2xl(class="icon-[material-symbols--close]")
+        span= __("Cancel")
