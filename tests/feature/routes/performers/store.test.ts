@@ -21,7 +21,12 @@ describe("The store performer route", () => {
   });
 
   it("needs a name to create a performer", async () => {
-    await supertest(express).post("/performers").expect(422);
+    await supertest(express)
+      .post("/performers")
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain("The name is missing.");
+      });
   });
 
   it("cannot create a performer with a duplicate name", async () => {
@@ -33,7 +38,11 @@ describe("The store performer route", () => {
       .send({
         name: performer.name,
       })
-      .expect(422);
+      .expect(422)
+      .expect((res) => {
+        expect(res.text).toContain(performer.name);
+        expect(res.text).toContain("The given name is already taken.");
+      });
   });
 
   it("tells htmx redirect the page to the show page", async () => {

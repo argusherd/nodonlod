@@ -5,10 +5,13 @@ form(action="/performers", hx-target="#modal", method="post")
 
   +list.mb-4
     +listItem(__("Name"))
-      +input.w-full(name="name", type="text")
+      +input.w-full(name="name", type="text", value=old.name)
+
+      if errors && errors.name
+        span.text-red-500= errors.name.msg
 
     +listItem(__("Thumbnail"))
-      .flex.flex-col.gap-2(x-data="{ thumbnail: '' }")
+      .flex.flex-col.gap-2(x-data=`{ thumbnail: '${old.thumbnail || ''}' }`)
         +input(name="thumbnail", x-model="thumbnail")
 
         .max-w-3xl
@@ -19,7 +22,7 @@ form(action="/performers", hx-target="#modal", method="post")
           )
 
     +listItem(__("Description"))
-      +textarea#description(name="description")
+      +textarea#description(name="description")= old.description
 
   +buttonGroup.ml-auto
     +buttonGroup

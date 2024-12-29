@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import Performer from "../database/models/performer";
+import { __ } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 
 interface PerformerRequest extends HasPageRequest {
@@ -34,21 +35,27 @@ router.get("/create", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("performers/create");
 });
 
-router.post("/", body("name").notEmpty(), async (req, res) => {
-  const errors = validationResult(req);
+router.post(
+  "/",
+  body("name")
+    .notEmpty()
+    .withMessage(__("The name is missing."))
+    .custom(async (name) => {
+      const duplicated = await Performer.count({ where: { name } });
 
-  if (
-    !errors.isEmpty() ||
-    (await Performer.count({ where: { name: req.body.name } }))
-  ) {
-    res.status(422).render("performers/create");
-    return;
-  }
+      if (duplicated) throw new Error(__("The given name is already taken."));
+    }),
+  async (req, res) => {
+    const errors = validationResult(req);
 
-  const performer = await Performer.create({ name: req.body.name });
+    if (errors.isEmpty()) {
+      const performer = await Performer.create({ name: req.body.name });
 
-  res.set("HX-Location", `/performers/${performer.id}`).sendStatus(201);
-});
+      res.set("HX-Location", `/performers/${performer.id}`).sendStatus(201);
+    } else
+      res.status(422).render("performers/create", { errors: errors.mapped() });
+  },
+);
 
 router.get("/:performer", async (req: PerformerRequest, res) => {
   res.render("performers/show", { performer: req.performer });
