@@ -35,8 +35,7 @@ form#chapter-form.flex.flex-col.gap-2(
         type="text",
         value=old.title || (chapter ? chapter.title : "")
       )
-      if errors && errors.title
-        span.text-red-500= errors.title.msg
+      +error("title")
 
     +listItem(__("Start Time"))
       .mb-2.flex.flex-wrap.items-center.gap-1
@@ -58,8 +57,7 @@ form#chapter-form.flex.flex-col.gap-2(
           span= __("Reset")
       span(x-text="dayjs.neatDuration(startTime.asSeconds())")
 
-      if errors && errors.startTime
-        .text-red-500= errors.startTime.msg
+      +error("startTime")
 
     +listItem(__("End Time"))
       .mb-2.flex.flex-wrap.items-center.gap-1
@@ -81,8 +79,7 @@ form#chapter-form.flex.flex-col.gap-2(
           span= __("Reset")
       span(x-text="dayjs.neatDuration(endTime.asSeconds())")
 
-      if errors && errors.endTime
-        .text-red-500= errors.endTime.msg
+      +error("endTime")
 
   .flex.flex-wrap.items-center.justify-end.gap-2
     +buttonGroup

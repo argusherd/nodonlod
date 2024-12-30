@@ -8,8 +8,7 @@ include /_mixin.pug
       name="title",
       value=title
     )
-    if errors && errors.title
-      span.text-red-500= errors.title.msg
+    +error("title")
 
   +listItem(__("Performer"))
     each performer in performers
@@ -24,8 +23,7 @@ include /_mixin.pug
       name="url",
       value=url
     )
-    if errors && errors.url
-      span.text-red-500= errors.url.msg
+    +error("url")
 
   +listItem(__("Thumbnail"))
     - var thumbnail = "thumbnail" in old ? old.thumbnail : medium.thumbnail;

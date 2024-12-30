@@ -7,8 +7,7 @@ form(action="/performers", hx-target="#modal", method="post")
     +listItem(__("Name"))
       +input.w-full(name="name", type="text", value=old.name)
 
-      if errors && errors.name
-        span.text-red-500= errors.name.msg
+      +error("name")
 
     +listItem(__("Thumbnail"))
       .flex.flex-col.gap-2(x-data=`{ thumbnail: '${old.thumbnail || ''}' }`)
