@@ -1,0 +1,4 @@
+include /_mixin.pug
+
+each performer in performers
+  a(href=`/media/${medium.id}/performers/${performer.id}`)= performer.name

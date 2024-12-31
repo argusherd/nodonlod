@@ -11,6 +11,14 @@ include /_mixin.pug
     +error("title")
 
   +listItem(__("Performer"))
+    +buttonGroup
+      +buttonInGroup(
+        hx-get=`/media/${medium.id}/performers`,
+        hx-target="#modal",
+        type="button"
+      )
+        i.text-xl(class="icon-[material-symbols--add]")
+        span= __("Add")
     each performer in performers
       a.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm(
         href=`/performers/${performer.id}`

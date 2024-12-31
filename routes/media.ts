@@ -136,6 +136,23 @@ router.get("/:medium/playlists", async (req: MediumRequest, res) => {
   });
 });
 
+router.get(
+  "/:medium/performers",
+  async (req: MediumRequest & HasPageRequest, res) => {
+    const { rows: performers, count } = await Performer.findAndCountAll({
+      limit: req.perPage,
+      offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+      order: [["name", "ASC"]],
+    });
+
+    res.set("HX-Trigger", "open-modal").render("media/performers/index", {
+      medium: req.medium,
+      performers,
+      count,
+    });
+  },
+);
+
 router.put(
   "/:medium/performers/:performer",
   async (req: MediumRequest & PerformerRequest, res) => {
