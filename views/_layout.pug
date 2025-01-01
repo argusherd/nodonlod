@@ -9,9 +9,9 @@ html(lang=`${getLocale()}`)
     link(href="/css/app.css", rel="stylesheet")
     script(defer, src="/js/app.js")
 
-  body(
+  body.text-gray-600(
     :class="dark && 'dark'",
-    class="dark:bg-gray-900",
+    class="dark:bg-gray-900 dark:text-gray-200",
     hx-boost="true",
     hx-ext="ws,alpine-morph",
     ws-connect="/",
