@@ -1,11 +1,11 @@
-extends ../_layout.pug
+extends /_layout.pug
 
 block append breadcrumb
   +breadcrumb({ href: '/media', icon:'icon-[ph--play]', name: __("Media") })
-  +breadcrumb({ href: '/extractions', icon:'icon-[gridicons--create]', name: __("Create") })
+  +breadcrumb({ href: '/extractions/create', icon:'icon-[gridicons--create]', name: __("Create") })
 
 block body
-  include _create.pug
+  include _form.pug
 
   hr.mb-2
 
@@ -15,5 +15,12 @@ block body
     +buttonInGroup(hx-delete="/extractions/confirm", hx-target="#modal")
       i.text-2xl(class="icon-[material-symbols--delete-outline]")
       span #{ __("Delete All") }
+
+  #load-extractions(
+    hx-get="/extractions",
+    hx-swap="outerHTML",
+    hx-target="#extractions",
+    hx-trigger="load"
+  )
 
   include _list.pug

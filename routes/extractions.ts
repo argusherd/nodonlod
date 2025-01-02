@@ -28,12 +28,13 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: extractions, count } = await paginated(req.currentPage);
+  const { rows: extractions, count } = await Extraction.findAndCountAll({
+    offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+    limit: req.perPage,
+    order: [["createdAt", "DESC"]],
+  });
 
-  const template =
-    req.query._list != undefined ? "extractions/_list" : "extractions/index";
-
-  res.render(template, {
+  res.render("extractions/_list", {
     extractions,
     count,
   });
@@ -41,31 +42,38 @@ router.get("/", async (req: HasPageRequest, res) => {
 
 router.post(
   "/",
-  body("url").notEmpty(),
-  body("page").isNumeric().optional({ values: "falsy" }),
+  body("url").notEmpty().withMessage("The URL is missing."),
+  body("page")
+    .toInt()
+    .isNumeric({ no_symbols: true })
+    .withMessage("The page should be positive interger")
+    .optional(),
   async (req, res) => {
     const errors = validationResult(req);
 
-    if (!errors.isEmpty()) {
-      res.sendStatus(422);
-      return;
+    if (errors.isEmpty()) {
+      await Extraction.create({
+        url: req.body.url,
+        isContinuous: Boolean(req.body.isContinuous),
+        isConvertible: Boolean(req.body.isConvertible),
+        page: req.body.page || undefined,
+      });
+
+      const location = JSON.stringify({
+        path: "/extractions",
+        target: "#extractions",
+      });
+
+      res.set("HX-Location", location).sendStatus(201);
+    } else {
+      res.status(422).render("extractions/_form", { errors: errors.mapped() });
     }
-
-    await Extraction.create({
-      url: req.body.url,
-      isContinuous: Boolean(req.body.isContinuous),
-      isConvertible: Boolean(req.body.isConvertible),
-      page: req.body.page || undefined,
-    });
-
-    const { rows: extractions, count } = await paginated(1);
-
-    res.status(201).render("extractions/_list", {
-      extractions,
-      count,
-    });
   },
 );
+
+router.get("/create", (_req, res) => {
+  res.render("extractions/create");
+});
 
 router.delete("/confirm", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
@@ -77,7 +85,12 @@ router.delete("/confirm", (_req, res) => {
 router.delete("/", async (_req, res) => {
   await Extraction.truncate();
 
-  res.set("HX-Location", "/extractions").sendStatus(204);
+  const location = JSON.stringify({
+    path: "/extractions",
+    target: "#extractions",
+  });
+
+  res.set("HX-Location", location).sendStatus(204);
 });
 
 router.get("/:extraction", async (req: ExtractionRequest, res) => {
@@ -154,16 +167,6 @@ function findRawInfoById(
   }
 
   return null;
-}
-
-async function paginated(page: number) {
-  const limit = 10;
-
-  return await Extraction.findAndCountAll({
-    offset: Math.max(page - 1, 0) * limit,
-    limit,
-    order: [["createdAt", "DESC"]],
-  });
 }
 
 export default router;

@@ -1,0 +1,61 @@
+form.mb-4.flex.flex-col.gap-2(
+  @submit="$nextTick(() => ($refs.url.value = ''))",
+  action="/extractions",
+  hx-swap="outerHTML",
+  method="post"
+)
+  label.text-xs(for="input-url") #{ __("Create media by extracting information from a URL") }
+
+  .flex.flex-wrap.gap-2
+    .flex.grow.flex-col
+      include _input-url.pug
+      +error("url")
+
+    .flex.items-start
+      +buttonGroup
+        +buttonInGroup(type="submit")
+          i.text-2xl(class="icon-[system-uicons--box-open]")
+          span #{ __("Extract") }
+        +buttonInGroup(
+          hx-get="/electron/file",
+          hx-swap="outerHTML",
+          hx-target="#input-url",
+          title=__("Select a file as a extraction target"),
+          type="button"
+        )
+          i.text-2xl(class="icon-[ph--file-audio]")
+        +buttonInGroup(
+          hx-get="/electron/directory",
+          hx-swap="outerHTML",
+          hx-target="#input-url",
+          title=__("Select a directory as a playlist"),
+          type="button"
+        )
+          i.text-2xl(class="icon-[clarity--directory-line]")
+
+  .flex.gap-2.text-sm.text-gray-600(class="dark:text-gray-300")
+    +input#isConvertible.size-4(
+      checked,
+      name="isConvertible",
+      type="checkbox"
+    )
+    label.cursor-pointer(for="isConvertible")= __("Automatically convert extracted information into playable media")
+
+  .flex.flex-col.gap-2.text-sm(x-data="{ show: false }")
+    .flex.flex-wrap.gap-2
+      +input#isContinuous.size-4(
+        name="isContinuous",
+        type="checkbox",
+        x-model="show"
+      )
+
+      label.cursor-pointer(for="isContinuous")= __("Extract whole playlist")
+
+      p.text-red-500(x-show="show")= __("Be aware of very long playlists or channels.")
+
+    .flex.flex-wrap.gap-2(x-show="!show")
+      label(for="page") #{ __("Extract the given playlist from page") }:
+
+      +input#page.h-8.w-20(name="page", type="number", value="1")
+
+      small #{ __("10 items per page") }

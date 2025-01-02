@@ -3,34 +3,22 @@ include _badge.pug
 
 #extractions.flex.flex-col.gap-2
   #refresh-extractions(
-    hx-get=`/extractions?${qs().set("_list", true).toString()}`,
+    hx-get=`/extractions?${qs().toString()}`,
     hx-swap="outerHTML",
     hx-target="#extractions",
     hx-trigger="every 3s, refresh-extractions from:body"
   )
 
-  table.min-w-full.divide-y-2.divide-gray-200.bg-white.text-sm(
-    class="dark:divide-gray-700 dark:bg-gray-900"
-  )
-    thead(class="ltr:text-left rtl:text-right")
-      tr.text-left
-        th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-          class="dark:text-white"
-        ) #{ __("Type") }
-        th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-          class="dark:text-white"
-        ) #{ __("Page") }
-        th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-          class="dark:text-white"
-        ) #{ __("URL") }
-        th.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-          class="dark:text-white"
-        ) #{ __("Operation") }
-    tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")
-      each extraction in extractions
-        tr(
+  +table
+    +thead
+      +th= __("Type")
+      +th= __("Page")
+      +th= __("URL")
+      +th= __("Operation")
+    +tbody
+      each extraction in extractions || []
+        +tr.m-auto(
           :class="show || 'pointer-events-none'",
-          class="odd:bg-gray-50 dark:odd:bg-gray-800/50",
           x-bind="transition",
           x-data=`{
             show: true,
@@ -41,22 +29,19 @@ include _badge.pug
           }`,
           x-show="show"
         )
-          td.whitespace-nowrap.px-4.py-2.font-medium.text-gray-900(
-            class="dark:text-white"
-          )
+          +td
             +extractionBadget(extraction)
-          td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200")
-            | #{ extraction.page }
-          td.px-4.py-2.text-gray-700(class="dark:text-gray-200")
+          +td= extraction.page
+          +td.text-wrap
             a(href=`/extractions/${extraction.id}`) #{ extraction.url }
-          td.whitespace-nowrap.px-4.py-2.text-gray-700(class="dark:text-gray-200")
+          +td
             +buttonGroup
-              - var attributes = { "@click": "show = false" };
-              +buttonInGroup(
+              +buttonInGroup.flex(
+                @click="show = false",
                 hx-delete=`/extractions/${extraction.id}?_list`,
                 hx-swap="delete",
                 hx-target="closest div"
-              )&attributes(attributes)
+              )
                 i.text-2xl(class="icon-[material-symbols--delete-outline]")
 
   != paginator({ path: "/extractions", qs: qs().omit("_list"), count })
