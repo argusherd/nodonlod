@@ -1,6 +1,3 @@
-- var eachSide = 2;
-- var totalPage = Math.ceil((count ?? 0) / perPage);
-
 mixin pageBtn(page, disabled = false)
   a.rounded-m.flex.items-center.justify-center.rounded-md.px-4.py-2(
     class="rtl:-scale-x-100",
@@ -9,69 +6,63 @@ mixin pageBtn(page, disabled = false)
     class=`${disabled && "dark:hover:bg-blue-500 dark:hover:text-gray-200"}`,
     class=`${currentPage == page && !disabled ? "dark:text-gray-200 dark:bg-blue-500" : "dark:bg-gray-800"}`,
     class=`${currentPage == page && !disabled ? "text-white bg-blue-500": "bg-white"}`,
-    href=`${path}?${qs.set("page", page).toString()}`
-  )
+    href=`${fullPath}?${qs().set("page", page).toString()}`
+  )&attributes(attributes)
     block
 
-.mb-1.flex.justify-center.gap-1
-  +pageBtn(currentPage - 1, currentPage == 1)
-    i(class="icon-[mingcute--left-fill]")
+mixin paginator
+  - var eachSide = 2;
+  - var totalPage = Math.ceil((count ?? 0) / perPage);
 
-  .hidden.gap-1(class="sm:flex")
-    +pageBtn(1)
-      | 1
+  .mb-1.flex.justify-center.gap-1
+    +pageBtn(currentPage - 1, currentPage == 1)&attributes(attributes)
+      i(class="icon-[mingcute--left-fill]")
 
-    if currentPage > eachSide + 2
-      +pageBtn(0, true)
-        i(class="icon-[bi--three-dots]")
+    .hidden.gap-1(class="sm:flex")
+      +pageBtn(1)&attributes(attributes)= 1
 
-    - var i = Math.max(1, currentPage - eachSide);
-      while i < currentPage
-        if i != 1
-          +pageBtn(i)
-            | #{ i++ }
-        else
-          - i++;
+      if currentPage > eachSide + 2
+        +pageBtn(0, true)&attributes(attributes)
+          i(class="icon-[bi--three-dots]")
 
-      if currentPage != 1 && currentPage != totalPage
-        +pageBtn(i)
-          | #{ currentPage }
+      - var i = Math.max(1, currentPage - eachSide);
+        while i < currentPage
+          if i != 1
+            +pageBtn(i)&attributes(attributes)= i++
+          else
+            - i++;
 
-    - var i = Math.min(totalPage, currentPage + 1);
-      while i != totalPage && i <= currentPage + eachSide
-        +pageBtn(i)
-          | #{ i++ }
+        if currentPage != 1 && currentPage != totalPage
+          +pageBtn(i)&attributes(attributes)= currentPage
 
-    if currentPage < totalPage - eachSide - 1
-      +pageBtn(0, true)
-        i(class="icon-[bi--three-dots]")
+      - var i = Math.min(totalPage, currentPage + 1);
+        while i != totalPage && i <= currentPage + eachSide
+          +pageBtn(i)&attributes(attributes)= i++
 
-    if totalPage > 1
-      +pageBtn(totalPage)
-        | #{ totalPage }
+      if currentPage < totalPage - eachSide - 1
+        +pageBtn(0, true)&attributes(attributes)
+          i(class="icon-[bi--three-dots]")
 
-  +pageBtn(currentPage + 1, currentPage == totalPage)
-    i(class="icon-[mingcute--right-fill]")
+      if totalPage > 1
+        +pageBtn(totalPage)&attributes(attributes)= totalPage
 
-- var from = (currentPage - 1) * perPage + 1;
-- var to = Math.min(currentPage * perPage, count);
-.mb-1.text-center
-  small.text-gray-700(class="dark:text-gray-200") #{ from }-#{ to } (#{ count })
+    +pageBtn(currentPage + 1, currentPage == totalPage)&attributes(attributes)
+      i(class="icon-[mingcute--right-fill]")
 
-form.mx-auto.flex.max-w-40.rounded-lg.border.border-gray-200.shadow-sm(
-  action=`${path}?${qs.omit("page").toString()}`,
-  class="dark:border-neutral-700",
-  method="get"
-)
-  input.w-full.rounded-s-lg.border-gray-200.px-4.py-2.text-sm.shadow-sm(
-    class="dark:bg-neutral-900 dark:text-gray-200",
-    max=totalPage,
-    min="1",
-    name="page",
-    type="number",
-    value=currentPage
-  )
-  button.inline-flex.shrink-0.items-center.justify-center.rounded-e-md.border-s.bg-white.px-2.text-sm.text-gray-700(
-    class="hover:bg-blue-500 hover:text-white dark:border-neutral-700 dark:bg-gray-800 dark:text-gray-200"
-  )
-    | Go
+  - var from = (currentPage - 1) * perPage + 1;
+  - var to = Math.min(currentPage * perPage, count);
+  .mb-1.text-center
+    small.text-gray-700(class="dark:text-gray-200") #{ from }-#{ to } (#{ count })
+
+  form.mx-auto.flex.max-w-40.gap-2(
+    action=`${fullPath}?${qs().omit("page").toString()}`,
+    method="get"
+  )&attributes(attributes)
+    +input.w-full(
+      max=totalPage,
+      min="1",
+      name="page",
+      type="number",
+      value=currentPage
+    )
+    +button= __("Go")

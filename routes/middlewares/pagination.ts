@@ -1,6 +1,4 @@
 import { Request, Response, Router } from "express";
-import render from "../pug";
-import { ParsedQs } from "./query-string";
 
 export interface HasPageRequest extends Request {
   currentPage: number;
@@ -11,11 +9,6 @@ export interface HasPageResponse extends Response {
   locals: {
     currentPage: number;
     perPage: number;
-    paginator: (params: {
-      path: string;
-      qs: ParsedQs;
-      count?: number;
-    }) => string;
   };
 }
 
@@ -29,14 +22,6 @@ router.use((req: HasPageRequest, res: HasPageResponse, next) => {
   req.perPage = limit;
   res.locals.currentPage = page;
   res.locals.perPage = limit;
-  res.locals.paginator = ({ path, qs, count }) =>
-    render("_pagination.pug", {
-      path,
-      qs,
-      count,
-      currentPage: page,
-      perPage: limit,
-    });
 
   next();
 });

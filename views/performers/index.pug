@@ -13,4 +13,4 @@ block body
     each performer, index in performers
       include _widget.pug
 
-  != paginator({ path: "/performers", qs: qs(), count })
+  +paginator

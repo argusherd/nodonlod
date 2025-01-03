@@ -44,4 +44,4 @@ include _badge.pug
               )
                 i.text-2xl(class="icon-[material-symbols--delete-outline]")
 
-  != paginator({ path: "/extractions", qs: qs().omit("_list"), count })
+  +paginator(hx-swap="outerHTML", hx-target="#extractions")
