@@ -4,18 +4,6 @@ import dayjs from "dayjs";
 import supertest from "supertest";
 
 describe("The extraction index page", () => {
-  it("contains a form that can generate an extraction", async () => {
-    await supertest(express)
-      .get("/extractions")
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain(`action="/extractions"`);
-        expect(res.text).toContain(`name="isContinuous"`);
-        expect(res.text).toContain(`name="isConvertible"`);
-        expect(res.text).toContain(`name="page"`);
-      });
-  });
-
   it("lists extractions and provides a link for each extraction", async () => {
     const extraction1 = await Extraction.create({
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",

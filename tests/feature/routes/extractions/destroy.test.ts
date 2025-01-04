@@ -24,7 +24,10 @@ describe("The destroy extraction route", () => {
     await supertest(express)
       .delete("/extractions")
       .expect(204)
-      .expect("HX-Location", "/extractions");
+      .expect(
+        "HX-Location",
+        JSON.stringify({ path: "/extractions", target: "#extractions" }),
+      );
 
     expect(await Extraction.count()).toEqual(0);
   });

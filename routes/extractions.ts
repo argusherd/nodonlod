@@ -44,10 +44,9 @@ router.post(
   "/",
   body("url").notEmpty().withMessage("The URL is missing."),
   body("page")
-    .toInt()
     .isNumeric({ no_symbols: true })
     .withMessage("The page should be positive interger")
-    .optional(),
+    .optional({ values: "falsy" }),
   async (req, res) => {
     const errors = validationResult(req);
 

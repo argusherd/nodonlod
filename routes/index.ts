@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import { join } from "path";
+import neatDuration from "../src/neat-duration";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
@@ -20,6 +21,7 @@ import playlistRouter from "./playlists";
 import uploaderRouter from "./uploaders";
 
 dayjs.extend(duration);
+dayjs.extend(neatDuration);
 
 const express = coreExpress();
 const relativePath =
