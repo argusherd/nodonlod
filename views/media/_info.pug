@@ -11,18 +11,21 @@ include /_mixin.pug
     +error("title")
 
   +listItem(__("Performer"))
-    +buttonGroup
-      +buttonInGroup(
+    .flex.flex-col.gap-2
+      +buttonGroup
+        +buttonInGroup(
+          hx-get=`/media/${medium.id}/performers/create`,
+          hx-target="#modal",
+          type="button"
+        )
+          i.text-xl(class="icon-[material-symbols--add]")
+          span= __("Add")
+
+      #performers.flex.flex-wrap.gap-2(
         hx-get=`/media/${medium.id}/performers`,
-        hx-target="#modal",
-        type="button"
+        hx-trigger="refresh-performers from:body"
       )
-        i.text-xl(class="icon-[material-symbols--add]")
-        span= __("Add")
-    each performer in performers
-      a.rounded.border.border-gray-500.bg-gray-100.px-1.text-sm(
-        href=`/performers/${performer.id}`
-      ) #{ performer.name }
+        include performers/index.pug
 
   +listItem(__("URL"))
     - var url = "url" in old ? old.url : medium.url;

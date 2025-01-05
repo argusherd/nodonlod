@@ -1,23 +1,12 @@
 include /_mixin.pug
 
-.mb-2.flex.gap-2
-  +input.grow(name="name", placeholder=__("Search"))
-  +button(hx-get=`/media/${medium.id}/performers`, hx-target="#modal")
-    i.text-xl(class="icon-[gridicons--create]")
-    span= __("Create")
+each performer in performers
+  +buttonGroup
+    +buttonInGroup(href=`/performers/${performer.id}`)= performer.name
 
-+table.w-full
-  +tbody
-    each performer in performers
-      +tr
-        +td
-          .flex.items-center.gap-2
-            include /performers/_widget.pug
-
-            +button.ml-auto(
-              href=`/media/${medium.id}/performers/${performer.id}`
-            )
-              i.text-xl(class="icon-[material-symbols--add]")
-              span= __("Add")
-
-+paginator
+    +buttonInGroup(
+      hx-delete=`/media/${medium.id}/performers/${performer.id}`,
+      hx-swap="none",
+      title=__("Remove Performer")
+    )
+      i.text-xl(class="icon-[iconamoon--close-light]")

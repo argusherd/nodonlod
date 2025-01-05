@@ -136,8 +136,15 @@ router.get("/:medium/playlists", async (req: MediumRequest, res) => {
   });
 });
 
+router.get("/:medium/performers", async (req: MediumRequest, res) => {
+  res.render("media/performers/index", {
+    medium: req.medium,
+    performers: await req.medium.$get("performers"),
+  });
+});
+
 router.get(
-  "/:medium/performers",
+  "/:medium/performers/create",
   async (req: MediumRequest & HasPageRequest, res) => {
     const { rows: performers, count } = await Performer.findAndCountAll({
       limit: req.perPage,
@@ -145,7 +152,7 @@ router.get(
       order: [["name", "ASC"]],
     });
 
-    res.set("HX-Trigger", "open-modal").render("media/performers/index", {
+    res.set("HX-Trigger", "open-modal").render("media/performers/create", {
       medium: req.medium,
       performers,
       count,
@@ -153,16 +160,23 @@ router.get(
   },
 );
 
-router.put(
+router.post(
   "/:medium/performers/:performer",
   async (req: MediumRequest & PerformerRequest, res) => {
-    if (await req.medium.$has("performer", req.performer)) {
-      await req.medium.$remove("performer", req.performer);
-    } else {
-      await req.medium.$add("performer", req.performer);
-    }
+    await req.medium.$add("performer", req.performer);
 
-    res.sendStatus(201);
+    res
+      .set("HX-Trigger", ["close-modal", "refresh-performers"])
+      .sendStatus(205);
+  },
+);
+
+router.delete(
+  "/:medium/performers/:performer",
+  async (req: MediumRequest & PerformerRequest, res) => {
+    await req.medium.$remove("performer", req.performer);
+
+    res.set("HX-Trigger", "refresh-performers").sendStatus(205);
   },
 );
 
