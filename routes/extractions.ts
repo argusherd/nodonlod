@@ -29,7 +29,7 @@ router.param("extraction", async (req: ExtractionRequest, res, next) => {
 
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: extractions, count } = await Extraction.findAndCountAll({
-    offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+    offset: req.offset,
     limit: req.perPage,
     order: [["createdAt", "DESC"]],
   });

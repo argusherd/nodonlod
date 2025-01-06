@@ -24,7 +24,7 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: performers, count } = await Performer.findAndCountAll({
     limit: req.perPage,
-    offset: (req.currentPage - 1) * req.perPage,
+    offset: req.offset,
     order: [["name", "ASC"]],
   });
 

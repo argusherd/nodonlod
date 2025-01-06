@@ -44,7 +44,7 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: media, count } = await Medium.findAndCountAll({
     limit: req.perPage,
-    offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+    offset: req.offset,
     order: [["createdAt", "DESC"]],
   });
 
@@ -148,7 +148,7 @@ router.get(
   async (req: MediumRequest & HasPageRequest, res) => {
     const { rows: performers, count } = await Performer.findAndCountAll({
       limit: req.perPage,
-      offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+      offset: req.offset,
       order: [["name", "ASC"]],
     });
 

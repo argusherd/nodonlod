@@ -30,7 +30,7 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: playlists, count } = await Playlist.findAndCountAll({
     limit: req.perPage,
-    offset: (req.currentPage - 1) * req.perPage,
+    offset: req.offset,
     order: [["createdAt", "DESC"]],
   });
 

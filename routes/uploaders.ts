@@ -26,7 +26,7 @@ router.param("uploader", async (req: UploaderRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const uploaders = await Uploader.findAll({
     limit: req.perPage,
-    offset: Math.max(req.currentPage - 1, 0) * req.perPage,
+    offset: req.offset,
     order: [["name", "ASC"]],
     attributes: {
       include: [[fn("COUNT", col("media.id")), "mediaCount"]],
@@ -43,7 +43,7 @@ router.get("/", async (req: HasPageRequest, res) => {
 router.get("/:uploader", async (req: UploaderRequest, res) => {
   const { rows: media, count } = await Medium.findAndCountAll({
     limit: req.perPage,
-    offset: (req.currentPage - 1) * req.perPage,
+    offset: req.offset,
     order: [["uploadDate", "DESC"]],
     where: { uploaderId: req.uploader.id },
   });
