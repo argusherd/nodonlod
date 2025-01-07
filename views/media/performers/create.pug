@@ -1,24 +1,17 @@
 include /_mixin.pug
 
 .mb-2.flex.gap-2
-  +input.grow(name="name", placeholder=__("Search"))
+  +input.grow(
+    hx-get=`/media/${medium.id}/performers/search`,
+    hx-target="#search-result",
+    hx-trigger="input changed delay:500ms, load",
+    name="name",
+    placeholder=__("Search"),
+    type="search"
+  )
+
   +button(hx-get=`/media/${medium.id}/performers`, hx-target="#modal")
     i.text-xl(class="icon-[gridicons--create]")
     span= __("Create")
 
-+table.w-full
-  +tbody
-    each performer in performers
-      +tr
-        +td
-          .flex.items-center.gap-2
-            include /performers/_widget.pug
-
-            +button.ml-auto(
-              hx-post=`/media/${medium.id}/performers/${performer.id}`,
-              hx-swap="none"
-            )
-              i.text-xl(class="icon-[material-symbols--add]")
-              span= __("Add")
-
-+paginator
+#search-result

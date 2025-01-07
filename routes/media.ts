@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import Category from "../database/models/category";
 import Label from "../database/models/label";
 import Medium from "../database/models/medium";
@@ -146,13 +147,27 @@ router.get("/:medium/performers", async (req: MediumRequest, res) => {
 router.get(
   "/:medium/performers/create",
   async (req: MediumRequest & HasPageRequest, res) => {
+    res.set("HX-Trigger", "open-modal").render("media/performers/create", {
+      medium: req.medium,
+    });
+  },
+);
+
+router.get(
+  "/:medium/performers/search",
+  async (req: MediumRequest & HasPageRequest, res) => {
     const { rows: performers, count } = await Performer.findAndCountAll({
       limit: req.perPage,
       offset: req.offset,
       order: [["name", "ASC"]],
+      where: {
+        ...(req.query.name && {
+          name: { [Op.substring]: req.query.name as string },
+        }),
+      },
     });
 
-    res.set("HX-Trigger", "open-modal").render("media/performers/create", {
+    res.render("media/performers/_search", {
       medium: req.medium,
       performers,
       count,
