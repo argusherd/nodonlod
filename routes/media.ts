@@ -144,6 +144,32 @@ router.get("/:medium/performers", async (req: MediumRequest, res) => {
   });
 });
 
+router.post(
+  "/:medium/performers",
+  body("name")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("The name is missing."),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const [performer] = await Performer.findOrCreate({
+        where: { name: req.body.name },
+      });
+
+      await req.medium.$add("performer", performer);
+
+      res
+        .set("HX-Trigger", ["close-modal", "refresh-performers"])
+        .sendStatus(205);
+    } else
+      res.status(422).render("media/performers/create", {
+        medium: req.medium,
+        errors: errors.mapped(),
+      });
+  },
+);
+
 router.get(
   "/:medium/performers/create",
   async (req: MediumRequest & HasPageRequest, res) => {
