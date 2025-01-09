@@ -6,12 +6,17 @@ import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
+import Playlist from "../database/models/playlist";
 import { play } from "../src/currently-playing";
 import { __ } from "./middlewares/i18n";
 import { HasPageRequest } from "./middlewares/pagination";
 
 interface MediumRequest extends HasPageRequest {
   medium: Medium;
+}
+
+interface PlaylistRequest extends HasPageRequest {
+  playlist: Playlist;
 }
 
 interface PerformerRequest extends HasPageRequest {
@@ -25,6 +30,17 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 
   if (medium) {
     req.medium = medium;
+    next();
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+router.param("playlist", async (req: PlaylistRequest, res, next) => {
+  const playlist = await Playlist.findByPk(req.params.playlist);
+
+  if (playlist) {
+    req.playlist = playlist;
     next();
   } else {
     res.sendStatus(404);
@@ -131,11 +147,60 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
 });
 
 router.get("/:medium/playlists", async (req: MediumRequest, res) => {
-  res.render("media/playlists/index", {
+  const template =
+    "_list" in req.query ? "media/playlists/_list" : "media/playlists/index";
+
+  res.render(template, {
     medium: req.medium,
     playlists: await req.medium.$get("playlists"),
   });
 });
+
+router.get("/:medium/playlists/create", (req: MediumRequest, res) => {
+  res
+    .set("HX-Trigger", "open-modal")
+    .render("media/playlists/create", { medium: req.medium });
+});
+
+router.get(
+  "/:medium/playlists/search",
+  async (req: MediumRequest & HasPageRequest, res) => {
+    const { rows: playlists, count } = await Playlist.findAndCountAll({
+      limit: req.perPage,
+      offset: req.offset,
+      order: [["title", "ASC"]],
+      where: {
+        ...(req.query.title && {
+          title: { [Op.substring]: req.query.title as string },
+        }),
+      },
+    });
+
+    res.render("media/playlists/_search", {
+      medium: req.medium,
+      playlists,
+      count,
+    });
+  },
+);
+
+router.post(
+  "/:medium/playlists/:playlist",
+  async (req: MediumRequest & PlaylistRequest, res) => {
+    await req.medium.$add("playlist", req.playlist);
+
+    res.set("HX-Trigger", ["close-modal", "refresh-playlists"]).sendStatus(205);
+  },
+);
+
+router.delete(
+  "/:medium/playlists/:playlist",
+  async (req: MediumRequest & PlaylistRequest, res) => {
+    await req.medium.$remove("playlist", req.playlist);
+
+    res.set("HX-Trigger", "refresh-playlists").sendStatus(205);
+  },
+);
 
 router.get("/:medium/performers", async (req: MediumRequest, res) => {
   res.render("media/performers/index", {

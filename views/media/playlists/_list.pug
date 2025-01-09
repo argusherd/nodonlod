@@ -1,0 +1,16 @@
+include /_mixin.pug
+
++table.mb-4.w-full
+  +tbody
+    each playlist in playlists
+      +tr
+        +td
+          .flex.items-center.gap-2
+            include /playlists/_widget.pug
+
+            +button.ml-auto(
+              hx-delete=`/media/${medium.id}/playlists/${playlist.id}`,
+              hx-swap="none"
+            )
+              i.text-xl(class="icon-[iconamoon--close-light]")
+              span= __("Remove")

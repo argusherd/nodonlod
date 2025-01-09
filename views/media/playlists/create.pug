@@ -1,0 +1,24 @@
+include /_mixin.pug
+
+.mb-2.flex.gap-2
+  +input.grow(
+    hx-get=`/media/${medium.id}/playlists/search`,
+    hx-target="#search-result",
+    hx-trigger="input changed delay:500ms, load",
+    name="title",
+    placeholder=__("Search"),
+    type="search",
+    value=old.name || ""
+  )
+
+  +button(
+    hx-include="[name='title']",
+    hx-post=`/media/${medium.id}/playlists`,
+    hx-target="#modal"
+  )
+    i.text-xl(class="icon-[gridicons--create]")
+    span= __("Create")
+
++error('title')
+
+#search-result

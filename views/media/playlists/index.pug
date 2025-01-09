@@ -1,5 +1,17 @@
 extends ../_layout.pug
 
 block append body
-  each playlist in playlists
-    include /playlists/_widget.pug
+  +buttonGroup.mb-4
+    +buttonInGroup(
+      hx-get=`/media/${medium.id}/playlists/create`,
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-xl(class="icon-[material-symbols--add]")
+      span= __("Add")
+
+  #playlists(
+    hx-get=`/media/${medium.id}/playlists?_list`,
+    hx-trigger="refresh-playlists from:body"
+  )
+    include _list.pug
