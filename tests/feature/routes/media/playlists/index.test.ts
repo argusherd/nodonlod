@@ -20,4 +20,13 @@ describe("The medium playlist index page", () => {
         expect(res.text).toContain(`/playlists/${playlist2.id}`);
       });
   });
+
+  it("successfully displays the playlists in list mode", async () => {
+    const medium = await createMedium();
+    const playlist = await createPlaylist();
+
+    await medium.$add("playlist", playlist);
+
+    await supertest(express).get(`/media/${medium.id}/playlists`).expect(200);
+  });
 });
