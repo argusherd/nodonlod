@@ -156,6 +156,33 @@ router.get("/:medium/playlists", async (req: MediumRequest, res) => {
   });
 });
 
+router.post(
+  "/:medium/playlists",
+  body("title")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("The title is missing."),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const playlist = await Playlist.create({ title: req.body.title });
+
+      await req.medium.$add("playlist", playlist);
+
+      res
+        .set("HX-Trigger", ["close-modal", "refresh-playlists"])
+        .sendStatus(205);
+    } else {
+      res
+        .status(422)
+        .render("media/playlists/create", {
+          medium: req.medium,
+          errors: errors.mapped(),
+        });
+    }
+  },
+);
+
 router.get("/:medium/playlists/create", (req: MediumRequest, res) => {
   res
     .set("HX-Trigger", "open-modal")
