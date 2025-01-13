@@ -37,14 +37,7 @@ router.get("/create", (_req, res) => {
 
 router.post(
   "/",
-  body("name")
-    .notEmpty()
-    .withMessage(__("The name is missing."))
-    .custom(async (name) => {
-      const duplicated = await Performer.count({ where: { name } });
-
-      if (duplicated) throw new Error(__("The given name is already taken."));
-    }),
+  body("name").notEmpty().withMessage(__("The name is missing.")),
   async (req, res) => {
     const errors = validationResult(req);
 

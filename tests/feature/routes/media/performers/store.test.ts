@@ -21,7 +21,7 @@ describe("The medium performer store route", () => {
       .post(`/media/${medium.id}/performers`)
       .type("form")
       .send({ name: "foo" })
-      .expect(205);
+      .expect(201);
 
     const performers = await medium.$get("performers");
 

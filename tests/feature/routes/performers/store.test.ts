@@ -1,7 +1,6 @@
 import Performer from "@/database/models/performer";
 import express from "@/routes";
 import supertest from "supertest";
-import { createPerformer } from "../../setup/create-model";
 
 describe("The store performer route", () => {
   it("creates a new performer", async () => {
@@ -26,22 +25,6 @@ describe("The store performer route", () => {
       .expect(422)
       .expect((res) => {
         expect(res.text).toContain("The name is missing.");
-      });
-  });
-
-  it("cannot create a performer with a duplicate name", async () => {
-    const performer = await createPerformer();
-
-    await supertest(express)
-      .post("/performers")
-      .type("form")
-      .send({
-        name: performer.name,
-      })
-      .expect(422)
-      .expect((res) => {
-        expect(res.text).toContain(performer.name);
-        expect(res.text).toContain("The given name is already taken.");
       });
   });
 

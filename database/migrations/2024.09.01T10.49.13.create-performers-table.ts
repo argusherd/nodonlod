@@ -9,7 +9,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     name: {
       type: DataType.STRING,
-      unique: true,
       allowNull: false,
     },
     description: {

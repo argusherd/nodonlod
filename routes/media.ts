@@ -173,12 +173,10 @@ router.post(
         .set("HX-Trigger", ["close-modal", "refresh-playlists"])
         .sendStatus(205);
     } else {
-      res
-        .status(422)
-        .render("media/playlists/create", {
-          medium: req.medium,
-          errors: errors.mapped(),
-        });
+      res.status(422).render("media/playlists/create", {
+        medium: req.medium,
+        errors: errors.mapped(),
+      });
     }
   },
 );
@@ -245,15 +243,13 @@ router.post(
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-      const [performer] = await Performer.findOrCreate({
-        where: { name: req.body.name },
-      });
+      const performer = await Performer.create({ name: req.body.name });
 
       await req.medium.$add("performer", performer);
 
       res
         .set("HX-Trigger", ["close-modal", "refresh-performers"])
-        .sendStatus(205);
+        .sendStatus(201);
     } else
       res.status(422).render("media/performers/create", {
         medium: req.medium,
