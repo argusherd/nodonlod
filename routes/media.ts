@@ -72,19 +72,9 @@ router.get("/", async (req: HasPageRequest, res) => {
 });
 
 router.get("/:medium", async (req: MediumRequest, res) => {
-  const labels = await req.medium.$get("labels", { include: [Category] });
-  const categorized: Record<string, Label[]> = {};
-
-  labels.forEach((label) => {
-    if (label.category.name in categorized == false)
-      categorized[label.category.name] = [];
-    categorized[label.category.name]?.push(label);
-  });
-
   res.render("media/show", {
     medium: req.medium,
     uploader: await req.medium.$get("uploader"),
-    categorized,
     performers: await req.medium.$get("performers"),
   });
 });
@@ -308,5 +298,21 @@ router.delete(
     res.set("HX-Trigger", "refresh-performers").sendStatus(205);
   },
 );
+
+router.get("/:medium/categories", async (req: MediumRequest, res) => {
+  const labels = await req.medium.$get("labels", { include: [Category] });
+  const categories: Record<string, Label[]> = {};
+
+  labels.forEach((label) => {
+    if (label.category.name in categories == false)
+      categories[label.category.name] = [];
+    categories[label.category.name]?.push(label);
+  });
+
+  res.render("media/categories/index", {
+    medium: req.medium,
+    categories,
+  });
+});
 
 export default router;
