@@ -1,0 +1,17 @@
+include /_mixin.pug
+
+form
+  #category
+    select(
+      hx-get="/categories",
+      hx-trigger="load",
+      name="categoryId",
+      x-modal="categoryId"
+    )
+
+    .flex.flex-col
+      +input(name="name")
+      +input(name="type")
+
+  #label
+    +input(name="text")

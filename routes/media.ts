@@ -315,4 +315,10 @@ router.get("/:medium/categories", async (req: MediumRequest, res) => {
   });
 });
 
+router.get("/:medium/categories/create", (req: MediumRequest, res) => {
+  res
+    .set("HX-Trigger", "open-modal")
+    .render("categories/create", { medium: req.medium });
+});
+
 export default router;
