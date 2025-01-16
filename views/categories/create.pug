@@ -2,7 +2,7 @@ include /_mixin.pug
 
 form
   #category
-    select(
+    +select(
       hx-get="/categories",
       hx-trigger="load",
       name="categoryId",
