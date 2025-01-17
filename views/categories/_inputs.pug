@@ -1,0 +1,12 @@
+extends _layout.pug
+
+block column
+  +list
+    +listItem(__("Name"))
+      +input(name="name")
+
+    +listItem(__("Type"))
+      +select(name="type")
+        option(value="string")= __("String")
+        option(value="number")= __("Number")
+        option(value="datetime")= __("Datetime")

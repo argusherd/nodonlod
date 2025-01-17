@@ -1,17 +1,11 @@
 include /_mixin.pug
 
-form
-  #category
-    +select(
-      hx-get="/categories",
-      hx-trigger="load",
-      name="categoryId",
-      x-modal="categoryId"
-    )
-
-    .flex.flex-col
-      +input(name="name")
-      +input(name="type")
+form.flex.flex-col.gap-2
+  #category.mb-4
+    include _select.pug
 
   #label
-    +input(name="text")
+    h3.mb-2.font-bold= __("Label")
+    +list
+      +listItem(__("Name"))
+        +input(name="text")
