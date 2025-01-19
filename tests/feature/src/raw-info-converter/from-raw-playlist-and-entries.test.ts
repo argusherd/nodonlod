@@ -1,4 +1,3 @@
-import sequelize from "@/database/connection";
 import Medium from "@/database/models/medium";
 import Playlist from "@/database/models/playlist";
 import RawInfoConverter from "@/src/raw-info-converter";
@@ -62,11 +61,8 @@ describe("The fromRawplaylistAndEntries method in the RawInfoConverter", () => {
       entries: [subRawMedium1, subRawMedium2],
     });
 
-    sequelize.options.logging = console.log;
-
     await converter.fromRawPlaylistAndEntries(rawPlaylist);
 
-    sequelize.options.logging = undefined;
     expect(mockedToPlaylist).toHaveBeenCalledTimes(1);
     expect(mockedToMedium).toHaveBeenCalledTimes(2);
     expect(mockedToPlaylist).toHaveBeenNthCalledWith(1, rawPlaylist);

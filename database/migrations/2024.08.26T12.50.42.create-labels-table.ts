@@ -9,17 +9,20 @@ export const up: Migration = async ({ context: queryInterface }) => {
         type: DataType.UUID,
         primaryKey: true,
       },
-      category_id: {
-        type: DataType.UUID,
-        allowNull: false,
-        references: { key: "id", model: "categories" },
-        onDelete: "CASCADE",
-        unique: "unique_labels_category_text",
-      },
-      text: {
+      category: {
         type: DataType.STRING,
         allowNull: false,
-        unique: "unique_labels_category_text",
+        unique: "unique_label",
+      },
+      type: {
+        type: DataType.STRING,
+        allowNull: false,
+        unique: "unique_label",
+      },
+      content: {
+        type: DataType.TEXT,
+        allowNull: false,
+        unique: "unique_label",
       },
       created_at: {
         type: DataType.DATE,
@@ -30,8 +33,8 @@ export const up: Migration = async ({ context: queryInterface }) => {
     },
     {
       uniqueKeys: {
-        unique_labels_category_text: {
-          fields: ["category_id", "text"],
+        unique_label: {
+          fields: ["category", "type", "content"],
         },
       },
     },

@@ -16,8 +16,8 @@ describe("The medium performer routes", () => {
     const performer = await createPerformer();
 
     await supertest(express)
-      .put(`/media/${medium.id}/performers/${performer.id}`)
-      .expect(201);
+      .post(`/media/${medium.id}/performers/${performer.id}`)
+      .expect(205);
 
     const belongsToMany = await medium.$get("performers");
 
@@ -32,8 +32,8 @@ describe("The medium performer routes", () => {
     await medium.$add("performer", performer);
 
     await supertest(express)
-      .put(`/media/${medium.id}/performers/${performer.id}`)
-      .expect(201);
+      .delete(`/media/${medium.id}/performers/${performer.id}`)
+      .expect(205);
 
     expect(await medium.$get("performers")).toHaveLength(0);
   });

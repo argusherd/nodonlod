@@ -4,7 +4,6 @@ import duration from "dayjs/plugin/duration";
 import coreExpress from "express";
 import { join } from "path";
 import neatDuration from "../src/neat-duration";
-import categoryRouter from "./categories";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
@@ -59,6 +58,5 @@ express.use("/playlist-items", playlistItemRouter);
 express.use("/uploaders", uploaderRouter);
 express.use("/performers", performerRouter);
 express.use("/play", playRouter);
-express.use("/categories", categoryRouter);
 
 export default express;

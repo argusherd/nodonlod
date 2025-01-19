@@ -1,19 +1,16 @@
 import { Optional } from "sequelize";
 import {
   AllowNull,
-  BelongsTo,
   BelongsToMany,
   Column,
   CreatedAt,
   DataType,
   Default,
-  ForeignKey,
   Model,
   PrimaryKey,
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
-import Category from "./category";
 import Labelable from "./labelable";
 import Medium from "./medium";
 import Playlist from "./playlist";
@@ -25,8 +22,9 @@ interface OptionalLabelCreationAttributes {
 }
 
 interface LabelAttributes extends OptionalLabelCreationAttributes {
-  categoryId: string;
-  text: string;
+  category: string;
+  type: string;
+  content: string;
 }
 
 export interface LabelCreationAttributes
@@ -42,22 +40,23 @@ export default class Label extends Model<
   @Column
   id: string;
 
-  @ForeignKey(() => Category)
+  @AllowNull(false)
   @Column
-  categoryId: string;
+  category: string;
 
   @AllowNull(false)
   @Column
-  text: string;
+  type: string;
+
+  @AllowNull(false)
+  @Column
+  content: string;
 
   @CreatedAt
   createdAt: Date;
 
   @UpdatedAt
   updatedAt: Date;
-
-  @BelongsTo(() => Category)
-  category: Category;
 
   @BelongsToMany(() => Medium, {
     through: { model: () => Labelable, scope: { labelableType: "medium" } },

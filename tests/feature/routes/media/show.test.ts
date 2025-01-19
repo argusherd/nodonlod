@@ -3,7 +3,6 @@ import { formatSeconds } from "@/src/neat-duration";
 import dayjs from "dayjs";
 import supertest from "supertest";
 import {
-  createLabel,
   createMedium,
   createPerformer,
   createUploader,
@@ -65,22 +64,6 @@ describe("The medium show page", () => {
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(uploader.name);
-      });
-  });
-
-  it("displays all related categories and labels of the medium", async () => {
-    const medium = await createMedium();
-    const label = await createLabel();
-    const category = await label.$get("category");
-
-    await label.$add("medium", medium);
-
-    await supertest(express)
-      .get(`/media/${medium.id}`)
-      .expect(200)
-      .expect((res) => {
-        expect(res.text).toContain(label.text);
-        expect(res.text).toContain(category?.name);
       });
   });
 

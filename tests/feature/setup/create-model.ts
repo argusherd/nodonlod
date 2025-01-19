@@ -1,6 +1,3 @@
-import Category, {
-  CategoryCreationAttributes,
-} from "@/database/models/category";
 import Chapter, { ChapterCreationAttributes } from "@/database/models/chapter";
 import Label, { LabelCreationAttributes } from "@/database/models/label";
 import Medium, { MediumCreationAttributes } from "@/database/models/medium";
@@ -76,21 +73,13 @@ export const createPlaylistItem = async (
     ...overwrite,
   });
 
-export const createCategory = async (
-  overwrite?: Partial<CategoryCreationAttributes>,
-) =>
-  await Category.create({
-    name: faker.lorem.word(),
-    type: "string",
-    ...overwrite,
-  });
-
 export const createLabel = async (
   overwrite?: Partial<LabelCreationAttributes>,
 ) =>
   await Label.create({
-    text: faker.lorem.word(),
-    categoryId: overwrite?.categoryId || (await createCategory()).id,
+    content: faker.lorem.word(),
+    category: faker.lorem.word(),
+    type: "string",
     ...overwrite,
   });
 

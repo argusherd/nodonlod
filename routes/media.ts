@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
-import Category from "../database/models/category";
-import Label from "../database/models/label";
 import Medium from "../database/models/medium";
 import Performer from "../database/models/performer";
 import PlayQueue from "../database/models/play-queue";
@@ -298,27 +296,5 @@ router.delete(
     res.set("HX-Trigger", "refresh-performers").sendStatus(205);
   },
 );
-
-router.get("/:medium/categories", async (req: MediumRequest, res) => {
-  const labels = await req.medium.$get("labels", { include: [Category] });
-  const categories: Record<string, Label[]> = {};
-
-  labels.forEach((label) => {
-    if (label.category.name in categories == false)
-      categories[label.category.name] = [];
-    categories[label.category.name]?.push(label);
-  });
-
-  res.render("media/categories/index", {
-    medium: req.medium,
-    categories,
-  });
-});
-
-router.get("/:medium/categories/create", (req: MediumRequest, res) => {
-  res
-    .set("HX-Trigger", "open-modal")
-    .render("categories/create", { medium: req.medium });
-});
 
 export default router;

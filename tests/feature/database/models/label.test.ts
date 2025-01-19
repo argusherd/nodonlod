@@ -1,20 +1,13 @@
-import Category from "@/database/models/category";
-import Label from "@/database/models/label";
 import Labelable from "@/database/models/labelable";
-import { createMedium, createPlaylist } from "../../setup/create-model";
+import {
+  createLabel,
+  createMedium,
+  createPlaylist,
+} from "../../setup/create-model";
 
 describe("The label model", () => {
-  it("belongs to a category", async () => {
-    const category = await Category.create({ name: "foo", type: "string" });
-    const label = await Label.create({ categoryId: category.id, text: "bar" });
-    const belongsTo = await label.$get("category");
-
-    expect(belongsTo?.id).toEqual(category.id);
-  });
-
   it("can belong to many media", async () => {
-    const category = await Category.create({ name: "foo", type: "string" });
-    const label = await Label.create({ categoryId: category.id, text: "bar" });
+    const label = await createLabel();
     const medium1 = await createMedium();
     const medium2 = await createMedium();
 
@@ -30,8 +23,7 @@ describe("The label model", () => {
   });
 
   it("can belong to many playlists", async () => {
-    const category = await Category.create({ name: "foo", type: "string" });
-    const label = await Label.create({ categoryId: category.id, text: "bar" });
+    const label = await createLabel();
     const playlist1 = await createPlaylist();
     const playlist2 = await createPlaylist();
 

@@ -1,9 +1,0 @@
-extends _layout.pug
-
-block column
-  .flex.flex-col(
-    hx-get="/categories/create/_options",
-    hx-target="find select",
-    hx-trigger="load"
-  )
-    +select(name="categoryId")

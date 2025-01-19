@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import { Op } from "sequelize";
-import Category from "../database/models/category";
 import Chapter from "../database/models/chapter";
 import Label, { LabelCreationAttributes } from "../database/models/label";
 import Medium from "../database/models/medium";
@@ -177,30 +176,23 @@ export default class RawInfoConverter {
   }
 
   async preserveAllTags(rawMedium: RawMedium | SubRawMedium, medium: Medium) {
-    let category = await Category.findOne({ where: { name: "Tag" } });
-
-    if (!category)
-      category = await Category.create({ name: "Tag", type: "string" });
-
     const existsTags = await Label.findAll({
       where: {
-        categoryId: category.id,
-        text: { [Op.in]: rawMedium.tags ?? [] },
+        content: { [Op.in]: rawMedium.tags ?? [] },
       },
     });
-    const existsTexts = existsTags.map((label) => label.text.toLowerCase());
+    const existsTexts = existsTags.map((label) => label.content.toLowerCase());
     const missingTexts: LabelCreationAttributes[] = [];
 
     for (const tag of rawMedium.tags ?? [])
       if (!existsTexts.some((text) => text == tag.toLowerCase()))
-        missingTexts.push({ text: tag, categoryId: category.id });
+        missingTexts.push({ content: tag, category: "Tag", type: "string" });
 
     await Label.bulkCreate(missingTexts);
 
     const missingTags = await Label.findAll({
       where: {
-        categoryId: category.id,
-        text: { [Op.in]: missingTexts.map((data) => data.text) },
+        content: { [Op.in]: missingTexts.map((data) => data.content) },
       },
     });
 

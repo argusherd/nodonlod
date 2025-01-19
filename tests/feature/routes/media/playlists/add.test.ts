@@ -11,7 +11,6 @@ describe("The medium playlist add route", () => {
       .post(`/media/${medium.id}/playlists/${playlist.id}`)
       .expect(205)
       .expect((res) => {
-        console.log(res.headers);
         expect(res.headers["hx-trigger"]).toContain("close-modal");
         expect(res.headers["hx-trigger"]).toContain("refresh-playlists");
       });
