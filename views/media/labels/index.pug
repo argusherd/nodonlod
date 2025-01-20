@@ -1,0 +1,10 @@
+extends ../_layout.pug
+
+block append body
+  +list
+    each labels, category in categories
+      +listItem(__(category))
+        .flex.flex-wrap.gap-2
+          each label in labels
+            +button
+              span= label.content

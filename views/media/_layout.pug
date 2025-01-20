@@ -16,11 +16,11 @@ block body
       i.text-2xl(class="icon-[material-symbols--book-outline]")
       span= __("Chapter")
 
-    +tabItem(isSamePath(`/media/${medium.id}/categories`))(
-      href=`/media/${medium.id}/categories`
+    +tabItem(isSamePath(`/media/${medium.id}/labels`))(
+      href=`/media/${medium.id}/labels`
     )
       i.text-2xl(class="icon-[material-symbols--category-outline]")
-      span= __("Category")
+      span= __("Label")
 
     +tabItem(isSamePath(`/media/${medium.id}/playlists`))(
       href=`/media/${medium.id}/playlists`

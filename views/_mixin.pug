@@ -54,7 +54,7 @@ mixin list
       block
 
 mixin listItem(title="")
-  .grid.grid-cols-1.gap-1.p-3(class="sm:grid-cols-4 sm:gap-4")&attributes(attributes)
+  .grid.grid-cols-1.gap-2.p-3(class="sm:grid-cols-4 sm:gap-4")&attributes(attributes)
     dt.font-medium.text-gray-900(class="dark:text-white") #{ title }
     dd.text-gray-700(class="sm:col-span-3 dark:text-gray-200")
       block
