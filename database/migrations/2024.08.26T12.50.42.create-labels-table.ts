@@ -11,12 +11,6 @@ export const up: Migration = async ({ context: queryInterface }) => {
       },
       category: {
         type: DataType.STRING,
-        allowNull: false,
-        unique: "unique_label",
-      },
-      type: {
-        type: DataType.STRING,
-        allowNull: false,
         unique: "unique_label",
       },
       content: {
@@ -34,7 +28,7 @@ export const up: Migration = async ({ context: queryInterface }) => {
     {
       uniqueKeys: {
         unique_label: {
-          fields: ["category", "type", "content"],
+          fields: ["category", "content"],
         },
       },
     },

@@ -186,7 +186,7 @@ export default class RawInfoConverter {
 
     for (const tag of rawMedium.tags ?? [])
       if (!existsTexts.some((text) => text == tag.toLowerCase()))
-        missingTexts.push({ content: tag, category: "Tag", type: "string" });
+        missingTexts.push({ content: tag });
 
     await Label.bulkCreate(missingTexts);
 

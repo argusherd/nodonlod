@@ -17,13 +17,12 @@ import Playlist from "./playlist";
 
 interface OptionalLabelCreationAttributes {
   id: string;
+  category: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
 interface LabelAttributes extends OptionalLabelCreationAttributes {
-  category: string;
-  type: string;
   content: string;
 }
 
@@ -40,13 +39,8 @@ export default class Label extends Model<
   @Column
   id: string;
 
-  @AllowNull(false)
   @Column
   category: string;
-
-  @AllowNull(false)
-  @Column
-  type: string;
 
   @AllowNull(false)
   @Column

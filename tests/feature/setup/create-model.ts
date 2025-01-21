@@ -78,8 +78,6 @@ export const createLabel = async (
 ) =>
   await Label.create({
     content: faker.lorem.word(),
-    category: faker.lorem.word(),
-    type: "string",
     ...overwrite,
   });
 
