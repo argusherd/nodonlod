@@ -23,7 +23,7 @@ interface OptionalLabelCreationAttributes {
 }
 
 interface LabelAttributes extends OptionalLabelCreationAttributes {
-  content: string;
+  text: string;
 }
 
 export interface LabelCreationAttributes
@@ -44,7 +44,7 @@ export default class Label extends Model<
 
   @AllowNull(false)
   @Column
-  content: string;
+  text: string;
 
   @CreatedAt
   createdAt: Date;

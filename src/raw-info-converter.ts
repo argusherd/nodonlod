@@ -178,21 +178,21 @@ export default class RawInfoConverter {
   async preserveAllTags(rawMedium: RawMedium | SubRawMedium, medium: Medium) {
     const existsTags = await Label.findAll({
       where: {
-        content: { [Op.in]: rawMedium.tags ?? [] },
+        text: { [Op.in]: rawMedium.tags ?? [] },
       },
     });
-    const existsTexts = existsTags.map((label) => label.content.toLowerCase());
+    const existsTexts = existsTags.map((label) => label.text.toLowerCase());
     const missingTexts: LabelCreationAttributes[] = [];
 
     for (const tag of rawMedium.tags ?? [])
       if (!existsTexts.some((text) => text == tag.toLowerCase()))
-        missingTexts.push({ content: tag });
+        missingTexts.push({ text: tag });
 
     await Label.bulkCreate(missingTexts);
 
     const missingTags = await Label.findAll({
       where: {
-        content: { [Op.in]: missingTexts.map((data) => data.content) },
+        text: { [Op.in]: missingTexts.map((data) => data.text) },
       },
     });
 

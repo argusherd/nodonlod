@@ -24,7 +24,7 @@ describe("The preserveAllTags method in the RawInfoConverter", () => {
 
     const label = await Label.findOne();
 
-    expect(label?.content).toEqual("foo");
+    expect(label?.text).toEqual("foo");
   });
 
   it("does not create two identical tags when preserving all the tags", async () => {

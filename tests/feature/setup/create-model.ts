@@ -77,7 +77,7 @@ export const createLabel = async (
   overwrite?: Partial<LabelCreationAttributes>,
 ) =>
   await Label.create({
-    content: faker.lorem.word(),
+    text: faker.lorem.word(),
     ...overwrite,
   });
 
