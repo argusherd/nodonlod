@@ -1,10 +1,40 @@
 extends ../_layout.pug
 
+mixin labels(labels = [])
+  .flex.flex-wrap.gap-2
+    each label in labels
+      +buttonGroup
+        +buttonInGroup= label.text
+        +buttonInGroup(
+          hx-delete=`/media/${medium.id}/labels/${label.id}`,
+          hx-swap="none"
+        )
+          i.text-xl(class="icon-[iconamoon--close-light]")
+
 block append body
-  +list
-    each labels, category in categories
-      +listItem(__(category))
-        .flex.flex-wrap.gap-2
-          each label in labels
-            +button
-              span= label.text
+  +buttonGroup.mb-4
+    +buttonInGroup(
+      hx-get=`/media/${medium.id}/labels/add`,
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-xl(class="icon-[material-symbols--add]")
+      span= __("Add")
+    +buttonInGroup(
+      hx-get=`/media/${medium.id}/labels/create`,
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-2xl(class="icon-[gridicons--create]")
+      span= __("Create")
+
+  if "" in categories
+    .mb-2
+      +labels(categories[""])
+
+  if Object.keys(categories).length > 1
+    +list
+      each labels, category in categories
+        if category
+          +listItem(__(category))
+            +labels(labels)

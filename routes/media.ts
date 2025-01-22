@@ -299,13 +299,17 @@ router.delete(
 );
 
 router.get("/:medium/labels", async (req: MediumRequest, res) => {
-  const labels = await req.medium.$get("labels");
+  const labels = await req.medium.$get("labels", {
+    order: ["category", "text"],
+  });
   const categories: Record<string, Label[]> = {};
 
   labels.forEach((label) => {
-    if (label.category in categories === false) categories[label.category] = [];
+    const category = label.category || "";
 
-    categories[label.category]?.push(label);
+    if (category in categories === false) categories[category] = [];
+
+    categories[category]?.push(label);
   });
 
   res.render("media/labels/index", { medium: req.medium, categories });
