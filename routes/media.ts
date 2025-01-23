@@ -22,6 +22,10 @@ interface PerformerRequest extends HasPageRequest {
   performer: Performer;
 }
 
+interface LabelRequest extends HasPageRequest {
+  label: Label;
+}
+
 const router = Router();
 
 router.param("medium", async (req: MediumRequest, res, next) => {
@@ -51,6 +55,17 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
 
   if (performer) {
     req.performer = performer;
+    next();
+  } else {
+    res.sendStatus(404);
+  }
+});
+
+router.param("label", async (req: LabelRequest, res, next) => {
+  const label = await Label.findByPk(req.params.label);
+
+  if (label) {
+    req.label = label;
     next();
   } else {
     res.sendStatus(404);
@@ -312,7 +327,19 @@ router.get("/:medium/labels", async (req: MediumRequest, res) => {
     categories[category]?.push(label);
   });
 
-  res.render("media/labels/index", { medium: req.medium, categories });
+  const template =
+    "_list" in req.query ? "media/labels/_list" : "media/labels/index";
+
+  res.render(template, { medium: req.medium, categories });
 });
+
+router.delete(
+  "/:medium/labels/:label",
+  async (req: MediumRequest & LabelRequest, res) => {
+    await req.medium.$remove("label", req.label);
+
+    res.set("HX-Trigger", "refresh-labels").sendStatus(205);
+  },
+);
 
 export default router;

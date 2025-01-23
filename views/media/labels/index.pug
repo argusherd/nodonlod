@@ -1,16 +1,5 @@
 extends ../_layout.pug
 
-mixin labels(labels = [])
-  .flex.flex-wrap.gap-2
-    each label in labels
-      +buttonGroup
-        +buttonInGroup= label.text
-        +buttonInGroup(
-          hx-delete=`/media/${medium.id}/labels/${label.id}`,
-          hx-swap="none"
-        )
-          i.text-xl(class="icon-[iconamoon--close-light]")
-
 block append body
   +buttonGroup.mb-4
     +buttonInGroup(
@@ -28,13 +17,8 @@ block append body
       i.text-2xl(class="icon-[gridicons--create]")
       span= __("Create")
 
-  if "" in categories
-    .mb-2
-      +labels(categories[""])
-
-  if Object.keys(categories).length > 1
-    +list
-      each labels, category in categories
-        if category
-          +listItem(__(category))
-            +labels(labels)
+  #labels(
+    hx-get=`/media/${medium.id}/labels?_list`,
+    hx-trigger="refresh-labels"
+  )
+    include _list.pug
