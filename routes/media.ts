@@ -317,20 +317,20 @@ router.get("/:medium/labels", async (req: MediumRequest, res) => {
   const labels = await req.medium.$get("labels", {
     order: ["category", "text"],
   });
-  const categories: Record<string, Label[]> = {};
-
-  labels.forEach((label) => {
-    const category = label.category || "";
-
-    if (category in categories === false) categories[category] = [];
-
-    categories[category]?.push(label);
-  });
 
   const template =
     "_list" in req.query ? "media/labels/_list" : "media/labels/index";
 
-  res.render(template, { medium: req.medium, categories });
+  res.render(template, { medium: req.medium, categories: groupLabels(labels) });
+});
+
+router.get("/:medium/labels/create", async (req: MediumRequest, res) => {
+  const labels = await Label.findAll({ order: ["category", "text"] });
+
+  res.set("HX-Trigger", "open-modal").render("media/labels/create", {
+    medium: req.medium,
+    categories: groupLabels(labels),
+  });
 });
 
 router.delete(
@@ -341,5 +341,19 @@ router.delete(
     res.set("HX-Trigger", "refresh-labels").sendStatus(205);
   },
 );
+
+function groupLabels(labels: Label[]) {
+  const categories: Record<string, Label[]> = {};
+
+  labels.forEach((label) => {
+    const category = label.category || "";
+
+    if (category in categories === false) categories[category] = [];
+
+    categories[category]?.push(label);
+  });
+
+  return categories;
+}
 
 export default router;
