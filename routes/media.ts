@@ -333,6 +333,15 @@ router.get("/:medium/labels/create", async (req: MediumRequest, res) => {
   });
 });
 
+router.post(
+  "/:medium/labels/:label",
+  async (req: MediumRequest & LabelRequest, res) => {
+    await req.medium.$add("label", req.label);
+
+    res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
+  },
+);
+
 router.delete(
   "/:medium/labels/:label",
   async (req: MediumRequest & LabelRequest, res) => {

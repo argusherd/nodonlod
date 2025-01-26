@@ -19,6 +19,6 @@ block append body
 
   #labels(
     hx-get=`/media/${medium.id}/labels?_list`,
-    hx-trigger="refresh-labels"
+    hx-trigger="refresh-labels from:body"
   )
     include _list.pug
