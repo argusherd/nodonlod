@@ -324,10 +324,44 @@ router.get("/:medium/labels", async (req: MediumRequest, res) => {
   res.render(template, { medium: req.medium, categories: groupLabels(labels) });
 });
 
-router.get("/:medium/labels/create", async (req: MediumRequest, res) => {
-  const labels = await Label.findAll({ order: ["category", "text"] });
-
+router.get("/:medium/labels/create", (req: MediumRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("media/labels/create", {
+    medium: req.medium,
+  });
+});
+
+router.post(
+  "/:medium/labels",
+  body("text").notEmpty().withMessage("The text is missing."),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const [label] = await Label.findOrCreate({
+        where: { category: req.body.category || null, text: req.body.text },
+      });
+
+      await req.medium.$add("label", label);
+
+      res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
+    } else {
+      res.status(422).render("media/labels/create", {
+        medium: req.medium,
+        errors: errors.mapped(),
+      });
+    }
+  },
+);
+
+router.get("/:medium/labels/add", async (req: MediumRequest, res) => {
+  const labels = await Label.findAll({
+    order: [
+      ["category", "ASC"],
+      ["text", "ASC"],
+    ],
+  });
+
+  res.set("HX-Trigger", "open-modal").render("media/labels/add", {
     medium: req.medium,
     categories: groupLabels(labels),
   });

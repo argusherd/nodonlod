@@ -1,17 +1,16 @@
 include /_mixin.pug
 
-mixin labels(labels = [])
-  .flex.flex-wrap.gap-2
-    each label in labels
-      +button(hx-post=`/media/${medium.id}/labels/${label.id}`)= label.text
+form.flex.flex-col.gap-2(
+  action=`/media/${medium.id}/labels`,
+  hx-target="#modal",
+  method="POST"
+)
+  +input.w-full(name="category", placeholder=__("Category"))
 
-if "" in categories
-  .mb-2
-    +labels(categories[""])
+  .flex.flex-col
+    +input.w-full(name="text", placeholder=__("Text"))
+    +error("text")
 
-if Object.keys(categories).length > 1
-  +list
-    each labels, category in categories
-      if category
-        +listItem(__(category))
-          +labels(labels)
+  +button.ml-auto
+    i.text-2xl(class="icon-[gridicons--create]")
+    span= __("Create")
