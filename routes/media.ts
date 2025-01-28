@@ -359,9 +359,22 @@ router.get("/:medium/labels/add", async (req: MediumRequest, res) => {
       ["category", "ASC"],
       ["text", "ASC"],
     ],
+    ...(req.query.search
+      ? {
+          where: {
+            [Op.or]: [
+              { category: { [Op.substring]: req.query.search as string } },
+              { text: { [Op.substring]: req.query.search as string } },
+            ],
+          },
+        }
+      : {}),
   });
 
-  res.set("HX-Trigger", "open-modal").render("media/labels/add", {
+  const template =
+    "_list" in req.query ? "media/labels/add/_list" : "media/labels/add/index";
+
+  res.set("HX-Trigger", "open-modal").render(template, {
     medium: req.medium,
     categories: groupLabels(labels),
   });
