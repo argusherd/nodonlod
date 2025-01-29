@@ -169,7 +169,32 @@ describe("The toMedium method in the RawInfoConverter", () => {
     );
   });
 
+  it("can convert the medium without calling the preserveAllChapters method", async () => {
+    const mockedPreserveAllChapters = jest
+      .spyOn(converter, "preserveAllChapters")
+      .mockImplementation();
+    const rawMedium = createRawMedium();
+
+    converter.shouldPreserveChapters = false;
+
+    await converter.toMedium(rawMedium);
+
+    expect(mockedPreserveAllChapters).not.toHaveBeenCalledWith();
+  });
+
   it("calls the preserveAllTags method when converting a raw-medium into a medium", async () => {
+    const mockedPreserveAllTags = jest
+      .spyOn(converter, "preserveAllTags")
+      .mockImplementation();
+
+    const rawMedium = createRawMedium({ tags: ["foo", "bar"] });
+
+    await converter.toMedium(rawMedium);
+
+    expect(mockedPreserveAllTags).toHaveBeenCalled();
+  });
+
+  it("can convert the medium without calling the preserveAllTags method", async () => {
     const mockedPreserveAllTags = jest
       .spyOn(converter, "preserveAllTags")
       .mockImplementation();

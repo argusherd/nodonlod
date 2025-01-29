@@ -16,6 +16,9 @@ export interface Overwritable {
 }
 
 export default class RawInfoConverter {
+  shouldPreserveChapters = true;
+  shouldPreserveTags = true;
+
   async convertAll(rawInfo: RawMedium | RawPlaylist) {
     if (rawInfo._type === "playlist") {
       await this.fromRawPlaylistAndEntries(rawInfo);
@@ -107,8 +110,10 @@ export default class RawInfoConverter {
       });
     }
 
-    await this.preserveAllChapters(rawMedium, medium.id);
-    await this.preserveAllTags(rawMedium, medium);
+    if (this.shouldPreserveChapters)
+      await this.preserveAllChapters(rawMedium, medium.id);
+
+    if (this.shouldPreserveTags) await this.preserveAllTags(rawMedium, medium);
 
     return medium;
   }
