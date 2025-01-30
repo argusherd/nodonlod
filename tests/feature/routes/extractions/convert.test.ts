@@ -1,4 +1,6 @@
+import Chapter from "@/database/models/chapter";
 import Extraction from "@/database/models/extraction";
+import Label from "@/database/models/label";
 import Medium from "@/database/models/medium";
 import Playlist from "@/database/models/playlist";
 import express from "@/routes";
@@ -205,5 +207,49 @@ describe("The convert extraction raw info route", () => {
     const playlist = await Playlist.findOne();
 
     expect(resText).toContain(`/playlists/${playlist?.id}`);
+  });
+
+  it("can preserve the chapters from the raw medium", async () => {
+    const rawMedium = createRawMedium({
+      chapters: [{ title: "foo", start_time: 0, end_time: 10 }],
+    });
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      content: JSON.stringify(rawMedium),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/convert`)
+      .type("form")
+      .send({ resourceId: rawMedium.id, includeChapters: true })
+      .expect(200);
+
+    const chapter = await Chapter.findOne();
+
+    expect(chapter?.title).toEqual("foo");
+    expect(chapter?.startTime).toEqual(0);
+    expect(chapter?.endTime).toEqual(10);
+  });
+
+  it("can preserve the tags from the raw medium", async () => {
+    const rawMedium = createRawMedium({ tags: ["foo", "bar"] });
+
+    const extraction = await Extraction.create({
+      url: playlistURL,
+      content: JSON.stringify(rawMedium),
+    });
+
+    await supertest(express)
+      .post(`/extractions/${extraction.id}/convert`)
+      .type("form")
+      .send({ resourceId: rawMedium.id, includeTags: true })
+      .expect(200);
+
+    const labels = await Label.findAll({ order: [["text", "ASC"]] });
+
+    expect(labels).toHaveLength(2);
+    expect(labels.at(0)?.text).toEqual("bar");
+    expect(labels.at(1)?.text).toEqual("foo");
   });
 });

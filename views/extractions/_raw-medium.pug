@@ -120,6 +120,30 @@ form.mb-4(
           )
 
   +buttonGroup.ml-auto
+    +buttonInGroup.flex(
+      @click="include = !include",
+      type="button",
+      x-data="{ include: true }"
+    )
+      +input(
+        checked="checked",
+        name="includeChapters",
+        type="checkbox",
+        x-model="include"
+      )
+      span= __("Include Chapters")
+    +buttonInGroup.flex(
+      @click="include = !include",
+      type="button",
+      x-data="{ include: true }"
+    )
+      +input(
+        checked="checked",
+        name="includeTags",
+        type="checkbox",
+        x-model="include"
+      )
+      span= __("Include Tags")
     +buttonInGroup(type="submit")
       i.text-2xl(class="icon-[material-symbols--save-outline]")
       span #{ __("Save") }

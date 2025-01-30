@@ -121,6 +121,9 @@ router.post(
     const { title, description, thumbnail, ageLimit }: Overwritable = req.body;
     let url = "";
 
+    converter.shouldPreserveChapters = Boolean(req.body.includeChapters);
+    converter.shouldPreserveTags = Boolean(req.body.includeTags);
+
     if ("_type" in rawInfo === false || rawInfo._type === "video") {
       const medium = await converter.toMedium(rawInfo, {
         title,
