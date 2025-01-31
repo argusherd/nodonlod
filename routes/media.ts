@@ -75,6 +75,7 @@ router.param("label", async (req: LabelRequest, res, next) => {
 router.get("/", async (req: HasPageRequest, res) => {
   const { rows: media, count } = await Medium.findAndCountAll({
     limit: req.perPage,
+    include: [{ model: Performer, order: [["name", "ASC"]] }],
     offset: req.offset,
     order: [["createdAt", "DESC"]],
   });
