@@ -5,8 +5,8 @@ each performer in performers
     +buttonInGroup(href=`/performers/${performer.id}`)= performer.name
 
     +buttonInGroup(
-      hx-delete=`/media/${medium.id}/performers/${performer.id}`,
-      hx-swap="none",
+      hx-delete=`/media/${medium.id}/performers/${performer.id}/confirm`,
+      hx-target="#modal",
       title=__("Remove Performer")
     )
       i.text-xl(class="icon-[iconamoon--close-light]")

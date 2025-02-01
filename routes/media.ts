@@ -90,7 +90,9 @@ router.get("/:medium", async (req: MediumRequest, res) => {
   res.render("media/show", {
     medium: req.medium,
     uploader: await req.medium.$get("uploader"),
-    performers: await req.medium.$get("performers"),
+    performers: await req.medium.$get("performers", {
+      order: [["name", "ASC"]],
+    }),
   });
 });
 
@@ -235,7 +237,9 @@ router.delete(
 router.get("/:medium/performers", async (req: MediumRequest, res) => {
   res.render("media/performers/index", {
     medium: req.medium,
-    performers: await req.medium.$get("performers"),
+    performers: await req.medium.$get("performers", {
+      order: [["name", "ASC"]],
+    }),
   });
 });
 
@@ -302,6 +306,16 @@ router.post(
     res
       .set("HX-Trigger", ["close-modal", "refresh-performers"])
       .sendStatus(205);
+  },
+);
+
+router.delete(
+  "/:medium/performers/:performer/confirm",
+  async (req: MediumRequest & PerformerRequest, res) => {
+    res.set("HX-Trigger", "open-modal").render("_delete", {
+      message: __("Are you sure you want to remove this performer?"),
+      route: `/media/${req.medium.id}/performers/${[req.performer.id]}`,
+    });
   },
 );
 
