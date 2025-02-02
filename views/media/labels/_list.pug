@@ -6,8 +6,8 @@ mixin labels(labels = [])
       +buttonGroup
         +buttonInGroup= label.text
         +buttonInGroup(
-          hx-delete=`/media/${medium.id}/labels/${label.id}`,
-          hx-swap="none"
+          hx-delete=`/media/${medium.id}/labels/${label.id}/confirm`,
+          hx-target="#modal"
         )
           i.text-xl(class="icon-[iconamoon--close-light]")
 
