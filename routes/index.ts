@@ -7,7 +7,7 @@ import neatDuration from "../src/neat-duration";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
-import mediumRouter from "./media";
+import mediumRouter from "./media/index";
 import i18nMiddleware from "./middlewares/i18n";
 import pagination from "./middlewares/pagination";
 import queryString from "./middlewares/query-string";
