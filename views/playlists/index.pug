@@ -4,6 +4,11 @@ block append breadcrumb
   +breadcrumb({ href: "/playlists", icon: "icon-[mage--playlist]", name: __("Playlist") })
 
 block body
+  +buttonGroup.mb-4
+    +buttonInGroup(hx-get="/playlists/create", hx-target="#modal")
+      i.text-2xl(class="icon-[gridicons--create]")
+      span #{ __("Create") }
+
   .mb-4.flex.flex-col.gap-4
     each playlist in playlists
       include _widget.pug

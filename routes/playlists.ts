@@ -40,6 +40,10 @@ router.get("/", async (req: HasPageRequest, res) => {
   });
 });
 
+router.get("/create", async (_req, res) => {
+  res.set("HX-Trigger", "open-modal").render("playlists/create");
+});
+
 router.get("/:playlist", async (req: PlaylistRequest, res) => {
   res.render("playlists/show.pug", {
     playlist: req.playlist,

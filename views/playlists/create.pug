@@ -1,0 +1,17 @@
+include /_mixin.pug
+
+form.flex.flex-col.gap-2(
+  action="/playlists",
+  hx-target="#modal",
+  method="POST"
+)
+  +input.w-full(name="title", placeholder=__("Title"))
+  +error('title')
+
+  +input.w-full(name="thumbnail", placeholder=__("Thumbnail"))
+
+  +textarea.w-full(name="description", placeholder=__("Description"))
+
+  +button.ml-auto
+    i.text-2xl(class="icon-[material-symbols--save-outline]")
+    span= __("Save")
