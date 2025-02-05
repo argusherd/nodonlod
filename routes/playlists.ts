@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue, {
@@ -43,6 +44,27 @@ router.get("/", async (req: HasPageRequest, res) => {
 router.get("/create", async (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("playlists/create");
 });
+
+router.post(
+  "/",
+  body("title")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage(__("The title is missing.")),
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const playlist = await Playlist.create({
+        title: req.body.title,
+        thumbnail: req.body.thumbnail,
+        description: req.body.description,
+      });
+      res.set("HX-Location", `/playlists/${playlist.id}`).sendStatus(201);
+    } else {
+      res.status(422).render("playlists/create", { errors: errors.mapped() });
+    }
+  },
+);
 
 router.get("/:playlist", async (req: PlaylistRequest, res) => {
   res.render("playlists/show.pug", {
