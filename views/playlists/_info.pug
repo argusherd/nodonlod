@@ -1,0 +1,36 @@
+include /_mixin.pug
+
++list
+  +listItem(__("Title"))
+    - var title = "title" in old ? old.title : playlist.title;
+    +input.w-full(name="title", value=title)
+
+  if playlist.url
+    +listItem(__("URL"))
+      span= playlist.url
+
+  +listItem(__("Thumbnail"))
+    - var thumbnail = "thumbnail" in old ? old.thumbnail : playlist.thumbnail;
+    .flex.flex-col.gap-2(
+      @input="$dispatch('playlist-changed')",
+      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
+    )
+      +input.w-full(name="thumbnail", x-model="thumbnail")
+      .max-w-3xl
+        img.size-fit.object-cover(
+          :src="thumbnail",
+          alt="thumbnail",
+          x-show="thumbnail"
+        )
+
+  +listItem(__("Description"))
+    - var description = "description" in old ? old.description : playlist.description;
+    +textarea.w-full(
+      @input="$dispatch('playlist-changed')",
+      name="description"
+    ) #{ description }
+
+  +listItem(__("Created At"))
+    span= dayjs(playlist.createdAt).format("YYYY-MM-DD HH:mm:ss")
+  +listItem(__("Updated At"))
+    span= dayjs(playlist.updatedAt).format("YYYY-MM-DD HH:mm:ss")
