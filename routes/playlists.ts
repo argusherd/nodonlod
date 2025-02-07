@@ -77,6 +77,36 @@ router.get("/:playlist", async (req: PlaylistRequest, res) => {
   });
 });
 
+router.put(
+  "/:playlist",
+  body("title")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("The title is missing."),
+  async (req: PlaylistRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.playlist.update({
+        title: req.body.title,
+        thumbnail: req.body.thumbnail,
+        description: req.body.description,
+      });
+
+      res
+        .set("HX-Trigger", "playlist-saved")
+        .render("playlists/_info", { playlist: req.playlist });
+    } else {
+      res
+        .status(422)
+        .set("HX-Trigger", "playlist-failed")
+        .render("playlists/_info", {
+          playlist: req.playlist,
+          errors: errors.mapped(),
+        });
+    }
+  },
+);
+
 router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
   const firstItem = await PlaylistItem.findOne({
     order: [["order", "ASC"]],

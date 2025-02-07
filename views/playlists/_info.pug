@@ -3,7 +3,12 @@ include /_mixin.pug
 +list
   +listItem(__("Title"))
     - var title = "title" in old ? old.title : playlist.title;
-    +input.w-full(name="title", value=title)
+    +input.w-full(
+      @input="$dispatch('playlist-changed')",
+      name="title",
+      value=title
+    )
+    +error('title')
 
   if playlist.url
     +listItem(__("URL"))
