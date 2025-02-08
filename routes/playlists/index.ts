@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import Chapter from "../database/models/chapter";
-import Medium from "../database/models/medium";
+import Chapter from "../../database/models/chapter";
+import Medium from "../../database/models/medium";
 import PlayQueue, {
   PlayQueueCreationAttributes,
-} from "../database/models/play-queue";
-import Playlist from "../database/models/playlist";
-import PlaylistItem from "../database/models/playlist-item";
-import { play } from "../src/currently-playing";
-import { __ } from "./middlewares/i18n";
-import { HasPageRequest } from "./middlewares/pagination";
+} from "../../database/models/play-queue";
+import Playlist from "../../database/models/playlist";
+import PlaylistItem from "../../database/models/playlist-item";
+import { play } from "../../src/currently-playing";
+import { __ } from "../middlewares/i18n";
+import { HasPageRequest } from "../middlewares/pagination";
 
 interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
