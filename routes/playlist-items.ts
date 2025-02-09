@@ -39,6 +39,9 @@ router.put(
     const order = Math.max(1, Math.min(max, Number(req.body.order)));
     const between = [order, playlistItem.order].sort();
 
+    if (order > playlistItem.order) between[0] += 1;
+    else between[1] -= 1;
+
     await PlaylistItem.increment("order", {
       by: order > playlistItem.order ? -1 : 1,
       where: { order: { [Op.between]: between as [number, number] } },

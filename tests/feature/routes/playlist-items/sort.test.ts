@@ -114,4 +114,28 @@ describe("The playlist item sort route", () => {
     expect(target.order).toEqual(2);
     expect(shouldBe1.order).toEqual(1);
   });
+
+  it("can manully fix duplicated order number", async () => {
+    const playlistId = (await createPlaylist()).id;
+    const remain1 = await createPlaylistItem({ order: 1, playlistId });
+    const shouldBe3 = await createPlaylistItem({ order: 2, playlistId });
+    const remain2 = await createPlaylistItem({ order: 2, playlistId });
+    const remain4 = await createPlaylistItem({ order: 4, playlistId });
+
+    await supertest(express)
+      .put(`/playlist-items/${shouldBe3.id}`)
+      .type("form")
+      .send({ order: 3 })
+      .expect(205);
+
+    await remain1.reload();
+    await shouldBe3.reload();
+    await remain2.reload();
+    await remain4.reload();
+
+    expect(remain1.order).toEqual(1);
+    expect(shouldBe3.order).toEqual(3);
+    expect(remain2.order).toEqual(2);
+    expect(remain4.order).toEqual(4);
+  });
 });
