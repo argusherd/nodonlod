@@ -28,15 +28,19 @@ router.get("/", async (req: MediumRequest, res) => {
     order: ["category", "text"],
   });
 
-  const template =
-    "_list" in req.query ? "media/labels/_list" : "media/labels/index";
+  const template = "_list" in req.query ? "labels/_list" : "labels/index";
 
-  res.render(template, { medium: req.medium, categories: groupLabels(labels) });
+  res.render(template, {
+    medium: req.medium,
+    labels,
+    basePath: `/media/${req.medium.id}`,
+  });
 });
 
 router.get("/create", (req: MediumRequest, res) => {
-  res.set("HX-Trigger", "open-modal").render("media/labels/create", {
+  res.set("HX-Trigger", "open-modal").render("labels/create", {
     medium: req.medium,
+    basePath: `/media/${req.medium.id}`,
   });
 });
 
@@ -55,8 +59,9 @@ router.post(
 
       res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
     } else {
-      res.status(422).render("media/labels/create", {
+      res.status(422).render("labels/create", {
         medium: req.medium,
+        basePath: `/media/${req.medium.id}`,
         errors: errors.mapped(),
       });
     }
@@ -82,11 +87,12 @@ router.get("/add", async (req: MediumRequest, res) => {
   });
 
   const template =
-    "_list" in req.query ? "media/labels/add/_list" : "media/labels/add/index";
+    "_list" in req.query ? "labels/add/_list" : "labels/add/index";
 
   res.set("HX-Trigger", "open-modal").render(template, {
     medium: req.medium,
-    categories: groupLabels(labels),
+    basePath: `/media/${req.medium.id}`,
+    labels,
   });
 });
 
@@ -111,19 +117,5 @@ router.delete("/:label", async (req: MediumRequest & LabelRequest, res) => {
 
   res.set("HX-Trigger", "refresh-labels").sendStatus(205);
 });
-
-function groupLabels(labels: Label[]) {
-  const categories: Record<string, Label[]> = {};
-
-  labels.forEach((label) => {
-    const category = label.category || "";
-
-    if (category in categories === false) categories[category] = [];
-
-    categories[category]?.push(label);
-  });
-
-  return categories;
-}
 
 export default router;

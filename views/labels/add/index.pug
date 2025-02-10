@@ -1,7 +1,7 @@
 include /_mixin.pug
 
 +input.mb-4.w-full(
-  hx-get=`/media/${medium.id}/labels/add?_list`,
+  hx-get=`${basePath}/labels/add?_list`,
   hx-target="#add-label",
   hx-trigger="input changed delay:500ms",
   name="search",

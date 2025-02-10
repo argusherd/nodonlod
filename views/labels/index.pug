@@ -3,14 +3,14 @@ extends ../_layout.pug
 block append body
   +buttonGroup.mb-4
     +buttonInGroup(
-      hx-get=`/media/${medium.id}/labels/add`,
+      hx-get=`${basePath}/labels/add`,
       hx-target="#modal",
       type="button"
     )
       i.text-xl(class="icon-[material-symbols--add]")
       span= __("Add")
     +buttonInGroup(
-      hx-get=`/media/${medium.id}/labels/create`,
+      hx-get=`${basePath}/labels/create`,
       hx-target="#modal",
       type="button"
     )
@@ -18,7 +18,7 @@ block append body
       span= __("Create")
 
   #labels(
-    hx-get=`/media/${medium.id}/labels?_list`,
+    hx-get=`${basePath}/labels?_list`,
     hx-trigger="refresh-labels from:body"
   )
     include _list.pug

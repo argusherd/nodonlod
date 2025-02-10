@@ -1,7 +1,7 @@
 include /_mixin.pug
 
 form.flex.flex-col.gap-2(
-  action=`/media/${medium.id}/labels`,
+  action=`${basePath}/labels`,
   hx-target="#modal",
   method="POST"
 )
