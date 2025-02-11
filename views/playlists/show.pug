@@ -1,9 +1,6 @@
-extends ../_layout.pug
+extends _layout.pug
 
-block append breadcrumb
-  +breadcrumb({ href: "/playlists", icon: "icon-[mage--playlist]", name: __("Playlist") })
-
-block body
+block append body
   +buttonGroup.mb-4
     +buttonInGroup(
       hx-get=`/playlists/${playlist.id}/play`,
