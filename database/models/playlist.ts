@@ -1,6 +1,7 @@
 import { Optional } from "sequelize";
 import {
   AllowNull,
+  BeforeDestroy,
   BelongsToMany,
   Column,
   CreatedAt,
@@ -13,6 +14,8 @@ import {
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import Label from "./label";
+import Labelable from "./labelable";
 import Medium from "./medium";
 import PlaylistItem from "./playlist-item";
 
@@ -76,4 +79,17 @@ export default class Playlist extends Model<
 
   @BelongsToMany(() => Medium, () => PlaylistItem)
   media: Array<Medium & { PlaylistItem: PlaylistItem }>;
+
+  @BelongsToMany(() => Label, {
+    through: { model: () => Labelable, scope: { labelableType: "playlist" } },
+    foreignKey: "labelableId",
+  })
+  labels: Label[];
+
+  @BeforeDestroy
+  static async removeBelongsToMany(instance: Playlist) {
+    await Labelable.destroy({
+      where: { labelableId: instance.id, labelableType: "playlist" },
+    });
+  }
 }

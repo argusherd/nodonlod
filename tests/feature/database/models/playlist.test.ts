@@ -1,5 +1,10 @@
+import Labelable from "@/database/models/labelable";
 import Playlist from "@/database/models/playlist";
-import { createMedium, createPlaylist } from "../../setup/create-model";
+import {
+  createLabel,
+  createMedium,
+  createPlaylist,
+} from "../../setup/create-model";
 
 describe("The playlist model", () => {
   it("can persist one record to the database", async () => {
@@ -28,5 +33,30 @@ describe("The playlist model", () => {
 
     expect(belongsToMany).toHaveLength(1);
     expect(belongsToMany.at(0)?.id).toEqual(medium.id);
+  });
+
+  it("can belongs to many labels", async () => {
+    const playlist = await createPlaylist();
+    const label = await createLabel();
+
+    await playlist.$add("label", [label]);
+
+    const belongsToMany = await playlist.$get("labels");
+
+    expect(belongsToMany).toHaveLength(1);
+    expect(belongsToMany[0]?.id).toEqual(label.id);
+  });
+
+  it("removes all associated labels before deletion", async () => {
+    const playlist = await createPlaylist();
+    const label = await createLabel();
+
+    await playlist.$add("label", [label]);
+
+    expect(await Labelable.count()).toEqual(1);
+
+    await playlist.destroy();
+
+    expect(await Labelable.count()).toEqual(0);
   });
 });
