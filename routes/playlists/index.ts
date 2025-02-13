@@ -10,8 +10,9 @@ import PlaylistItem from "../../database/models/playlist-item";
 import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import labelRouter from "./labels";
 
-interface PlaylistRequest extends HasPageRequest {
+export interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
 }
 
@@ -155,5 +156,7 @@ async function queue(playlistItems: PlaylistItem[]) {
 
   await PlayQueue.bulkCreate(data);
 }
+
+router.use("/:playlist/labels", labelRouter);
 
 export default router;
