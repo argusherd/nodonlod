@@ -28,7 +28,7 @@ router.get("/", async (req: MediumRequest, res) => {
     order: ["category", "text"],
   });
 
-  const template = "_list" in req.query ? "labels/_list" : "labels/index";
+  const template = "_list" in req.query ? "labels/_list" : "media/labels/index";
 
   res.render(template, {
     medium: req.medium,

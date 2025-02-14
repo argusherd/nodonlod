@@ -25,7 +25,8 @@ router.get("/", async (req: PlaylistRequest, res) => {
     order: ["category", "text"],
   });
 
-  const template = "_list" in req.query ? "labels/_list" : "labels/index";
+  const template =
+    "_list" in req.query ? "labels/_list" : "playlists/labels/index";
 
   res.render(template, {
     playlist: req.playlist,
