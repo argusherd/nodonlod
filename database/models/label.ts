@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Op, Optional } from "sequelize";
 import {
   AllowNull,
   BelongsToMany,
@@ -8,6 +8,7 @@ import {
   Default,
   Model,
   PrimaryKey,
+  Scopes,
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
@@ -29,6 +30,20 @@ interface LabelAttributes extends OptionalLabelCreationAttributes {
 export interface LabelCreationAttributes
   extends Optional<LabelAttributes, keyof OptionalLabelCreationAttributes> {}
 
+@Scopes(() => ({
+  search(value: string) {
+    return value
+      ? {
+          where: {
+            [Op.or]: [
+              { category: { [Op.substring]: value } },
+              { text: { [Op.substring]: value } },
+            ],
+          },
+        }
+      : {};
+  },
+}))
 @Table({ underscored: true })
 export default class Label extends Model<
   LabelAttributes,

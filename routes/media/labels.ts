@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { Op } from "sequelize";
 import { MediumRequest } from ".";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
@@ -69,21 +68,13 @@ router.post(
 );
 
 router.get("/add", async (req: MediumRequest, res) => {
-  const labels = await Label.findAll({
+  const labels = await Label.scope({
+    method: ["search", req.query.search],
+  }).findAll({
     order: [
       ["category", "ASC"],
       ["text", "ASC"],
     ],
-    ...(req.query.search
-      ? {
-          where: {
-            [Op.or]: [
-              { category: { [Op.substring]: req.query.search as string } },
-              { text: { [Op.substring]: req.query.search as string } },
-            ],
-          },
-        }
-      : {}),
   });
 
   const template =
