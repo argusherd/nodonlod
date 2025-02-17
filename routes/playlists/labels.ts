@@ -66,4 +66,29 @@ router.post(
   },
 );
 
+router.get("/add", async (req: PlaylistRequest, res) => {
+  const labels = await Label.scope({
+    method: ["search", req.query.search],
+  }).findAll({
+    order: [
+      ["category", "ASC"],
+      ["text", "ASC"],
+    ],
+  });
+
+  const template =
+    "_list" in req.query ? "labels/add/_list" : "labels/add/index";
+
+  res.set("HX-Trigger", "open-modal").render(template, {
+    basePath: `/playlists/${req.playlist.id}`,
+    labels,
+  });
+});
+
+router.post("/:label", async (req: PlaylistRequest & LabelRequest, res) => {
+  await req.playlist.$add("label", req.label);
+
+  res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
+});
+
 export default router;
