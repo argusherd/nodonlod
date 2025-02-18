@@ -91,4 +91,20 @@ router.post("/:label", async (req: PlaylistRequest & LabelRequest, res) => {
   res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
 });
 
+router.delete(
+  "/:label/confirm",
+  async (req: PlaylistRequest & LabelRequest, res) => {
+    res.set("HX-Trigger", "open-modal").render("_delete", {
+      message: __("Are you sure you want to remove this label?"),
+      route: `/playlists/${req.playlist.id}/labels/${req.label.id}`,
+    });
+  },
+);
+
+router.delete("/:label", async (req: PlaylistRequest & LabelRequest, res) => {
+  await req.playlist.$remove("label", req.label);
+
+  res.set("HX-Trigger", "refresh-labels").sendStatus(205);
+});
+
 export default router;
