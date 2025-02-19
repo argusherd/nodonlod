@@ -7,6 +7,7 @@ import {
   CreatedAt,
   DataType,
   Default,
+  HasMany,
   IsUUID,
   Model,
   PrimaryKey,
@@ -79,6 +80,9 @@ export default class Playlist extends Model<
 
   @BelongsToMany(() => Medium, () => PlaylistItem)
   media: Array<Medium & { PlaylistItem: PlaylistItem }>;
+
+  @HasMany(() => PlaylistItem)
+  playlistItems: PlaylistItem[];
 
   @BelongsToMany(() => Label, {
     through: { model: () => Labelable, scope: { labelableType: "playlist" } },

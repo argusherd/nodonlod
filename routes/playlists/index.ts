@@ -1,7 +1,5 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import Chapter from "../../database/models/chapter";
-import Medium from "../../database/models/medium";
 import PlayQueue, {
   PlayQueueCreationAttributes,
 } from "../../database/models/play-queue";
@@ -11,6 +9,7 @@ import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import labelRouter from "./labels";
+import mediumRouter from "./media";
 
 export interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
@@ -68,14 +67,7 @@ router.post(
 );
 
 router.get("/:playlist", async (req: PlaylistRequest, res) => {
-  res.render("playlists/show.pug", {
-    playlist: req.playlist,
-    items: await PlaylistItem.findAll({
-      where: { playlistId: req.playlist.id },
-      include: [Medium, Chapter],
-      order: [["order", "ASC"]],
-    }),
-  });
+  res.render("playlists/show.pug", { playlist: req.playlist });
 });
 
 router.put(
@@ -158,5 +150,6 @@ async function queue(playlistItems: PlaylistItem[]) {
 }
 
 router.use("/:playlist/labels", labelRouter);
+router.use("/:playlist/media", mediumRouter);
 
 export default router;
