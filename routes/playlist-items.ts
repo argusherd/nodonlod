@@ -49,9 +49,7 @@ router.put(
 
     await req.playlistItem.update({ order });
 
-    res
-      .set("HX-Location", `/playlists/${playlistItem.playlistId}`)
-      .sendStatus(205);
+    res.set("HX-Trigger", "refresh-media").sendStatus(205);
   },
 );
 

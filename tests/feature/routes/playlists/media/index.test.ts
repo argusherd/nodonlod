@@ -73,4 +73,31 @@ describe("The playlist media index page", () => {
         expect(res.text.match(displayOrder)).not.toBeNull();
       });
   });
+
+  it("can request the list part of the page", async () => {
+    const playlist = await createPlaylist();
+    const medium = await createMedium();
+    const chapter = await createChapter();
+    const fromChapter = await chapter.$get("medium");
+
+    await PlaylistItem.bulkCreate([
+      { playlistId: playlist.id, mediumId: medium.id },
+      {
+        playlistId: playlist.id,
+        mediumId: chapter.mediumId,
+        chapterId: chapter.id,
+      },
+    ]);
+
+    await supertest(express)
+      .get(`/playlists/${playlist.id}/media?_list`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(medium.title);
+        expect(res.text).toContain(`/media/${medium.id}`);
+        expect(res.text).toContain(chapter.title);
+        expect(res.text).toContain(fromChapter?.title);
+        expect(res.text).toContain(`/media/${fromChapter?.id}`);
+      });
+  });
 });

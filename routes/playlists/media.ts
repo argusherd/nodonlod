@@ -6,7 +6,10 @@ import Medium from "../../database/models/medium";
 const router = Router();
 
 router.get("/", async (req: PlaylistRequest, res) => {
-  res.render("playlists/media", {
+  const template =
+    "_list" in req.query ? "playlists/media/_list" : "playlists/media";
+
+  res.render(template, {
     playlist: req.playlist,
     items: await req.playlist.$get("playlistItems", {
       include: [Medium, Chapter],

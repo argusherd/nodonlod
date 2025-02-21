@@ -1,45 +1,8 @@
 extends ../_layout.pug
 
 block append body
-  +table.w-full
-    +tbody.w-full(
-      x-data=`{
-        id: '',
-        order: 0,
-      }`,
-      x-sort=`
-        id = $item;
-        order = $position;
-        $nextTick(() => {
-          htmx.process($refs.sort);
-          htmx.trigger($refs.sort, "sorted")
-        });
-      `
-    )
-      input(
-        :hx-put="`/playlist-items/${id}`",
-        hx-include="this",
-        hx-trigger="sorted",
-        name="order",
-        type="hidden",
-        x-model="order",
-        x-ref="sort"
-      )
-      each item in items
-        +tr.w-full(x-sort:item=`"${item.id}"`)
-          +td.flex.flex-col.gap-2
-            i.cursor-pointer.text-2xl(class="icon-[mingcute--dots-fill]", x-sort:handle)
-            +input.w-20(
-              @keyup.enter=`id = "${item.id}"; order = $el.value; handle()`,
-              type="number",
-              value=item.order
-            )
-          +td
-            - var medium = item.medium;
-            - var chapter = item.chapter;
-
-            .mb-2
-              include /media/_widget.pug
-
-            if chapter
-              include /chapters/_widget.pug
+  #refresh-media(
+    hx-get=`/playlists/${playlist.id}/media?_list`,
+    hx-trigger="refresh-media from:body"
+  )
+    include _list.pug
