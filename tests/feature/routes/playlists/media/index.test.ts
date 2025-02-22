@@ -26,7 +26,7 @@ describe("The playlist media index page", () => {
     ]);
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/media`)
+      .get(`/playlists/${playlist.id}/playlist-items`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(medium1.title);
@@ -35,7 +35,7 @@ describe("The playlist media index page", () => {
         expect(res.text).toContain(`/media/${medium2.id}`);
         expect(res.text).toContain(chapter.title);
         expect(res.text).toContain(fromChapter?.title);
-        expect(res.text).toContain(`/media/${fromChapter?.id}`);
+        expect(res.text).toContain(`/media/${fromChapter?.id}/chapters`);
       });
   });
 
@@ -67,7 +67,7 @@ describe("The playlist media index page", () => {
     );
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/media`)
+      .get(`/playlists/${playlist.id}/playlist-items`)
       .expect(200)
       .expect((res) => {
         expect(res.text.match(displayOrder)).not.toBeNull();
@@ -90,7 +90,7 @@ describe("The playlist media index page", () => {
     ]);
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/media?_list`)
+      .get(`/playlists/${playlist.id}/playlist-items?_list`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(medium.title);

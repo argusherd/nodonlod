@@ -9,7 +9,7 @@ import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import labelRouter from "./labels";
-import mediumRouter from "./media";
+import playlistItemRouter from "./playlist-items";
 
 export interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
@@ -150,6 +150,6 @@ async function queue(playlistItems: PlaylistItem[]) {
 }
 
 router.use("/:playlist/labels", labelRouter);
-router.use("/:playlist/media", mediumRouter);
+router.use("/:playlist/playlist-items", playlistItemRouter);
 
 export default router;

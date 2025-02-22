@@ -7,7 +7,9 @@ const router = Router();
 
 router.get("/", async (req: PlaylistRequest, res) => {
   const template =
-    "_list" in req.query ? "playlists/media/_list" : "playlists/media";
+    "_list" in req.query
+      ? "playlists/playlist-items/_list"
+      : "playlists/playlist-items";
 
   res.render(template, {
     playlist: req.playlist,
