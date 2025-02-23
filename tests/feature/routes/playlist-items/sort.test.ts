@@ -21,7 +21,7 @@ describe("The playlist item sort route", () => {
       .type("form")
       .send({ order: 1 })
       .expect(205)
-      .expect("hx-trigger", "refresh-media");
+      .expect("hx-trigger", "refresh-playlist-items");
 
     await target.reload();
     await shouldBe2.reload();

@@ -7,7 +7,7 @@ import {
   createPlaylist,
 } from "../../../setup/create-model";
 
-describe("The playlist media index page", () => {
+describe("The playlist items index page", () => {
   it("lists all related media and chapters", async () => {
     const playlist = await createPlaylist();
     const medium1 = await createMedium();

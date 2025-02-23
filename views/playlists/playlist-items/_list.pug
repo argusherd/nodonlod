@@ -40,6 +40,11 @@ include /_mixin.pug
               title=__("Play this list starting from this item")
             )
               i.text-2xl(class="icon-[teenyicons--play-solid]")
+            +buttonInGroup(
+              hx-delete=`/playlist-items/${item.id}/confirm`,
+              hx-target="#modal"
+            )
+              i.text-2xl(class="icon-[material-symbols--delete-outline]")
 
         +td
           - var medium = item.medium;

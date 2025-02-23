@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import PlaylistItem from "../database/models/playlist-item";
 import { play } from "../src/currently-playing";
+import { __ } from "./middlewares/i18n";
 
 interface HasPlaylistItem extends Request {
   playlistItem: PlaylistItem;
@@ -49,7 +50,7 @@ router.put(
 
     await req.playlistItem.update({ order });
 
-    res.set("HX-Trigger", "refresh-media").sendStatus(205);
+    res.set("HX-Trigger", "refresh-playlist-items").sendStatus(205);
   },
 );
 
@@ -57,6 +58,29 @@ router.get("/:playlistItem/play", async (req: HasPlaylistItem, res) => {
   await play(req.playlistItem);
 
   res.set("HX-Trigger", "show-playing").sendStatus(202);
+});
+
+router.delete("/:playlistItem/confirm", async (req: HasPlaylistItem, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: __("Are you sure you want to delete this item?"),
+    route: `/playlist-items/${req.playlistItem.id}`,
+  });
+});
+
+router.delete("/:playlistItem", async (req: HasPlaylistItem, res) => {
+  await PlaylistItem.decrement("order", {
+    by: 1,
+    where: {
+      playlistId: req.playlistItem.playlistId,
+      order: { [Op.gte]: req.playlistItem.order },
+    },
+  });
+
+  await req.playlistItem.destroy();
+
+  res
+    .set("HX-Trigger", ["close-modal", "refresh-playlist-items"])
+    .sendStatus(205);
 });
 
 export default router;

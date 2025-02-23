@@ -1,8 +1,8 @@
 extends ../_layout.pug
 
 block append body
-  #refresh-media(
-    hx-get=`/playlists/${playlist.id}/media?_list`,
-    hx-trigger="refresh-media from:body"
+  #refresh-playlist-items(
+    hx-get=`/playlists/${playlist.id}/playlist-items?_list`,
+    hx-trigger="refresh-playlist-items from:body"
   )
     include _list.pug
