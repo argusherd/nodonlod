@@ -5,14 +5,17 @@ include /_mixin.pug
     x-data=`{
         id: '',
         order: 0,
+        handle() {
+          $nextTick(() => {
+            htmx.process($refs.sort);
+            htmx.trigger($refs.sort, "sorted")
+          });
+        },
       }`,
     x-sort=`
         id = $item;
         order = $position;
-        $nextTick(() => {
-          htmx.process($refs.sort);
-          htmx.trigger($refs.sort, "sorted")
-        });
+        handle();
       `
   )
     input(

@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import { MediumRequest } from ".";
 import Playlist from "../../database/models/playlist";
+import PlaylistItem from "../../database/models/playlist-item";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 
@@ -84,7 +85,17 @@ router.get("/search", async (req: MediumRequest & HasPageRequest, res) => {
 });
 
 router.post("/:playlist", async (req: MediumRequest & PlaylistRequest, res) => {
-  await req.medium.$add("playlist", req.playlist);
+  const alreadyInPlaylist = await req.medium.$has("playlist", req.playlist);
+
+  if (!alreadyInPlaylist) {
+    const maxOrder = (await PlaylistItem.max("order", {
+      where: { playlistId: req.playlist.id },
+    })) as number;
+
+    await req.medium.$add("playlist", req.playlist, {
+      through: { order: maxOrder + 1 },
+    });
+  }
 
   res.set("HX-Trigger", ["close-modal", "refresh-playlists"]).sendStatus(205);
 });
