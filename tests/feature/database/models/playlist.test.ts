@@ -1,9 +1,11 @@
+import sequelize from "@/database/connection";
 import Labelable from "@/database/models/labelable";
 import Playlist from "@/database/models/playlist";
 import {
   createLabel,
   createMedium,
   createPlaylist,
+  createPlaylistItem,
 } from "../../setup/create-model";
 
 describe("The playlist model", () => {
@@ -58,5 +60,50 @@ describe("The playlist model", () => {
     await playlist.destroy();
 
     expect(await Labelable.count()).toEqual(0);
+  });
+
+  it("can reorder associated playlist items", async () => {
+    const playlist = await createPlaylist();
+    const item1 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 9,
+    });
+    const item2 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 10,
+    });
+    const item3 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 69,
+    });
+
+    sequelize.options.logging = console.log;
+    await playlist.reorderPlaylistItems();
+    sequelize.options.logging = undefined;
+
+    await item1.reload();
+    await item2.reload();
+    await item3.reload();
+
+    expect(item1.order).toEqual(1);
+    expect(item2.order).toEqual(2);
+    expect(item3.order).toEqual(3);
+  });
+
+  it("reorders NULL order items to the last", async () => {
+    const playlist = await createPlaylist();
+    const nullOrder = await createPlaylistItem({ playlistId: playlist.id });
+    const shouldBe1 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 2,
+    });
+
+    await playlist.reorderPlaylistItems();
+
+    await nullOrder.reload();
+    await shouldBe1.reload();
+
+    expect(nullOrder.order).toEqual(2);
+    expect(shouldBe1.order).toEqual(1);
   });
 });

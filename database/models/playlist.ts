@@ -96,4 +96,25 @@ export default class Playlist extends Model<
       where: { labelableId: instance.id, labelableType: "playlist" },
     });
   }
+
+  async reorderPlaylistItems() {
+    const items = await this.$get("playlistItems", {
+      order: [["order", "ASC NULLS LAST"]],
+    });
+
+    let order = 1;
+
+    const rows =
+      items?.map(({ id, playlistId, mediumId }) => ({
+        id,
+        playlistId,
+        mediumId,
+        order: order++,
+      })) || [];
+
+    PlaylistItem.bulkCreate(rows, {
+      conflictAttributes: ["id"],
+      updateOnDuplicate: ["order"],
+    });
+  }
 }
