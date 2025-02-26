@@ -1,4 +1,3 @@
-import sequelize from "@/database/connection";
 import Labelable from "@/database/models/labelable";
 import Playlist from "@/database/models/playlist";
 import {
@@ -77,9 +76,7 @@ describe("The playlist model", () => {
       order: 69,
     });
 
-    sequelize.options.logging = console.log;
     await playlist.reorderPlaylistItems();
-    sequelize.options.logging = undefined;
 
     await item1.reload();
     await item2.reload();
@@ -105,5 +102,27 @@ describe("The playlist model", () => {
 
     expect(nullOrder.order).toEqual(2);
     expect(shouldBe1.order).toEqual(1);
+  });
+
+  it("reorders items based on the descending updatedAt column if they are in the same order", async () => {
+    const playlist = await createPlaylist();
+    const became1 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 69,
+    });
+    const remain2 = await createPlaylistItem({
+      playlistId: playlist.id,
+      order: 69,
+    });
+
+    became1.changed("updatedAt", true);
+    await became1.save();
+
+    await playlist.reorderPlaylistItems();
+    await became1.reload();
+    await remain2.reload();
+
+    expect(became1.order).toEqual(1);
+    expect(remain2.order).toEqual(2);
   });
 });

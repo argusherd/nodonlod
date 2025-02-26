@@ -24,7 +24,7 @@ router.param("playlistItem", async (req: HasPlaylistItem, res, next) => {
 
 router.put(
   "/:playlistItem",
-  body("order").isNumeric(),
+  body("order").isNumeric().toInt(),
   async (req: HasPlaylistItem, res) => {
     const errors = validationResult(req);
 
@@ -33,22 +33,12 @@ router.put(
       return;
     }
 
-    const playlistItem = req.playlistItem;
-    const max = await PlaylistItem.count({
-      where: { playlistId: playlistItem.playlistId },
-    });
-    const order = Math.max(1, Math.min(max, Number(req.body.order)));
-    const between = [order, playlistItem.order].sort();
-
-    if (order > playlistItem.order) between[0] += 1;
-    else between[1] -= 1;
-
-    await PlaylistItem.increment("order", {
-      by: order > playlistItem.order ? -1 : 1,
-      where: { order: { [Op.between]: between as [number, number] } },
-    });
+    const playlist = await req.playlistItem.$get("playlist");
+    let order = req.body.order;
+    order += Number(order > req.playlistItem.order);
 
     await req.playlistItem.update({ order });
+    await playlist?.reorderPlaylistItems();
 
     res.set("HX-Trigger", "refresh-playlist-items").sendStatus(205);
   },

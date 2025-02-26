@@ -139,4 +139,22 @@ describe("The playlist item sort route", () => {
     expect(remain2.order).toEqual(2);
     expect(remain4.order).toEqual(4);
   });
+
+  it("reorders all the items in the same playlist", async () => {
+    const playlistId = (await createPlaylist()).id;
+    const became1 = await createPlaylistItem({ order: 6969, playlistId });
+    const became2 = await createPlaylistItem({ order: 69, playlistId });
+
+    await supertest(express)
+      .put(`/playlist-items/${became1.id}`)
+      .type("form")
+      .send({ order: 69 })
+      .expect(205);
+
+    await became1.reload();
+    await became2.reload();
+
+    expect(became1.order).toEqual(1);
+    expect(became2.order).toEqual(2);
+  });
 });

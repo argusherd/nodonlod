@@ -99,7 +99,10 @@ export default class Playlist extends Model<
 
   async reorderPlaylistItems() {
     const items = await this.$get("playlistItems", {
-      order: [["order", "ASC NULLS LAST"]],
+      order: [
+        ["order", "ASC NULLS LAST"],
+        ["updatedAt", "DESC"],
+      ],
     });
 
     let order = 1;
@@ -112,7 +115,7 @@ export default class Playlist extends Model<
         order: order++,
       })) || [];
 
-    PlaylistItem.bulkCreate(rows, {
+    await PlaylistItem.bulkCreate(rows, {
       conflictAttributes: ["id"],
       updateOnDuplicate: ["order"],
     });
