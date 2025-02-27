@@ -1,13 +1,18 @@
 import express from "@/routes";
 import supertest from "supertest";
-import { createPlaylist, createPlaylistItem } from "../../setup/create-model";
+import {
+  createPlaylist,
+  createPlaylistItem,
+} from "../../../setup/create-model";
 
 describe("The playlist item sort route", () => {
   it("needs a parameter to set the item's new order", async () => {
     const playlistItem = await createPlaylistItem();
 
     await supertest(express)
-      .put(`/playlist-items/${playlistItem.id}`)
+      .put(
+        `/playlists/${playlistItem.playlistId}/playlist-items/${playlistItem.id}`,
+      )
       .expect(422);
   });
 
@@ -17,7 +22,7 @@ describe("The playlist item sort route", () => {
     const target = await createPlaylistItem({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
       .type("form")
       .send({ order: 1 })
       .expect(205)
@@ -39,7 +44,7 @@ describe("The playlist item sort route", () => {
     const remain5 = await createPlaylistItem({ order: 5, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
       .type("form")
       .send({ order: 4 })
       .expect(205);
@@ -64,7 +69,7 @@ describe("The playlist item sort route", () => {
     const remain5 = await createPlaylistItem({ order: 5, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
       .type("form")
       .send({ order: 2 })
       .expect(205);
@@ -86,7 +91,7 @@ describe("The playlist item sort route", () => {
     const target = await createPlaylistItem({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
       .type("form")
       .send({ order: -1 })
       .expect(205);
@@ -104,7 +109,7 @@ describe("The playlist item sort route", () => {
     const shouldBe1 = await createPlaylistItem({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
       .type("form")
       .send({ order: 99 })
       .expect(205);
@@ -124,7 +129,7 @@ describe("The playlist item sort route", () => {
     const remain4 = await createPlaylistItem({ order: 4, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${shouldBe3.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${shouldBe3.id}`)
       .type("form")
       .send({ order: 3 })
       .expect(205);
@@ -146,7 +151,7 @@ describe("The playlist item sort route", () => {
     const became2 = await createPlaylistItem({ order: 69, playlistId });
 
     await supertest(express)
-      .put(`/playlist-items/${became1.id}`)
+      .put(`/playlists/${playlistId}/playlist-items/${became1.id}`)
       .type("form")
       .send({ order: 69 })
       .expect(205);

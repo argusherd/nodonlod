@@ -1,19 +1,24 @@
 import PlaylistItem from "@/database/models/playlist-item";
 import express from "@/routes";
 import supertest from "supertest";
-import { createPlaylist, createPlaylistItem } from "../../setup/create-model";
+import {
+  createPlaylist,
+  createPlaylistItem,
+} from "../../../setup/create-model";
 
 describe("The playlist item destroy route", () => {
   it("has a dedicated confirm page", async () => {
     const item = await createPlaylistItem();
 
     await supertest(express)
-      .delete(`/playlist-items/${item.id}/confirm`)
+      .delete(`/playlists/${item.playlistId}/playlist-items/${item.id}/confirm`)
       .expect(200)
       .expect("hx-trigger", "open-modal")
       .expect((res) => {
         expect(res.text).toContain("Are you sure you want to delete this item");
-        expect(res.text).toContain(`/playlist-items/${item.id}`);
+        expect(res.text).toContain(
+          `/playlists/${item.playlistId}/playlist-items/${item.id}`,
+        );
       });
   });
 
@@ -21,7 +26,7 @@ describe("The playlist item destroy route", () => {
     const item = await createPlaylistItem();
 
     await supertest(express)
-      .delete(`/playlist-items/${item.id}`)
+      .delete(`/playlists/${item.playlistId}/playlist-items/${item.id}`)
       .expect(205)
       .expect((res) => {
         expect(res.headers["hx-trigger"]).toContain("close-modal");
@@ -48,7 +53,7 @@ describe("The playlist item destroy route", () => {
     const belongOtherPlaylist = await createPlaylistItem({ order: 3 });
 
     await supertest(express)
-      .delete(`/playlist-items/${removed.id}`)
+      .delete(`/playlists/${playlist.id}/playlist-items/${removed.id}`)
       .expect(205);
 
     await remain1.reload();

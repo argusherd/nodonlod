@@ -16,7 +16,6 @@ import performerRouter from "./performers";
 import playRouter from "./play";
 import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
-import playlistItemRouter from "./playlist-items";
 import playlistRouter from "./playlists";
 import uploaderRouter from "./uploaders";
 
@@ -54,7 +53,6 @@ express.use("/", chapterRouter);
 express.use("/play-queues", playQueueRouter);
 express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
-express.use("/playlist-items", playlistItemRouter);
 express.use("/uploaders", uploaderRouter);
 express.use("/performers", performerRouter);
 express.use("/play", playRouter);

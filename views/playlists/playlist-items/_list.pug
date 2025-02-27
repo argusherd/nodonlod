@@ -18,8 +18,9 @@ include /_mixin.pug
         handle();
       `
   )
+    - var sortRoute = "`/playlists/" + playlist.id + "/playlist-items/${id}`";
     input(
-      :hx-put="`/playlist-items/${id}`",
+      :hx-put=sortRoute,
       hx-include="this",
       hx-trigger="sorted",
       name="order",
@@ -38,13 +39,13 @@ include /_mixin.pug
           )
           +verticalButtonGroup
             +buttonInGroup(
-              hx-get=`/playlist-items/${item.id}/play`,
+              hx-get=`/playlists/${playlist.id}/playlist-items/${item.id}/play`,
               hx-swap="none",
               title=__("Play this list starting from this item")
             )
               i.text-2xl(class="icon-[teenyicons--play-solid]")
             +buttonInGroup(
-              hx-delete=`/playlist-items/${item.id}/confirm`,
+              hx-delete=`/playlists/${playlist.id}/playlist-items/${item.id}/confirm`,
               hx-target="#modal"
             )
               i.text-2xl(class="icon-[material-symbols--delete-outline]")
