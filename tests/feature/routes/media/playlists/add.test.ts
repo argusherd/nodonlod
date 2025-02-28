@@ -1,4 +1,4 @@
-import PlaylistItem from "@/database/models/playlist-item";
+import Playlistable from "@/database/models/playlistable";
 import express from "@/routes";
 import supertest from "supertest";
 import { createMedium, createPlaylist } from "../../../setup/create-model";
@@ -35,15 +35,15 @@ describe("The medium playlist add route", () => {
       .post(`/media/${medium2.id}/playlists/${playlist.id}`)
       .expect(205);
 
-    const item1 = await PlaylistItem.findOne({
+    const playlistable1 = await Playlistable.findOne({
       where: { mediumId: medium1.id },
     });
-    const item2 = await PlaylistItem.findOne({
+    const playlistable2 = await Playlistable.findOne({
       where: { mediumId: medium2.id },
     });
 
-    expect(item1?.order).toEqual(1);
-    expect(item2?.order).toEqual(2);
+    expect(playlistable1?.order).toEqual(1);
+    expect(playlistable2?.order).toEqual(2);
   });
 
   it("does not update the order if the medium already in the playlist", async () => {
@@ -52,7 +52,7 @@ describe("The medium playlist add route", () => {
     const medium3 = await createMedium();
     const playlist = await createPlaylist();
 
-    await PlaylistItem.bulkCreate([
+    await Playlistable.bulkCreate([
       { playlistId: playlist.id, mediumId: medium1.id, order: 1 },
       { playlistId: playlist.id, mediumId: medium2.id, order: 2 },
       { playlistId: playlist.id, mediumId: medium3.id, order: 3 },
@@ -62,10 +62,10 @@ describe("The medium playlist add route", () => {
       .post(`/media/${medium2.id}/playlists/${playlist.id}`)
       .expect(205);
 
-    const item = await PlaylistItem.findOne({
+    const playlistable = await Playlistable.findOne({
       where: { mediumId: medium2.id },
     });
 
-    expect(item?.order).toEqual(2);
+    expect(playlistable?.order).toEqual(2);
   });
 });

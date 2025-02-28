@@ -2,31 +2,31 @@ import express from "@/routes";
 import supertest from "supertest";
 import {
   createPlaylist,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../../setup/create-model";
 
 describe("The playlist item sort route", () => {
   it("needs a parameter to set the item's new order", async () => {
-    const playlistItem = await createPlaylistItem();
+    const playlistable = await createPlaylistable();
 
     await supertest(express)
       .put(
-        `/playlists/${playlistItem.playlistId}/playlist-items/${playlistItem.id}`,
+        `/playlists/${playlistable.playlistId}/playlistables/${playlistable.id}`,
       )
       .expect(422);
   });
 
   it("sets the playlist item's order", async () => {
     const playlistId = (await createPlaylist()).id;
-    const shouldBe2 = await createPlaylistItem({ order: 1, playlistId });
-    const target = await createPlaylistItem({ order: 2, playlistId });
+    const shouldBe2 = await createPlaylistable({ order: 1, playlistId });
+    const target = await createPlaylistable({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${target.id}`)
       .type("form")
       .send({ order: 1 })
       .expect(205)
-      .expect("hx-trigger", "refresh-playlist-items");
+      .expect("hx-trigger", "refresh-playlistables");
 
     await target.reload();
     await shouldBe2.reload();
@@ -37,14 +37,14 @@ describe("The playlist item sort route", () => {
 
   it("decreases the order of items by 1 whose order is lower than or equal to but not lower than the original order", async () => {
     const playlistId = (await createPlaylist()).id;
-    const remain1 = await createPlaylistItem({ order: 1, playlistId });
-    const target = await createPlaylistItem({ order: 2, playlistId });
-    const shouldBe2 = await createPlaylistItem({ order: 3, playlistId });
-    const shouldBe3 = await createPlaylistItem({ order: 4, playlistId });
-    const remain5 = await createPlaylistItem({ order: 5, playlistId });
+    const remain1 = await createPlaylistable({ order: 1, playlistId });
+    const target = await createPlaylistable({ order: 2, playlistId });
+    const shouldBe2 = await createPlaylistable({ order: 3, playlistId });
+    const shouldBe3 = await createPlaylistable({ order: 4, playlistId });
+    const remain5 = await createPlaylistable({ order: 5, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${target.id}`)
       .type("form")
       .send({ order: 4 })
       .expect(205);
@@ -62,14 +62,14 @@ describe("The playlist item sort route", () => {
 
   it("increases the order of items whose order is greater than or equal to the given order", async () => {
     const playlistId = (await createPlaylist()).id;
-    const remain1 = await createPlaylistItem({ order: 1, playlistId });
-    const shouldBe3 = await createPlaylistItem({ order: 2, playlistId });
-    const shouldBe4 = await createPlaylistItem({ order: 3, playlistId });
-    const target = await createPlaylistItem({ order: 4, playlistId });
-    const remain5 = await createPlaylistItem({ order: 5, playlistId });
+    const remain1 = await createPlaylistable({ order: 1, playlistId });
+    const shouldBe3 = await createPlaylistable({ order: 2, playlistId });
+    const shouldBe4 = await createPlaylistable({ order: 3, playlistId });
+    const target = await createPlaylistable({ order: 4, playlistId });
+    const remain5 = await createPlaylistable({ order: 5, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${target.id}`)
       .type("form")
       .send({ order: 2 })
       .expect(205);
@@ -87,11 +87,11 @@ describe("The playlist item sort route", () => {
 
   it("does not reorder numbers below 0", async () => {
     const playlistId = (await createPlaylist()).id;
-    const shouldBe2 = await createPlaylistItem({ order: 1, playlistId });
-    const target = await createPlaylistItem({ order: 2, playlistId });
+    const shouldBe2 = await createPlaylistable({ order: 1, playlistId });
+    const target = await createPlaylistable({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${target.id}`)
       .type("form")
       .send({ order: -1 })
       .expect(205);
@@ -105,11 +105,11 @@ describe("The playlist item sort route", () => {
 
   it("does not exceed the length of the playlist when reordering numbers", async () => {
     const playlistId = (await createPlaylist()).id;
-    const target = await createPlaylistItem({ order: 1, playlistId });
-    const shouldBe1 = await createPlaylistItem({ order: 2, playlistId });
+    const target = await createPlaylistable({ order: 1, playlistId });
+    const shouldBe1 = await createPlaylistable({ order: 2, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${target.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${target.id}`)
       .type("form")
       .send({ order: 99 })
       .expect(205);
@@ -123,13 +123,13 @@ describe("The playlist item sort route", () => {
 
   it("can manully fix duplicated order number", async () => {
     const playlistId = (await createPlaylist()).id;
-    const remain1 = await createPlaylistItem({ order: 1, playlistId });
-    const shouldBe3 = await createPlaylistItem({ order: 2, playlistId });
-    const remain2 = await createPlaylistItem({ order: 2, playlistId });
-    const remain4 = await createPlaylistItem({ order: 4, playlistId });
+    const remain1 = await createPlaylistable({ order: 1, playlistId });
+    const shouldBe3 = await createPlaylistable({ order: 2, playlistId });
+    const remain2 = await createPlaylistable({ order: 2, playlistId });
+    const remain4 = await createPlaylistable({ order: 4, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${shouldBe3.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${shouldBe3.id}`)
       .type("form")
       .send({ order: 3 })
       .expect(205);
@@ -147,11 +147,11 @@ describe("The playlist item sort route", () => {
 
   it("reorders all the items in the same playlist", async () => {
     const playlistId = (await createPlaylist()).id;
-    const became1 = await createPlaylistItem({ order: 6969, playlistId });
-    const became2 = await createPlaylistItem({ order: 69, playlistId });
+    const became1 = await createPlaylistable({ order: 6969, playlistId });
+    const became2 = await createPlaylistable({ order: 69, playlistId });
 
     await supertest(express)
-      .put(`/playlists/${playlistId}/playlist-items/${became1.id}`)
+      .put(`/playlists/${playlistId}/playlistables/${became1.id}`)
       .type("form")
       .send({ order: 69 })
       .expect(205);

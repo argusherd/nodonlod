@@ -4,7 +4,7 @@ import {
   createLabel,
   createMedium,
   createPlaylist,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../setup/create-model";
 
 describe("The playlist model", () => {
@@ -63,39 +63,39 @@ describe("The playlist model", () => {
 
   it("can reorder associated playlist items", async () => {
     const playlist = await createPlaylist();
-    const item1 = await createPlaylistItem({
+    const playlistable1 = await createPlaylistable({
       playlistId: playlist.id,
       order: 9,
     });
-    const item2 = await createPlaylistItem({
+    const playlistable2 = await createPlaylistable({
       playlistId: playlist.id,
       order: 10,
     });
-    const item3 = await createPlaylistItem({
+    const playlistable3 = await createPlaylistable({
       playlistId: playlist.id,
       order: 69,
     });
 
-    await playlist.reorderPlaylistItems();
+    await playlist.reorderPlaylistables();
 
-    await item1.reload();
-    await item2.reload();
-    await item3.reload();
+    await playlistable1.reload();
+    await playlistable2.reload();
+    await playlistable3.reload();
 
-    expect(item1.order).toEqual(1);
-    expect(item2.order).toEqual(2);
-    expect(item3.order).toEqual(3);
+    expect(playlistable1.order).toEqual(1);
+    expect(playlistable2.order).toEqual(2);
+    expect(playlistable3.order).toEqual(3);
   });
 
   it("reorders NULL order items to the last", async () => {
     const playlist = await createPlaylist();
-    const nullOrder = await createPlaylistItem({ playlistId: playlist.id });
-    const shouldBe1 = await createPlaylistItem({
+    const nullOrder = await createPlaylistable({ playlistId: playlist.id });
+    const shouldBe1 = await createPlaylistable({
       playlistId: playlist.id,
       order: 2,
     });
 
-    await playlist.reorderPlaylistItems();
+    await playlist.reorderPlaylistables();
 
     await nullOrder.reload();
     await shouldBe1.reload();
@@ -106,11 +106,11 @@ describe("The playlist model", () => {
 
   it("reorders items based on the descending updatedAt column if they are in the same order", async () => {
     const playlist = await createPlaylist();
-    const became1 = await createPlaylistItem({
+    const became1 = await createPlaylistable({
       playlistId: playlist.id,
       order: 69,
     });
-    const remain2 = await createPlaylistItem({
+    const remain2 = await createPlaylistable({
       playlistId: playlist.id,
       order: 69,
     });
@@ -118,7 +118,7 @@ describe("The playlist model", () => {
     became1.changed("updatedAt", true);
     await became1.save();
 
-    await playlist.reorderPlaylistItems();
+    await playlist.reorderPlaylistables();
     await became1.reload();
     await remain2.reload();
 

@@ -4,7 +4,7 @@ import {
   createMedium,
   createPlayQueue,
   createPlaylist,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../setup/create-model";
 
 describe("The playNextRandom function", () => {
@@ -19,13 +19,13 @@ describe("The playNextRandom function", () => {
 
   it("can play a random item from the playlist", async () => {
     const playlist = await createPlaylist();
-    const playlistItem1 = await createPlaylistItem({ playlistId: playlist.id });
-    const playlistItem2 = await createPlaylistItem({ playlistId: playlist.id });
-    const medium = await playlistItem2.$get("medium");
+    const playlistable1 = await createPlaylistable({ playlistId: playlist.id });
+    const playlistable2 = await createPlaylistable({ playlistId: playlist.id });
+    const medium = await playlistable2.$get("medium");
     const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
-    await play(playlistItem1);
-    await playlistItem1.destroy();
+    await play(playlistable1);
+    await playlistable1.destroy();
     await playNextRandom();
 
     expect(mockedPlay).toHaveBeenCalledWith(medium?.url);

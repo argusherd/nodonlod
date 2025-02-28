@@ -18,7 +18,7 @@ import {
 import Label from "./label";
 import Labelable from "./labelable";
 import Medium from "./medium";
-import PlaylistItem from "./playlist-item";
+import Playlistable from "./playlistable";
 
 interface OptionalPlaylistCreationAttributes {
   id: string;
@@ -78,11 +78,11 @@ export default class Playlist extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsToMany(() => Medium, () => PlaylistItem)
-  media: Array<Medium & { PlaylistItem: PlaylistItem }>;
+  @BelongsToMany(() => Medium, () => Playlistable)
+  media: Array<Medium & { Playlistable: Playlistable }>;
 
-  @HasMany(() => PlaylistItem)
-  playlistItems: PlaylistItem[];
+  @HasMany(() => Playlistable)
+  playlistables: Playlistable[];
 
   @BelongsToMany(() => Label, {
     through: { model: () => Labelable, scope: { labelableType: "playlist" } },
@@ -97,8 +97,8 @@ export default class Playlist extends Model<
     });
   }
 
-  async reorderPlaylistItems() {
-    const items = await this.$get("playlistItems", {
+  async reorderPlaylistables() {
+    const playlistables = await this.$get("playlistables", {
       order: [
         ["order", "ASC NULLS LAST"],
         ["updatedAt", "DESC"],
@@ -108,14 +108,14 @@ export default class Playlist extends Model<
     let order = 1;
 
     const rows =
-      items?.map(({ id, playlistId, mediumId }) => ({
+      playlistables?.map(({ id, playlistId, mediumId }) => ({
         id,
         playlistId,
         mediumId,
         order: order++,
       })) || [];
 
-    await PlaylistItem.bulkCreate(rows, {
+    await Playlistable.bulkCreate(rows, {
       conflictAttributes: ["id"],
       updateOnDuplicate: ["order"],
     });

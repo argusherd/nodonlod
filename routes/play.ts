@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   currentlyPlaying,
   playNextMedium,
-  playNextPlaylistItem,
+  playNextPlaylistable,
   playNextQueued,
   playNextRandom,
   playStatus,
@@ -18,7 +18,7 @@ router.get("/", (_req, res) => {
 
 router.put("/next", async (req, res) => {
   if (req.body.isRandom) await playNextRandom();
-  else if (currentlyPlaying.playlistItem) await playNextPlaylistItem();
+  else if (currentlyPlaying.playlistable) await playNextPlaylistable();
   else if (currentlyPlaying.playQueue) await playNextQueued();
   else await playNextMedium();
 

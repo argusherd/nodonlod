@@ -1,5 +1,5 @@
 import PlayQueue from "@/database/models/play-queue";
-import PlaylistItem from "@/database/models/playlist-item";
+import Playlistable from "@/database/models/playlistable";
 import express from "@/routes";
 import supertest from "supertest";
 import {
@@ -14,7 +14,7 @@ describe("The queue playlist route", () => {
     const medium = await createMedium();
     const chapter = await createChapter();
 
-    await PlaylistItem.bulkCreate([
+    await Playlistable.bulkCreate([
       { playlistId: playlist.id, mediumId: medium.id },
       {
         playlistId: playlist.id,
@@ -45,7 +45,7 @@ describe("The queue playlist route", () => {
     const medium1 = await createMedium();
     const medium2 = await createMedium();
 
-    await PlaylistItem.bulkCreate([
+    await Playlistable.bulkCreate([
       { playlistId: playlist.id, mediumId: medium1.id, order: 15 },
       { playlistId: playlist.id, mediumId: medium2.id, order: 14 },
     ]);

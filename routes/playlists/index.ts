@@ -4,12 +4,12 @@ import PlayQueue, {
   PlayQueueCreationAttributes,
 } from "../../database/models/play-queue";
 import Playlist from "../../database/models/playlist";
-import PlaylistItem from "../../database/models/playlist-item";
+import Playlistable from "../../database/models/playlistable";
 import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import labelRouter from "./labels";
-import playlistItemRouter from "./playlist-items";
+import playlistableRouter from "./playlistables";
 
 export interface PlaylistRequest extends HasPageRequest {
   playlist: Playlist;
@@ -101,7 +101,7 @@ router.put(
 );
 
 router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
-  const firstItem = await PlaylistItem.findOne({
+  const firstItem = await Playlistable.findOne({
     order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
   });
@@ -112,12 +112,12 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
-  const playlistItems = await PlaylistItem.findAll({
+  const playlistables = await Playlistable.findAll({
     order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
   });
 
-  await queue(playlistItems);
+  await queue(playlistables);
 
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
@@ -135,14 +135,14 @@ router.delete("/:playlist", async (req: PlaylistRequest, res) => {
   res.set("HX-Location", "/playlists").sendStatus(204);
 });
 
-async function queue(playlistItems: PlaylistItem[]) {
+async function queue(playlistables: Playlistable[]) {
   const data: PlayQueueCreationAttributes[] = [];
   let order = Number(await PlayQueue.max("order")) + 1;
 
-  for (const playlistItem of playlistItems)
+  for (const playlistable of playlistables)
     data.push({
-      mediumId: playlistItem.mediumId,
-      chapterId: playlistItem.chapterId,
+      mediumId: playlistable.mediumId,
+      chapterId: playlistable.chapterId,
       order: order++,
     });
 
@@ -150,6 +150,6 @@ async function queue(playlistItems: PlaylistItem[]) {
 }
 
 router.use("/:playlist/labels", labelRouter);
-router.use("/:playlist/playlist-items", playlistItemRouter);
+router.use("/:playlist/playlistables", playlistableRouter);
 
 export default router;

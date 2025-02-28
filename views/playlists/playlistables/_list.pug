@@ -18,7 +18,7 @@ include /_mixin.pug
         handle();
       `
   )
-    - var sortRoute = "`/playlists/" + playlist.id + "/playlist-items/${id}`";
+    - var sortRoute = "`/playlists/" + playlist.id + "/playlistables/${id}`";
     input(
       :hx-put=sortRoute,
       hx-include="this",
@@ -28,31 +28,31 @@ include /_mixin.pug
       x-model="order",
       x-ref="sort"
     )
-    each item in items
-      +tr.w-full(x-sort:item=`"${item.id}"`)
+    each playlistable in playlistables
+      +tr.w-full(x-sort:item=`"${playlistable.id}"`)
         +td.flex.flex-col.gap-2
           i.cursor-pointer.text-2xl(class="icon-[mingcute--dots-fill]", x-sort:handle)
           +input.w-20(
-            @keyup.enter=`id = "${item.id}"; order = $el.value; handle()`,
+            @keyup.enter=`id = "${playlistable.id}"; order = $el.value; handle()`,
             type="number",
-            value=item.order
+            value=playlistable.order
           )
           +verticalButtonGroup
             +buttonInGroup(
-              hx-get=`/playlists/${playlist.id}/playlist-items/${item.id}/play`,
+              hx-get=`/playlists/${playlist.id}/playlistables/${playlistable.id}/play`,
               hx-swap="none",
               title=__("Play this list starting from this item")
             )
               i.text-2xl(class="icon-[teenyicons--play-solid]")
             +buttonInGroup(
-              hx-delete=`/playlists/${playlist.id}/playlist-items/${item.id}/confirm`,
+              hx-delete=`/playlists/${playlist.id}/playlistables/${playlistable.id}/confirm`,
               hx-target="#modal"
             )
               i.text-2xl(class="icon-[material-symbols--delete-outline]")
 
         +td
-          - var medium = item.medium;
-          - var chapter = item.chapter;
+          - var medium = playlistable.medium;
+          - var chapter = playlistable.chapter;
 
           .mb-2
             include /media/_widget.pug

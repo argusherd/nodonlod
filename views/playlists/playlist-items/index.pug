@@ -1,8 +1,0 @@
-extends ../_layout.pug
-
-block append body
-  #refresh-playlist-items(
-    hx-get=`/playlists/${playlist.id}/playlist-items?_list`,
-    hx-trigger="refresh-playlist-items from:body"
-  )
-    include _list.pug

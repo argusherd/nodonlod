@@ -3,7 +3,7 @@ import { Migration } from "../migrator";
 
 export const up: Migration = async ({ context: queryInterface }) => {
   await queryInterface.createTable(
-    "playlist_items",
+    "playlistables",
     {
       id: {
         type: DataType.UUID,
@@ -56,5 +56,5 @@ export const up: Migration = async ({ context: queryInterface }) => {
 };
 
 export const down: Migration = async ({ context: queryInterface }) => {
-  await queryInterface.dropTable("playlist_items");
+  await queryInterface.dropTable("playlistables");
 };

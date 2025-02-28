@@ -4,7 +4,7 @@ import Chapter from "../database/models/chapter";
 import Label, { LabelCreationAttributes } from "../database/models/label";
 import Medium from "../database/models/medium";
 import Playlist from "../database/models/playlist";
-import PlaylistItem from "../database/models/playlist-item";
+import Playlistable from "../database/models/playlistable";
 import Uploader from "../database/models/uploader";
 import { RawMedium, RawPlaylist, SubRawMedium } from "./raw-info-extractor";
 
@@ -120,11 +120,11 @@ export default class RawInfoConverter {
 
   async createAssociation(playlist: Playlist, media: Medium[]) {
     let order = Number(
-      await PlaylistItem.max("order", { where: { playlistId: playlist.id } }),
+      await Playlistable.max("order", { where: { playlistId: playlist.id } }),
     );
 
     for (const medium of media) {
-      const playlistItem = await PlaylistItem.findOne({
+      const playlistable = await Playlistable.findOne({
         where: {
           playlistId: playlist.id,
           mediumId: medium.id,
@@ -132,9 +132,9 @@ export default class RawInfoConverter {
         },
       });
 
-      if (playlistItem) return;
+      if (playlistable) return;
 
-      await PlaylistItem.create({
+      await Playlistable.create({
         playlistId: playlist.id,
         mediumId: medium.id,
         order: ++order,

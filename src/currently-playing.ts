@@ -3,32 +3,32 @@ import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
 import Playlist from "../database/models/playlist";
-import PlaylistItem from "../database/models/playlist-item";
+import Playlistable from "../database/models/playlistable";
 import mediaPlayer from "./media-player";
 
 export const playStatus = { isLastOne: false };
 
 export const currentlyPlaying: {
   playlist: Playlist | null;
-  playlistItem: PlaylistItem | null;
+  playlistable: Playlistable | null;
   playQueue: PlayQueue | null;
   medium: Medium | null;
   chapter: Chapter | null;
 } = {
   playlist: null,
-  playlistItem: null,
+  playlistable: null,
   playQueue: null,
   medium: null,
   chapter: null,
 };
 
 export async function play(
-  playable: Medium | Chapter | PlaylistItem | PlayQueue | null,
+  playable: Medium | Chapter | Playlistable | PlayQueue | null,
 ) {
   currentlyPlaying.medium = null;
   currentlyPlaying.chapter = null;
   currentlyPlaying.playlist = null;
-  currentlyPlaying.playlistItem = null;
+  currentlyPlaying.playlistable = null;
   currentlyPlaying.playQueue = null;
 
   if (!playable) return;
@@ -38,9 +38,9 @@ export async function play(
   } else if (playable instanceof Chapter) {
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = playable;
-  } else if (playable instanceof PlaylistItem) {
+  } else if (playable instanceof Playlistable) {
     currentlyPlaying.playlist = await playable.$get("playlist");
-    currentlyPlaying.playlistItem = playable;
+    currentlyPlaying.playlistable = playable;
     currentlyPlaying.medium = (await playable.$get("medium")) as Medium;
     currentlyPlaying.chapter = await playable.$get("chapter");
   } else if (playable instanceof PlayQueue) {
@@ -60,25 +60,25 @@ export async function play(
     mediaPlayer.play(currentlyPlaying.medium.url);
 }
 
-export async function playNextPlaylistItem() {
-  if (!currentlyPlaying.playlistItem) return;
+export async function playNextPlaylistable() {
+  if (!currentlyPlaying.playlistable) return;
 
-  const lastOrder = await PlaylistItem.max("order", {
-    where: { playlistId: currentlyPlaying.playlistItem.playlistId },
+  const lastOrder = await Playlistable.max("order", {
+    where: { playlistId: currentlyPlaying.playlistable.playlistId },
   });
-  const playlistItem = await PlaylistItem.findOne({
+  const playlistable = await Playlistable.findOne({
     where: {
-      playlistId: currentlyPlaying.playlistItem.playlistId,
-      ...(currentlyPlaying.playlistItem.order != lastOrder && {
-        order: { [Op.gt]: currentlyPlaying.playlistItem.order },
+      playlistId: currentlyPlaying.playlistable.playlistId,
+      ...(currentlyPlaying.playlistable.order != lastOrder && {
+        order: { [Op.gt]: currentlyPlaying.playlistable.order },
       }),
     },
     order: [["order", "ASC"]],
   });
 
-  playStatus.isLastOne = lastOrder == playlistItem?.order;
+  playStatus.isLastOne = lastOrder == playlistable?.order;
 
-  await play(playlistItem);
+  await play(playlistable);
 }
 
 export async function playNextQueued() {
@@ -118,10 +118,10 @@ export async function playNextMedium() {
 }
 
 export async function playNextRandom() {
-  let playable: Medium | PlaylistItem | PlayQueue | null;
+  let playable: Medium | Playlistable | PlayQueue | null;
 
-  if (currentlyPlaying.playlistItem)
-    playable = await PlaylistItem.findOne({
+  if (currentlyPlaying.playlistable)
+    playable = await Playlistable.findOne({
       where: { playlistId: currentlyPlaying.playlist?.id },
       order: literal("random()"),
     });

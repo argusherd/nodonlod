@@ -6,7 +6,7 @@ import {
   createChapter,
   createMedium,
   createPlaylist,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../setup/create-model";
 
 describe("The show play route", () => {
@@ -46,16 +46,16 @@ describe("The show play route", () => {
 
   it("can provide a link to the currently playing item in the playlist", async () => {
     const playlist = await createPlaylist({ thumbnail: "foobar" });
-    const playlistItem = await createPlaylistItem({ playlistId: playlist.id });
+    const playlistable = await createPlaylistable({ playlistId: playlist.id });
 
-    await play(playlistItem);
+    await play(playlistable);
 
     await supertest(express)
       .get("/play")
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(playlist.thumbnail);
-        expect(res.text).toContain(`/playlists/${playlistItem.playlistId}`);
+        expect(res.text).toContain(`/playlists/${playlistable.playlistId}`);
       });
   });
 });

@@ -25,7 +25,7 @@ import Labelable from "./labelable";
 import Performable from "./performable";
 import Performer from "./performer";
 import Playlist from "./playlist";
-import PlaylistItem from "./playlist-item";
+import Playlistable from "./playlistable";
 import Uploader from "./uploader";
 
 interface OptionalMediumCreationAttributes {
@@ -110,8 +110,8 @@ export default class Medium extends Model<
   @UpdatedAt
   updatedAt: Date;
 
-  @BelongsToMany(() => Playlist, () => PlaylistItem)
-  playlists: Array<Playlist & { PlaylistItem: PlaylistItem }>;
+  @BelongsToMany(() => Playlist, () => Playlistable)
+  playlists: Array<Playlist & { Playlistable: Playlistable }>;
 
   @BelongsTo(() => Uploader)
   uploader: Uploader;

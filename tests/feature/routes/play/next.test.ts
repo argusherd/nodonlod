@@ -6,7 +6,7 @@ import supertest from "supertest";
 import {
   createMedium,
   createPlayQueue,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../setup/create-model";
 
 describe("The play next route", () => {
@@ -49,19 +49,19 @@ describe("The play next route", () => {
   });
 
   it("plays the next item when an item from a playlist is currently playing", async () => {
-    playModule.currentlyPlaying.playlistItem = await createPlaylistItem();
+    playModule.currentlyPlaying.playlistable = await createPlaylistable();
 
-    const mockedPlayNextPlaylistItem = jest
-      .spyOn(playModule, "playNextPlaylistItem")
+    const mockedPlayNextPlaylistable = jest
+      .spyOn(playModule, "playNextPlaylistable")
       .mockImplementation();
 
     await supertest(express).put("/play/next").expect(205);
 
-    expect(mockedPlayNextPlaylistItem).toHaveBeenCalled();
+    expect(mockedPlayNextPlaylistable).toHaveBeenCalled();
   });
 
   it("plays the next item when an item from the play queue is currently playing", async () => {
-    playModule.currentlyPlaying.playlistItem = null;
+    playModule.currentlyPlaying.playlistable = null;
     playModule.currentlyPlaying.playQueue = await createPlayQueue();
 
     const mockedPlayNextQueued = jest

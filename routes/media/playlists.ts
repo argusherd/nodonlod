@@ -3,7 +3,7 @@ import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import { MediumRequest } from ".";
 import Playlist from "../../database/models/playlist";
-import PlaylistItem from "../../database/models/playlist-item";
+import Playlistable from "../../database/models/playlistable";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 
@@ -88,7 +88,7 @@ router.post("/:playlist", async (req: MediumRequest & PlaylistRequest, res) => {
   const alreadyInPlaylist = await req.medium.$has("playlist", req.playlist);
 
   if (!alreadyInPlaylist) {
-    const maxOrder = (await PlaylistItem.max("order", {
+    const maxOrder = (await Playlistable.max("order", {
       where: { playlistId: req.playlist.id },
     })) as number;
 

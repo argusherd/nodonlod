@@ -18,8 +18,8 @@ block body
       i.text-2xl(class="icon-[material-symbols--category-outline]")
       span= __("Label")
 
-    +tabItem(isSamePath(`/playlists/${playlist.id}/playlist-items`))(
-      href=`/playlists/${playlist.id}/playlist-items`
+    +tabItem(isSamePath(`/playlists/${playlist.id}/playlistables`))(
+      href=`/playlists/${playlist.id}/playlistables`
     )
       i.text-2xl(class="icon-[ph--play]")
       span= __("Media")

@@ -15,7 +15,7 @@ import Chapter from "./chapter";
 import Medium from "./medium";
 import Playlist from "./playlist";
 
-interface OptionalPlaylistItemCreationAttributes {
+interface OptionalPlaylistableCreationAttributes {
   id: string;
   chapterId: string | null;
   order: number;
@@ -23,22 +23,22 @@ interface OptionalPlaylistItemCreationAttributes {
   updatedAt: Date;
 }
 
-interface PlaylistItemAttributes
-  extends OptionalPlaylistItemCreationAttributes {
+interface PlaylistableAttributes
+  extends OptionalPlaylistableCreationAttributes {
   playlistId: string;
   mediumId: string;
 }
 
-export interface PlaylistItemCreationAttributes
+export interface PlaylistableCreationAttributes
   extends Optional<
-    PlaylistItemAttributes,
-    keyof OptionalPlaylistItemCreationAttributes
+    PlaylistableAttributes,
+    keyof OptionalPlaylistableCreationAttributes
   > {}
 
 @Table({ underscored: true })
-export default class PlaylistItem extends Model<
-  PlaylistItemAttributes,
-  PlaylistItemCreationAttributes
+export default class Playlistable extends Model<
+  PlaylistableAttributes,
+  PlaylistableCreationAttributes
 > {
   @PrimaryKey
   @Default(DataType.UUIDV4)

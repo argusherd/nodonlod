@@ -1,4 +1,4 @@
-import PlaylistItem from "@/database/models/playlist-item";
+import Playlistable from "@/database/models/playlistable";
 import {
   createChapter,
   createMedium,
@@ -11,23 +11,23 @@ describe("The pivot between medium and playlist", () => {
     const playlist = await createPlaylist();
 
     await medium.$add("playlist", playlist);
-    expect(await PlaylistItem.findOne()).not.toBeNull();
+    expect(await Playlistable.findOne()).not.toBeNull();
 
     await medium.destroy();
-    expect(await PlaylistItem.findOne()).toBeNull();
+    expect(await Playlistable.findOne()).toBeNull();
   });
 
   it("can belong to a chapter", async () => {
     const chapter = await createChapter();
     const playlist = await createPlaylist();
 
-    const playlistItem = await PlaylistItem.create({
+    const playlistable = await Playlistable.create({
       mediumId: chapter.mediumId,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
 
-    const belongsTo = await playlistItem.$get("chapter");
+    const belongsTo = await playlistable.$get("chapter");
 
     expect(belongsTo?.id).toEqual(chapter.id);
   });
@@ -37,14 +37,14 @@ describe("The pivot between medium and playlist", () => {
     const chapter = await createChapter({ mediumId: medium.id });
     const playlist = await createPlaylist();
 
-    await PlaylistItem.create({
+    await Playlistable.create({
       mediumId: medium.id,
       playlistId: playlist.id,
       chapterId: chapter.id,
     });
 
     await expect(
-      PlaylistItem.create({
+      Playlistable.create({
         mediumId: medium.id,
         playlistId: playlist.id,
         chapterId: chapter.id,

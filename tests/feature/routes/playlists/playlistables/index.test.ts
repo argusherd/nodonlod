@@ -1,4 +1,4 @@
-import PlaylistItem from "@/database/models/playlist-item";
+import Playlistable from "@/database/models/playlistable";
 import express from "@/routes";
 import supertest from "supertest";
 import {
@@ -15,7 +15,7 @@ describe("The playlist items index page", () => {
     const chapter = await createChapter();
     const fromChapter = await chapter.$get("medium");
 
-    await PlaylistItem.bulkCreate([
+    await Playlistable.bulkCreate([
       { playlistId: playlist.id, mediumId: medium1.id },
       { playlistId: playlist.id, mediumId: medium2.id },
       {
@@ -26,7 +26,7 @@ describe("The playlist items index page", () => {
     ]);
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/playlist-items`)
+      .get(`/playlists/${playlist.id}/playlistables`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(medium1.title);
@@ -45,17 +45,17 @@ describe("The playlist items index page", () => {
     const medium2 = await createMedium();
     const chapter = await createChapter();
 
-    await PlaylistItem.create({
+    await Playlistable.create({
       playlistId: playlist.id,
       mediumId: medium1.id,
       order: 100,
     });
-    await PlaylistItem.create({
+    await Playlistable.create({
       playlistId: playlist.id,
       mediumId: medium2.id,
       order: 10,
     });
-    await PlaylistItem.create({
+    await Playlistable.create({
       playlistId: playlist.id,
       mediumId: chapter.mediumId,
       chapterId: chapter.id,
@@ -67,7 +67,7 @@ describe("The playlist items index page", () => {
     );
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/playlist-items`)
+      .get(`/playlists/${playlist.id}/playlistables`)
       .expect(200)
       .expect((res) => {
         expect(res.text.match(displayOrder)).not.toBeNull();
@@ -80,7 +80,7 @@ describe("The playlist items index page", () => {
     const chapter = await createChapter();
     const fromChapter = await chapter.$get("medium");
 
-    await PlaylistItem.bulkCreate([
+    await Playlistable.bulkCreate([
       { playlistId: playlist.id, mediumId: medium.id },
       {
         playlistId: playlist.id,
@@ -90,7 +90,7 @@ describe("The playlist items index page", () => {
     ]);
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/playlist-items?_list`)
+      .get(`/playlists/${playlist.id}/playlistables?_list`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain(medium.title);

@@ -10,9 +10,9 @@ import PlayQueue, {
 import Playlist, {
   PlaylistCreationAttributes,
 } from "@/database/models/playlist";
-import PlaylistItem, {
-  PlaylistItemCreationAttributes,
-} from "@/database/models/playlist-item";
+import Playlistable, {
+  PlaylistableCreationAttributes,
+} from "@/database/models/playlistable";
 import Uploader, {
   UploaderCreationAttributes,
 } from "@/database/models/uploader";
@@ -64,10 +64,10 @@ export const createPlayQueue = async (
     ...overwrite,
   });
 
-export const createPlaylistItem = async (
-  overwrite?: Partial<PlaylistItemCreationAttributes>,
+export const createPlaylistable = async (
+  overwrite?: Partial<PlaylistableCreationAttributes>,
 ) =>
-  await PlaylistItem.create({
+  await Playlistable.create({
     playlistId: overwrite?.playlistId || (await createPlaylist()).id,
     mediumId: overwrite?.mediumId || (await createMedium()).id,
     ...overwrite,

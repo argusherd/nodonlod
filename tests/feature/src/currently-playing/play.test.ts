@@ -4,7 +4,7 @@ import {
   createChapter,
   createMedium,
   createPlayQueue,
-  createPlaylistItem,
+  createPlaylistable,
 } from "../../setup/create-model";
 
 describe("The play function", () => {
@@ -38,13 +38,13 @@ describe("The play function", () => {
       startTime: 10,
       endTime: 30,
     });
-    const playlistItem = await createPlaylistItem({
+    const playlistable = await createPlaylistable({
       mediumId: medium.id,
       chapterId: chapter.id,
     });
     const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
-    await play(playlistItem);
+    await play(playlistable);
 
     expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 30);
   });

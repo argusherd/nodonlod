@@ -1,4 +1,4 @@
-import PlaylistItem from "@/database/models/playlist-item";
+import Playlistable from "@/database/models/playlistable";
 import RawInfoConverter from "@/src/raw-info-converter";
 import { createMedium, createPlaylist } from "../../setup/create-model";
 
@@ -15,12 +15,12 @@ describe("The createAssociation method in the RawInfoConverter", () => {
 
     await converter.createAssociation(playlist, [medium]);
 
-    expect(await PlaylistItem.count()).toEqual(1);
+    expect(await Playlistable.count()).toEqual(1);
 
-    const playlistItem = await PlaylistItem.findOne();
+    const playlistable = await Playlistable.findOne();
 
-    expect(playlistItem?.mediumId).toEqual(medium?.id);
-    expect(playlistItem?.playlistId).toEqual(playlist?.id);
+    expect(playlistable?.mediumId).toEqual(medium?.id);
+    expect(playlistable?.playlistId).toEqual(playlist?.id);
   });
 
   it("does not create two identical records when establishing the relationship between the playlist and media", async () => {
@@ -30,7 +30,7 @@ describe("The createAssociation method in the RawInfoConverter", () => {
     await converter.createAssociation(playlist, [medium]);
     await converter.createAssociation(playlist, [medium]);
 
-    expect(await PlaylistItem.count()).toEqual(1);
+    expect(await Playlistable.count()).toEqual(1);
   });
 
   it("preserves the order of the media when establishing the relationship between the playlist and media", async () => {
@@ -40,15 +40,15 @@ describe("The createAssociation method in the RawInfoConverter", () => {
 
     await converter.createAssociation(playlist, [medium1, medium2]);
 
-    const playlistItem1 = await PlaylistItem.findOne({
+    const playlistable1 = await Playlistable.findOne({
       where: { mediumId: medium1.id },
     });
-    const playlistItem2 = await PlaylistItem.findOne({
+    const playlistable2 = await Playlistable.findOne({
       where: { mediumId: medium2.id },
     });
 
-    expect(playlistItem1?.order).toEqual(1);
-    expect(playlistItem2?.order).toEqual(2);
+    expect(playlistable1?.order).toEqual(1);
+    expect(playlistable2?.order).toEqual(2);
   });
 
   it("continues the order of the media when establishing the existing relationship", async () => {
@@ -60,10 +60,10 @@ describe("The createAssociation method in the RawInfoConverter", () => {
     await converter.createAssociation(playlist, [medium1, medium2]);
     await converter.createAssociation(playlist, [medium3]);
 
-    const playlistItem = await PlaylistItem.findOne({
+    const playlistable = await Playlistable.findOne({
       where: { mediumId: medium3.id },
     });
 
-    expect(playlistItem?.order).toEqual(3);
+    expect(playlistable?.order).toEqual(3);
   });
 });
