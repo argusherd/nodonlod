@@ -10,7 +10,7 @@ include /_mixin.pug
 
             .w-20(class="sm:w-40")
               +button.mx-auto(
-                hx-post=`/media/${medium.id}/playlists/${playlist.id}`,
+                hx-post=`${basePath}/${playlist.id}`,
                 hx-swap="none"
               )
                 i.text-xl(class="icon-[material-symbols--add]")

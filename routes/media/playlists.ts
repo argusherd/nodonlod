@@ -65,7 +65,7 @@ router.get("/create", (req: MediumRequest, res) => {
     .render("media/playlists/create", { medium: req.medium });
 });
 
-router.get("/search", async (req: MediumRequest & HasPageRequest, res) => {
+router.get("/add", async (req: MediumRequest & HasPageRequest, res) => {
   const { rows: playlists, count } = await Playlist.findAndCountAll({
     limit: req.perPage,
     offset: req.offset,
@@ -77,8 +77,11 @@ router.get("/search", async (req: MediumRequest & HasPageRequest, res) => {
     },
   });
 
-  res.render("media/playlists/_search", {
-    medium: req.medium,
+  const template =
+    "_list" in req.query ? "playlists/add/_list" : "playlists/add/index";
+
+  res.set("HX-Trigger", "open-modal").render(template, {
+    basePath: `/media/${req.medium.id}/playlists`,
     playlists,
     count,
   });

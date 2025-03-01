@@ -4,6 +4,47 @@ import supertest from "supertest";
 import { createMedium, createPlaylist } from "../../../setup/create-model";
 
 describe("The medium playlist add route", () => {
+  it("displays all available playlists", async () => {
+    const medium = await createMedium();
+    const playlist1 = await createPlaylist();
+    const playlist2 = await createPlaylist();
+
+    await supertest(express)
+      .get(`/media/${medium.id}/playlists/add`)
+      .expect(200)
+      .expect("hx-trigger", "open-modal")
+      .expect((res) => {
+        expect(res.text).toContain(playlist1.title);
+        expect(res.text).toContain(
+          `/media/${medium.id}/playlists/${playlist1.id}`,
+        );
+        expect(res.text).toContain(playlist2.title);
+        expect(res.text).toContain(
+          `/media/${medium.id}/playlists/${playlist2.id}`,
+        );
+      });
+  });
+
+  it("can filter playlists by title", async () => {
+    const medium = await createMedium();
+    const playlist1 = await createPlaylist();
+    const playlist2 = await createPlaylist();
+
+    await supertest(express)
+      .get(`/media/${medium.id}/playlists/add?title=${playlist1.title}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(playlist1.title);
+        expect(res.text).toContain(
+          `/media/${medium.id}/playlists/${playlist1.id}`,
+        );
+        expect(res.text).not.toContain(playlist2.title);
+        expect(res.text).not.toContain(
+          `/media/${medium.id}/playlists/${playlist2.id}`,
+        );
+      });
+  });
+
   it("establishes a relationship between the medium and the playlist", async () => {
     const medium = await createMedium();
     const playlist = await createPlaylist();
