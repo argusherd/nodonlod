@@ -9,6 +9,13 @@ block append body
     )
       i.text-xl(class="icon-[material-symbols--add]")
       span= __("Add")
+    +buttonInGroup(
+      hx-get=`/media/${medium.id}/playlists/create`,
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-xl(class="icon-[gridicons--create]")
+      span= __("Create")
 
   #playlists(
     hx-get=`/media/${medium.id}/playlists?_list`,

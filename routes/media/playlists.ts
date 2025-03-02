@@ -46,13 +46,14 @@ router.post(
       const playlist = await Playlist.create({ title: req.body.title });
 
       await req.medium.$add("playlist", playlist);
+      await playlist.reorderPlaylistables();
 
       res
         .set("HX-Trigger", ["close-modal", "refresh-playlists"])
         .sendStatus(205);
     } else {
-      res.status(422).render("media/playlists/create", {
-        medium: req.medium,
+      res.status(422).render("playlists/create", {
+        basePath: `/media/${req.medium.id}`,
         errors: errors.mapped(),
       });
     }
@@ -62,7 +63,7 @@ router.post(
 router.get("/create", (req: MediumRequest, res) => {
   res
     .set("HX-Trigger", "open-modal")
-    .render("media/playlists/create", { medium: req.medium });
+    .render("playlists/create", { basePath: `/media/${req.medium.id}` });
 });
 
 router.get("/add", async (req: MediumRequest & HasPageRequest, res) => {

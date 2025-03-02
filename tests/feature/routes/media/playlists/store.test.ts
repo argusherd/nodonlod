@@ -1,3 +1,4 @@
+import Playlistable from "@/database/models/playlistable";
 import express from "@/routes";
 import supertest from "supertest";
 import { createMedium } from "../../../setup/create-model";
@@ -32,6 +33,22 @@ describe("The medium playlist store route", () => {
       .expect(422)
       .expect((res) => {
         expect(res.text).toContain("The title is missing");
+        expect(res.text).toContain(`/media/${medium.id}/playlists`);
       });
+  });
+
+  it("has the order number 1 in the playlist", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .post(`/media/${medium.id}/playlists`)
+      .type("form")
+      .send({ title: "foo" })
+      .expect(205);
+
+    const playlistable = await Playlistable.findOne();
+
+    expect(playlistable?.mediumId).toEqual(medium.id);
+    expect(playlistable?.order).toEqual(1);
   });
 });

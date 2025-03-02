@@ -1,7 +1,7 @@
 include /_mixin.pug
 
 form.flex.flex-col.gap-2(
-  action="/playlists",
+  action=`${basePath || ''}/playlists`,
   hx-target="#modal",
   method="POST"
 )
