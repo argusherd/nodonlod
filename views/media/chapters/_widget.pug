@@ -18,7 +18,7 @@
         )
           i.text-2xl(class="icon-[teenyicons--play-solid]")
         +buttonInGroup(
-          hx-post=`/media/${medium.id}/queue`,
+          hx-post=`/chapters/${chapter.id}/queue`,
           hx-swap="none",
           title=__("Add to The Queue")
         )

@@ -8,7 +8,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter({ mediumId: medium.id });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: 12, endTime: 23 })
       .expect(205);
@@ -25,7 +25,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter({ mediumId: medium.id });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ startTime: 12, endTime: 23 })
       .expect(422)
@@ -38,7 +38,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter();
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo" })
       .expect(422)
@@ -47,7 +47,7 @@ describe("The chapter update route", () => {
       });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: "bar", endTime: "baz" })
       .expect(422)
@@ -62,7 +62,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter();
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: -10, endTime: -30 })
       .expect(422)
@@ -78,7 +78,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter({ mediumId: medium.id });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: 60, endTime: 30 })
       .expect(422)
@@ -94,7 +94,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter({ mediumId: medium.id });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: 60, endTime: 124 })
       .expect(422)
@@ -105,7 +105,7 @@ describe("The chapter update route", () => {
       });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: 60, endTime: 123 })
       .expect(205);
@@ -125,7 +125,7 @@ describe("The chapter update route", () => {
     });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({
         title: "foo",
@@ -140,7 +140,7 @@ describe("The chapter update route", () => {
       });
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({
         title: "foo",
@@ -160,7 +160,7 @@ describe("The chapter update route", () => {
     const chapter = await createChapter();
 
     await supertest(express)
-      .put(`/chapters/${chapter.id}`)
+      .put(`/media/${chapter.mediumId}/chapters/${chapter.id}`)
       .type("form")
       .send({ title: "foo", startTime: 0, endTime: 1 })
       .expect(205)

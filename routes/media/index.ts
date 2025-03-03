@@ -6,6 +6,7 @@ import PlayQueue from "../../database/models/play-queue";
 import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import chapterRouter from "./chapters";
 import labelRouter from "./labels";
 import performerRouter from "./performers";
 import playlistRouter from "./playlists";
@@ -108,6 +109,7 @@ router.delete("/:medium", async (req: MediumRequest, res) => {
   res.set("HX-Location", "/media").sendStatus(204);
 });
 
+router.use("/:medium/chapters", chapterRouter);
 router.use("/:medium/playlists", playlistRouter);
 router.use("/:medium/performers", performerRouter);
 router.use("/:medium/labels", labelRouter);

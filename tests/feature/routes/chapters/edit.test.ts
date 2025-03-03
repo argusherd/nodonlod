@@ -11,7 +11,7 @@ describe("The chapter edit page", () => {
     });
 
     await supertest(express)
-      .get(`/chapters/${chapter.id}/edit`)
+      .get(`/media/${chapter.mediumId}/chapters/${chapter.id}/edit`)
       .expect(200)
       .expect((res) => {
         expect(res.text).toContain("foo");
@@ -25,7 +25,7 @@ describe("The chapter edit page", () => {
     const chapter = await createChapter();
 
     await supertest(express)
-      .get(`/chapters/${chapter.id}/edit`)
+      .get(`/media/${chapter.mediumId}/chapters/${chapter.id}/edit`)
       .expect(200)
       .expect("HX-Trigger", "open-modal");
   });
