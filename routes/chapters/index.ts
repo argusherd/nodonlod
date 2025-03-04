@@ -1,8 +1,8 @@
 import { Request, Router } from "express";
-import Chapter from "../database/models/chapter";
-import PlayQueue from "../database/models/play-queue";
-import { play } from "../src/currently-playing";
-import { __ } from "./middlewares/i18n";
+import Chapter from "../../database/models/chapter";
+import PlayQueue from "../../database/models/play-queue";
+import { play } from "../../src/currently-playing";
+import { __ } from "../middlewares/i18n";
 
 interface ChapterRequest extends Request {
   chapter: Chapter;
