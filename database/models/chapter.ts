@@ -2,6 +2,7 @@ import { Optional } from "sequelize";
 import {
   AllowNull,
   BelongsTo,
+  BelongsToMany,
   Column,
   CreatedAt,
   DataType,
@@ -13,6 +14,8 @@ import {
   UpdatedAt,
 } from "sequelize-typescript";
 import Medium from "./medium";
+import Playlist from "./playlist";
+import Playlistable from "./playlistable";
 
 interface OptionalChapterCreationAttributes {
   id: string;
@@ -65,4 +68,7 @@ export default class Chapter extends Model<
 
   @BelongsTo(() => Medium)
   medium: Medium;
+
+  @BelongsToMany(() => Playlist, () => Playlistable)
+  playlists: Array<Playlist & { Playlistable: Playlistable }>;
 }

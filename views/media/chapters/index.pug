@@ -86,6 +86,14 @@ block append body
                         i.text-xl(class="icon-[material-symbols--edit]")
                         span= __("Edit")
                       +buttonInGroup.relative(
+                        @click="show = false",
+                        hx-get=`/chapters/${chapter.id}/playlists/add`,
+                        hx-target="#modal",
+                        type="button"
+                      )
+                        i.text-xl(class="icon-[material-symbols--add]")
+                        span= __("Add to playlist")
+                      +buttonInGroup.relative(
                         hx-delete=`/chapters/${chapter.id}/confirm`,
                         hx-swap="innerHTML",
                         hx-target="#modal",

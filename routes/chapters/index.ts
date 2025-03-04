@@ -1,10 +1,12 @@
-import { Request, Router } from "express";
+import { Router } from "express";
 import Chapter from "../../database/models/chapter";
 import PlayQueue from "../../database/models/play-queue";
 import { play } from "../../src/currently-playing";
 import { __ } from "../middlewares/i18n";
+import { HasPageRequest } from "../middlewares/pagination";
+import playlistRouter from "./playlists";
 
-interface ChapterRequest extends Request {
+export interface ChapterRequest extends HasPageRequest {
   chapter: Chapter;
 }
 
@@ -51,5 +53,7 @@ router.delete("/:chapter", async (req: ChapterRequest, res) => {
 
   res.set("HX-Trigger", "refresh-chapters").sendStatus(205);
 });
+
+router.use("/:chapter/playlists", playlistRouter);
 
 export default router;
