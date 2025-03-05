@@ -28,10 +28,15 @@ router.get("/", async (req: MediumRequest, res) => {
   const template =
     "_list" in req.query ? "media/playlists/_list" : "media/playlists/index";
 
-  res.render(template, {
-    medium: req.medium,
-    playlists: await req.medium.$get("playlists"),
+  const playlists = await Playlist.findAll({
+    include: {
+      model: Playlistable,
+      required: true,
+      where: { mediumId: req.medium.id },
+    },
   });
+
+  res.render(template, { medium: req.medium, playlists });
 });
 
 router.post(
