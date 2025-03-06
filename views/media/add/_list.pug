@@ -1,0 +1,19 @@
+include /_mixin.pug
+
++table.mb-4.w-full
+  +tbody
+    each medium in media
+      +tr
+        +td
+          .flex.flex-col.gap-2
+            include /media/_widget.pug
+
+            .w-20(class="sm:w-40")
+              +button.mx-auto(
+                hx-post=`${basePath}/media/${medium.id}`,
+                hx-swap="none"
+              )
+                i.text-xl(class="icon-[material-symbols--add]")
+                span= __("Add")
+
++paginator(hx-target="#add-medium")
