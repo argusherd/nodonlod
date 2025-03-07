@@ -3,7 +3,22 @@ import { Op } from "sequelize";
 import { PlaylistRequest } from ".";
 import Medium from "../../database/models/medium";
 
+interface MediumRequest extends PlaylistRequest {
+  medium: Medium;
+}
+
 const router = Router();
+
+router.param("medium", async (req: MediumRequest, res, next) => {
+  const medium = await Medium.findByPk(req.params.medium);
+
+  if (medium) {
+    req.medium = medium;
+    next();
+  } else {
+    res.sendStatus(404);
+  }
+});
 
 router.get("/add", async (req: PlaylistRequest, res) => {
   const { rows: media, count } = await Medium.findAndCountAll({
@@ -11,8 +26,8 @@ router.get("/add", async (req: PlaylistRequest, res) => {
     offset: req.offset,
     order: [["title", "ASC"]],
     where: {
-      ...(req.query.title && {
-        title: { [Op.substring]: req.query.title as string },
+      ...(req.query.search && {
+        title: { [Op.substring]: req.query.search as string },
       }),
     },
   });
@@ -24,6 +39,15 @@ router.get("/add", async (req: PlaylistRequest, res) => {
     media,
     count,
   });
+});
+
+router.post("/:medium", async (req: MediumRequest, res) => {
+  await req.playlist.$add("medium", req.medium);
+  await req.playlist.reorderPlaylistables();
+
+  res
+    .set("HX-Trigger", ["close-modal", "refresh-playlistables"])
+    .sendStatus(205);
 });
 
 export default router;
