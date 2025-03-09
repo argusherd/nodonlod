@@ -7,14 +7,14 @@ block append body
       hx-swap="none",
       title=__("Play")
     )
-      i.text-2xl(class="icon-[teenyicons--play-solid]")
+      i.text-xl(class="icon-[teenyicons--play-solid]")
       span.hidden(class="sm:inline-block")= __("Play")
     +buttonInGroup(
       hx-post=`/playlists/${playlist.id}/queue`,
       hx-swap="none",
       title=__("Add to The Queue")
     )
-      i.text-2xl(class="icon-[ph--stack-light]")
+      i.text-xl(class="icon-[ph--stack-light]")
       span.hidden(class="sm:inline-block")= __("Queue")
     +buttonInGroup#save-btn(
       hx-include="#form",
@@ -43,23 +43,23 @@ block append body
           timeoutId: null,
         }`
       )
-        i.text-2xl(
+        i.text-xl(
           class="icon-[material-symbols--save-outline]",
           x-show="!showError && !showSuccess"
         )
-        i.text-2xl(class="icon-[heroicons-outline--exclamation]", x-show="showError")
-        i.text-2xl(class="icon-[material-symbols--check]", x-show="showSuccess")
+        i.text-xl(class="icon-[heroicons-outline--exclamation]", x-show="showError")
+        i.text-xl(class="icon-[material-symbols--check]", x-show="showSuccess")
         span.absolute.right-0.top-0.rounded-full.bg-red-500.p-1(
           x-show="showHint"
         )
-        span.hidden(class="sm:inline-block") #{ __("Save") }
+      span.hidden(class="sm:inline-block") #{ __("Save") }
     +buttonInGroup(
       hx-delete=`/playlists/${playlist.id}/confirm`,
       hx-target="#modal",
       title=__("Delete"),
       type="button"
     )
-      i.text-2xl(class="icon-[material-symbols--delete-outline]")
+      i.text-xl(class="icon-[material-symbols--delete-outline]")
       span.hidden(class="sm:inline-block")= __("Delete")
 
   #form.mb-4

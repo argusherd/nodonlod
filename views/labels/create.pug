@@ -5,12 +5,21 @@ form.flex.flex-col.gap-2(
   hx-target="#modal",
   method="POST"
 )
-  +input.w-full(name="category", placeholder=__("Category"))
+  h2.mb-4.text-lg.font-bold.text-gray-700(class="dark:text-gray-300")= __("Create a new label")
 
-  .flex.flex-col
-    +input.w-full(name="text", placeholder=__("Text"))
-    +error("text")
+  +list
+    +listItem(__("Category"))
+      +input.w-full(name="category")
 
-  +button.ml-auto
-    i.text-2xl(class="icon-[gridicons--create]")
-    span= __("Create")
+    +listItem(__("Text"))
+      +input.w-full(name="text")
+      +error("text")
+
+  +buttonGroup.ml-auto
+    +buttonGroup
+      +buttonInGroup#save(type="submit")
+        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        span= __("Save")
+      +buttonInGroup#cancel(@click="show = false", type="button")
+        i.text-2xl(class="icon-[material-symbols--close]")
+        span= __("Cancel")

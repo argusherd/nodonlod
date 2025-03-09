@@ -5,13 +5,24 @@ form.flex.flex-col.gap-2(
   hx-target="#modal",
   method="POST"
 )
-  +input.w-full(name="title", placeholder=__("Title"))
-  +error('title')
+  h2.mb-4.text-lg.font-bold.text-gray-700(class="dark:text-gray-300")= __("Create a new playlist")
 
-  +input.w-full(name="thumbnail", placeholder=__("Thumbnail"))
+  +list
+    +listItem(__("Title"))
+      +input.w-full(name="title")
+      +error('title')
 
-  +textarea.w-full(name="description", placeholder=__("Description"))
+    +listItem(__("Thumbnail"))
+      +input.w-full(name="thumbnail")
 
-  +button.ml-auto
-    i.text-2xl(class="icon-[material-symbols--save-outline]")
-    span= __("Save")
+    +listItem(__("Description"))
+      +textarea.w-full(name="description")
+
+  +buttonGroup.ml-auto
+    +buttonGroup
+      +buttonInGroup#save(type="submit")
+        i.text-2xl(class="icon-[material-symbols--save-outline]")
+        span= __("Save")
+      +buttonInGroup#cancel(@click="show = false", type="button")
+        i.text-2xl(class="icon-[material-symbols--close]")
+        span= __("Cancel")
