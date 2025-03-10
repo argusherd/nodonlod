@@ -1,16 +1,15 @@
-extends ../_layout.pug
+extends _layout.pug
 
-block body
-  .mb-2.flex.flex-wrap.items-center.justify-between
-    h1.text-xl.font-bold #{ __("Performer Info") }
-
-    button.flex.items-center.gap-1.rounded.border.px-2.py-1.font-bold.text-gray-500(
-      hx-delete=`/media/${performer.id}/confirm`,
-      hx-target="#modal"
+block append body
+  +buttonGroup.mb-4
+    +buttonInGroup(
+      hx-delete=`/performers/${performer.id}/confirm`,
+      hx-target="#modal",
+      title=__("Delete"),
+      type="button"
     )
-      i.shrink-0.text-2xl(class="icon-[material-symbols--delete-outline]")
-      span #{ __("Delete") }
+      i.text-xl(class="icon-[material-symbols--delete-outline]")
+      span.hidden(class="sm:inline-block")= __("Delete")
 
-  p #{ performer.name }
-  img(alt="thumbnail", src=performer.thumbnail)
-  pre #{ performer.description }
+  #form.mb-4
+    include _info.pug

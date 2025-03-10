@@ -1,0 +1,29 @@
+include /_mixin.pug
+
++list
+  +listItem(__("Name"))
+    - var name = "name" in old ? old.name : performer.name;
+    +input.w-full(value=name)
+
+  +listItem(__("Thumbnail"))
+    - var thumbnail = "thumbnail" in old ? old.thumbnail : performer.thumbnail;
+    .flex.flex-col.gap-2(
+      @input="$dispatch('performer-changed')",
+      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
+    )
+      +input.w-full(name="thumbnail", x-model="thumbnail")
+      .max-w-3xl
+        img.size-fit.object-cover(
+          :src="thumbnail",
+          alt="thumbnail",
+          x-show="thumbnail"
+        )
+
+  +listItem(__("Description"))
+    - var description = "description" in old ? old.description : performer.description;
+    +textarea.w-full= description
+
+  +listItem(__("Created At"))
+    span= dayjs(performer.createdAt).format("YYYY-MM-DD HH:mm:ss")
+  +listItem(__("Updated At"))
+    span= dayjs(performer.updatedAt).format("YYYY-MM-DD HH:mm:ss")
