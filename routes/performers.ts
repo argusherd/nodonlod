@@ -54,4 +54,17 @@ router.get("/:performer", async (req: PerformerRequest, res) => {
   res.render("performers/show", { performer: req.performer });
 });
 
+router.delete("/:performer/confirm", (req: PerformerRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: __("Are you sure you want to delete this performer?"),
+    route: `/performers/${req.performer.id}`,
+  });
+});
+
+router.delete("/:performer", async (req: PerformerRequest, res) => {
+  await req.performer.destroy();
+
+  res.set("HX-Location", "/performers").sendStatus(204);
+});
+
 export default router;
