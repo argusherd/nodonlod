@@ -1,0 +1,26 @@
+mixin table
+  table.divide-y-2.divide-gray-200.bg-white(
+    class="dark:divide-gray-700 dark:bg-gray-900"
+  )&attributes(attributes)
+    block
+
+mixin thead
+  thead(class="ltr:text-left rtl:text-right")
+    tr.text-left
+      block
+
+mixin th
+  th.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")&attributes(attributes)
+    block
+
+mixin tbody
+  tbody.divide-y.divide-gray-200(class="dark:divide-gray-700")&attributes(attributes)
+    block
+
+mixin tr
+  tr(class="odd:bg-gray-50 dark:odd:bg-gray-800/50")&attributes(attributes)
+    block
+
+mixin td
+  td.whitespace-nowrap.px-4.py-2.text-gray-900(class="dark:text-white")&attributes(attributes)
+    block

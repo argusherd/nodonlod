@@ -1,0 +1,28 @@
+mixin input
+  input.rounded-lg.border.border-gray-200.bg-white.px-3.py-2.text-gray-700(
+    class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+  )&attributes(attributes)
+
+mixin inputThumbnail(thumbnail = "")
+  .flex.flex-col.gap-2(
+    x-data=`{ thumbnail: "${ old.thumbnail || thumbnail || "" }" }`
+  )&attributes(attributes)
+    +input.w-full(name="thumbnail", x-model="thumbnail")
+    .max-w-3xl
+      img.size-fit.object-cover(
+        :src="thumbnail",
+        alt="thumbnail",
+        x-show="thumbnail"
+      )
+
+mixin select
+  select.rounded-lg.border.border-gray-200.bg-white.px-3.py-2.text-gray-700(
+    class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+  )&attributes(attributes)
+    block
+
+mixin textarea
+  textarea.min-h-20.w-full.overflow-y-auto.rounded-lg.border.border-gray-200.bg-white.p-2.text-gray-700(
+    class="placeholder-gray-400/70 focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-40 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-blue-300"
+  )&attributes(attributes)
+    block
