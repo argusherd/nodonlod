@@ -15,18 +15,9 @@ include /_mixin.pug
       span= playlist.url
 
   +listItem(__("Thumbnail"))
-    - var thumbnail = "thumbnail" in old ? old.thumbnail : playlist.thumbnail;
-    .flex.flex-col.gap-2(
-      @input="$dispatch('playlist-changed')",
-      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
+    +inputThumbnail(playlist.thumbnail)(
+      @input="$dispatch('playlist-changed')"
     )
-      +input.w-full(name="thumbnail", x-model="thumbnail")
-      .max-w-3xl
-        img.size-fit.object-cover(
-          :src="thumbnail",
-          alt="thumbnail",
-          x-show="thumbnail"
-        )
 
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : playlist.description;

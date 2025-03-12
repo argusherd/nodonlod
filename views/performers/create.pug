@@ -10,15 +10,7 @@ form(action="/performers", hx-target="#modal", method="post")
       +error("name")
 
     +listItem(__("Thumbnail"))
-      .flex.flex-col.gap-2(x-data=`{ thumbnail: '${old.thumbnail || ''}' }`)
-        +input(name="thumbnail", x-model="thumbnail")
-
-        .max-w-3xl
-          img.size-fit.cursor-zoom-in.object-cover(
-            :src="thumbnail",
-            alt="thumbnail",
-            x-show="thumbnail"
-          )
+      +inputThumbnail
 
     +listItem(__("Description"))
       +textarea#description(name="description")= old.description

@@ -6,18 +6,7 @@ include /_mixin.pug
     +input.w-full(value=name)
 
   +listItem(__("Thumbnail"))
-    - var thumbnail = "thumbnail" in old ? old.thumbnail : performer.thumbnail;
-    .flex.flex-col.gap-2(
-      @input="$dispatch('performer-changed')",
-      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
-    )
-      +input.w-full(name="thumbnail", x-model="thumbnail")
-      .max-w-3xl
-        img.size-fit.object-cover(
-          :src="thumbnail",
-          alt="thumbnail",
-          x-show="thumbnail"
-        )
+    +inputThumbnail(performer.thumbnail)
 
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : performer.description;

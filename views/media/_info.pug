@@ -37,18 +37,8 @@ include /_mixin.pug
     +error("url")
 
   +listItem(__("Thumbnail"))
-    - var thumbnail = "thumbnail" in old ? old.thumbnail : medium.thumbnail;
-    .flex.flex-col.gap-2(
-      @input="$dispatch('medium-changed')",
-      x-data=`{ thumbnail: '${ thumbnail || '' }' }`
-    )
-      +input.w-full(name="thumbnail", x-model="thumbnail")
-      .max-w-3xl
-        img.size-fit.object-cover(
-          :src="thumbnail",
-          alt="thumbnail",
-          x-show="thumbnail"
-        )
+    +inputThumbnail(medium.thumbnail)(@input="$dispatch('medium-changed')")
+
   +listItem(__("Duration"))
     span= dayjs.neatDuration(medium.duration)
 
