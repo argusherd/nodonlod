@@ -4,7 +4,7 @@ include /_mixin.pug
   +listItem(__("Title"))
     - var title = "title" in old ? old.title : medium.title;
     +input.w-full(
-      @input="$dispatch('medium-changed')",
+      @input="$dispatch('data-changed')",
       name="title",
       value=title
     )
@@ -30,14 +30,14 @@ include /_mixin.pug
   +listItem(__("URL"))
     - var url = "url" in old ? old.url : medium.url;
     +input.w-full(
-      @input="$dispatch('medium-changed')",
+      @input="$dispatch('data-changed')",
       name="url",
       value=url
     )
     +error("url")
 
   +listItem(__("Thumbnail"))
-    +inputThumbnail(medium.thumbnail)(@input="$dispatch('medium-changed')")
+    +inputThumbnail(medium.thumbnail)(@input="$dispatch('data-changed')")
 
   +listItem(__("Duration"))
     span= dayjs.neatDuration(medium.duration)
@@ -45,7 +45,7 @@ include /_mixin.pug
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : medium.description;
     +textarea#description(
-      @input="$dispatch('medium-changed')",
+      @input="$dispatch('data-changed')",
       name="description",
       rows="5"
     ) #{ description }

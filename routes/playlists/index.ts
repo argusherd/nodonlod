@@ -87,12 +87,12 @@ router.put(
       });
 
       res
-        .set("HX-Trigger", "playlist-saved")
+        .set("HX-Trigger", "data-saved")
         .render("playlists/_info", { playlist: req.playlist });
     } else {
       res
         .status(422)
-        .set("HX-Trigger", "playlist-failed")
+        .set("HX-Trigger", "data-failed")
         .render("playlists/_info", {
           playlist: req.playlist,
           errors: errors.mapped(),

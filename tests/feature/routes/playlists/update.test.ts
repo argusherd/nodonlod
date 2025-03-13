@@ -9,7 +9,7 @@ describe("The playlist update route", () => {
     await supertest(express)
       .put(`/playlists/${playlist.id}`)
       .expect(422)
-      .expect("hx-trigger", "playlist-failed")
+      .expect("hx-trigger", "data-failed")
       .expect((res) => {
         expect(res.text).toContain("The title is missing");
       });
@@ -27,7 +27,7 @@ describe("The playlist update route", () => {
         description: "new description",
       })
       .expect(200)
-      .expect("hx-trigger", "playlist-saved");
+      .expect("hx-trigger", "data-saved");
 
     await playlist.reload();
 

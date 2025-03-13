@@ -67,9 +67,9 @@ router.put(
         description: req.body.description,
       });
 
-      res.set("HX-Trigger", "medium-saved");
+      res.set("HX-Trigger", "data-saved");
     } else {
-      res.set("HX-Trigger", "medium-failed").status(422);
+      res.set("HX-Trigger", "data-failed").status(422);
     }
 
     res.render("media/_info.pug", {

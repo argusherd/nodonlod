@@ -16,7 +16,7 @@ describe("The medium update route", () => {
         description: "description",
       })
       .expect(200)
-      .expect("HX-Trigger", "medium-saved");
+      .expect("HX-Trigger", "data-saved");
 
     await medium.reload();
 
@@ -38,6 +38,7 @@ describe("The medium update route", () => {
         description: "description",
       })
       .expect(422)
+      .expect("hx-trigger", "data-failed")
       .expect((res) => {
         expect(res.text).toContain("The title is missing");
       });

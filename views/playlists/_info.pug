@@ -4,7 +4,7 @@ include /_mixin.pug
   +listItem(__("Title"))
     - var title = "title" in old ? old.title : playlist.title;
     +input.w-full(
-      @input="$dispatch('playlist-changed')",
+      @input="$dispatch('data-changed')",
       name="title",
       value=title
     )
@@ -15,14 +15,12 @@ include /_mixin.pug
       span= playlist.url
 
   +listItem(__("Thumbnail"))
-    +inputThumbnail(playlist.thumbnail)(
-      @input="$dispatch('playlist-changed')"
-    )
+    +inputThumbnail(playlist.thumbnail)(@input="$dispatch('data-changed')")
 
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : playlist.description;
     +textarea.w-full(
-      @input="$dispatch('playlist-changed')",
+      @input="$dispatch('data-changed')",
       name="description"
     ) #{ description }
 
