@@ -54,6 +54,33 @@ router.get("/:performer", async (req: PerformerRequest, res) => {
   res.render("performers/show", { performer: req.performer });
 });
 
+router.put(
+  "/:performer",
+  body("name").notEmpty().withMessage(__("The name is missing.")),
+  async (req: PerformerRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.performer.update({
+        name: req.body.name,
+        thumbnail: req.body.thumbnail,
+        description: req.body.description,
+      });
+
+      res
+        .set("HX-Trigger", "data-saved")
+        .render("performers/_info", { performer: req.performer });
+    } else
+      res
+        .status(422)
+        .set("HX-Trigger", "data-failed")
+        .render("performers/_info", {
+          performer: req.performer,
+          errors: errors.mapped(),
+        });
+  },
+);
+
 router.delete("/:performer/confirm", (req: PerformerRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
     message: __("Are you sure you want to delete this performer?"),
