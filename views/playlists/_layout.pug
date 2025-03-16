@@ -4,7 +4,6 @@ block append breadcrumb
   +breadcrumb({ href: "/playlists", icon: "icon-[mage--playlist]", name: __("Playlist") })
 
 block body
-  - var isSamePath = (path) => fullPath == path;
   +tab.mb-4
     +tabItem(isSamePath(`/playlists/${playlist.id}`))(
       href=`/playlists/${playlist.id}`

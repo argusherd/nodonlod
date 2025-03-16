@@ -1,5 +1,7 @@
 include _mixin.pug
 
+- var isSamePath = (path) => fullPath == path;
+
 doctype html
 html(lang=`${getLocale()}`)
   head

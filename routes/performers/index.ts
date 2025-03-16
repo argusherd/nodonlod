@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import Performer from "../database/models/performer";
-import { __ } from "./middlewares/i18n";
-import { HasPageRequest } from "./middlewares/pagination";
+import Performer from "../../database/models/performer";
+import { __ } from "../middlewares/i18n";
+import { HasPageRequest } from "../middlewares/pagination";
 
 interface PerformerRequest extends HasPageRequest {
   performer: Performer;

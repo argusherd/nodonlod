@@ -4,7 +4,6 @@ block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 
 block body
-  - var isSamePath = (path) => fullPath == path;
   +tab.mb-4
     +tabItem(isSamePath(`/media/${medium.id}`))(href=`/media/${medium.id}`)
       i.text-2xl(class="icon-[material-symbols--info-outline]")

@@ -4,3 +4,9 @@ block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[fluent--people-team-20-regular]", name: __("Performers") })
 
 block body
+  +tab.mb-4
+    +tabItem(isSamePath(`/performers/${performer.id}`))(
+      href=`/performers/${performer.id}`
+    )
+      i.text-2xl(class="icon-[material-symbols--info-outline]")
+      span= __("Info")
