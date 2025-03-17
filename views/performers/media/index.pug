@@ -1,0 +1,8 @@
+extends ../_layout.pug
+
+block append body
+  +table
+    each medium in media
+      +tr
+        +td
+          include /media/_widget.pug

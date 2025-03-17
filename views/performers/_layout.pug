@@ -10,3 +10,8 @@ block body
     )
       i.text-2xl(class="icon-[material-symbols--info-outline]")
       span= __("Info")
+    +tabItem(isSamePath(`/performers/${performer.id}/media`))(
+      href=`/performers/${performer.id}/media`
+    )
+      i.text-2xl(class="icon-[ph--play]")
+      span= __("Media")
