@@ -20,4 +20,19 @@ describe("The performer media index page", () => {
         expect(res.text).toContain(medium2.title);
       });
   });
+
+  it("can request the list part of the page", async () => {
+    const performer = await createPerformer();
+    const medium = await createMedium();
+
+    await performer.$add("medium", medium);
+
+    await supertest(express)
+      .get(`/performers/${performer.id}/media?_list`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(medium.title);
+        expect(res.text).toContain(`/media/${medium.id}`);
+      });
+  });
 });

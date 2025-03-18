@@ -1,8 +1,16 @@
 extends ../_layout.pug
 
 block append body
-  +table
-    each medium in media
-      +tr
-        +td
-          include /media/_widget.pug
+  +buttonGroup.mb-4
+    +buttonInGroup(
+      hx-get=`/performers/${performer.id}/media/add`,
+      hx-target="#modal"
+    )
+      i.text-xl(class="icon-[material-symbols--add]")
+      span= __("Add")
+
+  #refresh-media(
+    hx-get=`/performers/${performer.id}/media?_list`,
+    hx-trigger="refresh-media from:body"
+  )
+    include _list.pug
