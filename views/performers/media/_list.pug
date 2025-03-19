@@ -4,4 +4,10 @@ include /_mixin.pug
   each medium in media
     +tr
       +td
+        +button(
+          hx-delete=`/performers/${performer.id}/media/${medium.id}/confirm`,
+          hx-target="#modal"
+        )
+          i.text-2xl(class="icon-[iconamoon--close-light]")
+      +td
         include /media/_widget.pug

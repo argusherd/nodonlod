@@ -57,4 +57,17 @@ router.post("/:medium", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", ["close-modal", "refresh-media"]).sendStatus(205);
 });
 
+router.delete("/:medium/confirm", (req: MediumRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: "Are you sure you want to remove this medium?",
+    route: `/performers/${req.performer.id}/media/${req.medium.id}`,
+  });
+});
+
+router.delete("/:medium", async (req: MediumRequest, res) => {
+  await req.performer.$remove("medium", req.medium);
+
+  res.set("HX-Trigger", ["close-modal", "refresh-media"]).sendStatus(204);
+});
+
 export default router;
