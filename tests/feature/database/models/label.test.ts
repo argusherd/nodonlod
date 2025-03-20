@@ -3,6 +3,7 @@ import Labelable from "@/database/models/labelable";
 import {
   createLabel,
   createMedium,
+  createPerformer,
   createPlaylist,
 } from "../../setup/create-model";
 
@@ -39,6 +40,24 @@ describe("The label model", () => {
     expect(playlistIds).toContain(playlist1.id);
     expect(playlistIds).toContain(playlist2.id);
     expect(labelable?.labelableType).toEqual("playlist");
+  });
+
+  it("can belong to many performers", async () => {
+    const label = await createLabel();
+    const performer1 = await createPerformer();
+    const performer2 = await createPerformer();
+
+    await label.$add("performer", [performer1, performer2]);
+
+    const performerIds = (await label.$get("performers")).map(
+      (performer) => performer.id,
+    );
+    const labelable = await Labelable.findOne();
+
+    expect(performerIds).toHaveLength(2);
+    expect(performerIds).toContain(performer1.id);
+    expect(performerIds).toContain(performer2.id);
+    expect(labelable?.labelableType).toEqual("performer");
   });
 
   it("can search category or text at same time", async () => {

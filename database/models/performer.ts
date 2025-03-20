@@ -11,6 +11,8 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
+import Label from "./label";
+import Labelable from "./labelable";
 import Medium from "./medium";
 import Performable from "./performable";
 
@@ -63,4 +65,10 @@ export default class Performer extends Model<
     foreignKey: "performerId",
   })
   media: Medium[];
+
+  @BelongsToMany(() => Label, {
+    through: { model: () => Labelable, scope: { labelableType: "performer" } },
+    foreignKey: "labelableId",
+  })
+  labels: Label[];
 }

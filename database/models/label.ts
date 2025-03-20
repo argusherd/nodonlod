@@ -14,6 +14,7 @@ import {
 } from "sequelize-typescript";
 import Labelable from "./labelable";
 import Medium from "./medium";
+import Performer from "./performer";
 import Playlist from "./playlist";
 
 interface OptionalLabelCreationAttributes {
@@ -78,4 +79,10 @@ export default class Label extends Model<
     foreignKey: "labelId",
   })
   playlists: Playlist[];
+
+  @BelongsToMany(() => Performer, {
+    through: { model: () => Labelable, scope: { labelableType: "performer" } },
+    foreignKey: "labelId",
+  })
+  performers: Performer[];
 }
