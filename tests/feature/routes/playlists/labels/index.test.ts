@@ -14,6 +14,7 @@ describe("The playlist labels index page", () => {
       .get(`/playlists/${playlist.id}/labels`)
       .expect(200)
       .expect((res) => {
+        expect(res.text).toContain(`/playlists/${playlist.id}/labels/add`);
         expect(res.text).toContain(label1.text);
         expect(res.text).toContain(label2.text);
       });

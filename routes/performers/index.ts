@@ -3,6 +3,7 @@ import { body, validationResult } from "express-validator";
 import Performer from "../../database/models/performer";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import labelRouter from "./labels";
 import mediumRouter from "./media";
 
 export interface PerformerRequest extends HasPageRequest {
@@ -95,6 +96,7 @@ router.delete("/:performer", async (req: PerformerRequest, res) => {
   res.set("HX-Location", "/performers").sendStatus(204);
 });
 
+router.use("/:performer/labels", labelRouter);
 router.use("/:performer/media", mediumRouter);
 
 export default router;
