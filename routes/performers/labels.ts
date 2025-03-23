@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { PerformerRequest } from ".";
 import Label from "../../database/models/label";
+import { __ } from "../middlewares/i18n";
 
 interface LabelRequest extends PerformerRequest {
   label: Label;
@@ -57,6 +58,19 @@ router.post("/:label", async (req: LabelRequest, res) => {
   await req.performer.$add("label", req.label);
 
   res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
+});
+
+router.delete("/:label/confirm", async (req: LabelRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: __("Are you sure you want to remove this label?"),
+    route: `/performers/${req.performer.id}/labels/${req.label.id}`,
+  });
+});
+
+router.delete("/:label", async (req: LabelRequest, res) => {
+  await req.performer.$remove("label", req.label);
+
+  res.set("HX-Trigger", "refresh-labels").sendStatus(205);
 });
 
 export default router;
