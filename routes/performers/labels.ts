@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
 import { PerformerRequest } from ".";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
@@ -34,6 +35,35 @@ router.get("/", async (req: PerformerRequest, res) => {
     labels,
   });
 });
+
+router.get("/create", (req: PerformerRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("labels/create", {
+    basePath: `/performers/${req.performer.id}`,
+  });
+});
+
+router.post(
+  "/",
+  body("text").notEmpty().withMessage(__("The text is missing.")),
+  async (req: PerformerRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const [label] = await Label.findOrCreate({
+        where: { category: req.body.category || null, text: req.body.text },
+      });
+
+      await req.performer.$add("label", label);
+
+      res.set("HX-Trigger", ["close-modal", "refresh-labels"]).sendStatus(205);
+    } else {
+      res.status(422).render("labels/create", {
+        basePath: `/performers/${req.performer.id}`,
+        errors: errors.mapped(),
+      });
+    }
+  },
+);
 
 router.get("/add", async (req: PerformerRequest, res) => {
   const labels = await Label.scope({
