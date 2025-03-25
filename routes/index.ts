@@ -7,6 +7,7 @@ import neatDuration from "../src/neat-duration";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
+import labelRouter from "./labels";
 import mediumRouter from "./media/index";
 import i18nMiddleware from "./middlewares/i18n";
 import pagination from "./middlewares/pagination";
@@ -55,6 +56,7 @@ express.use("/player", playerRouter);
 express.use("/electron", electronRouter);
 express.use("/uploaders", uploaderRouter);
 express.use("/performers", performerRouter);
+express.use("/labels", labelRouter);
 express.use("/play", playRouter);
 
 export default express;
