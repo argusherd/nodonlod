@@ -27,7 +27,7 @@ router.get("/", async (req: PerformerRequest, res) => {
   });
 
   const template =
-    "_list" in req.query ? "labels/_list" : "performers/labels/index";
+    "_list" in req.query ? "labelables/_list" : "performers/labels/index";
 
   res.render(template, {
     performer: req.performer,

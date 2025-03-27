@@ -1,0 +1,33 @@
+include /_mixin.pug
+
+- var noCategory = [];
+- var categories = {};
+
+each label in labels
+  if !label.category
+    - noCategory.push(label);
+  else
+    if (label.category in categories == false)
+      - categories[label.category] = [];
+    - categories[label.category].push(label);
+
+mixin labels(labels = [])
+  .flex.flex-wrap.gap-2
+    each label in labels
+      +buttonGroup
+        +buttonInGroup= label.text
+        +buttonInGroup(
+          hx-delete=`${basePath}/labels/${label.id}/confirm`,
+          hx-target="#modal"
+        )
+          i.text-xl(class="icon-[iconamoon--close-light]")
+
+if noCategory.length
+  .mb-2
+    +labels(noCategory)
+
+if Object.keys(categories).length
+  +list
+    each labels, category in categories
+      +listItem(__(category))
+        +labels(labels)

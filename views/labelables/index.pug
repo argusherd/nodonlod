@@ -1,0 +1,23 @@
+include /_mixin.pug
+
++buttonGroup.mb-4
+  +buttonInGroup(
+    hx-get=`${basePath}/labels/add`,
+    hx-target="#modal",
+    type="button"
+  )
+    i.text-xl(class="icon-[material-symbols--add]")
+    span= __("Add")
+  +buttonInGroup(
+    hx-get=`${basePath}/labels/create`,
+    hx-target="#modal",
+    type="button"
+  )
+    i.text-xl(class="icon-[gridicons--create]")
+    span= __("Create")
+
+#labels(
+  hx-get=`${basePath}/labels?_list`,
+  hx-trigger="refresh-labels from:body"
+)
+  include _list.pug
