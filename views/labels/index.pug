@@ -1,23 +1,40 @@
-include /_mixin.pug
+extends /_layout.pug
 
-+buttonGroup.mb-4
-  +buttonInGroup(
-    hx-get=`${basePath}/labels/add`,
-    hx-target="#modal",
-    type="button"
-  )
-    i.text-xl(class="icon-[material-symbols--add]")
-    span= __("Add")
-  +buttonInGroup(
-    hx-get=`${basePath}/labels/create`,
-    hx-target="#modal",
-    type="button"
-  )
-    i.text-xl(class="icon-[gridicons--create]")
-    span= __("Create")
+mixin labels(labels = [])
+  .flex.flex-wrap.gap-2
+    each label in labels
+      +button(href=`/labels/${label.id}`)= label.text
 
-#labels(
-  hx-get=`${basePath}/labels?_list`,
-  hx-trigger="refresh-labels from:body"
-)
-  include _list.pug
+block append breadcrumb
+  +breadcrumb({ href: "/labels", icon: "icon-[mynaui--label]", name: __("Label") })
+
+block append body
+  +buttonGroup.mb-4
+    +buttonInGroup(
+      hx-get="/labels/create",
+      hx-target="#modal",
+      type="button"
+    )
+      i.text-2xl(class="icon-[gridicons--create]")
+      span= __("Create")
+
+  - var noCategory = [];
+  - var categories = {};
+
+  each label in labels
+    if !label.category
+      - noCategory.push(label);
+    else
+      if (label.category in categories == false)
+        - categories[label.category] = [];
+      - categories[label.category].push(label);
+
+  if noCategory.length
+    .mb-2
+      +labels(noCategory)
+
+  if Object.keys(categories).length
+    +list.mb-4
+      each labels, category in categories
+        +listItem(__(category))
+          +labels(labels)
