@@ -1,0 +1,12 @@
+extends _layout.pug
+
+block append body
+  +list
+    +listItem(__("Text"))
+      +input.w-full(name="text", value=label.text)
+    +listItem(__("Category"))
+      +input.w-full(name="category", value=label.category)
+    +listItem(__("Created At"))
+      span= dayjs(label.createdAt).format("YYYY-MM-DD HH:mm:ss")
+    +listItem(__("Updated At"))
+      span= dayjs(label.updatedAt).format("YYYY-MM-DD HH:mm:ss")
