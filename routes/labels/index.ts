@@ -57,4 +57,30 @@ router.get("/:label", (req: LabelRequest, res) => {
   res.render("labels/show", { label: req.label });
 });
 
+router.put(
+  "/:label",
+  body("text")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage("The text is missing."),
+  async (req: LabelRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.label.update({
+        category: req.body.category || null,
+        text: req.body.text,
+      });
+
+      res
+        .set("HX-Trigger", "data-saved")
+        .render("labels/_info", { label: req.label });
+    } else {
+      res
+        .status(422)
+        .set("HX-Trigger", "data-failed")
+        .render("labels/_info", { label: req.label, errors: errors.mapped() });
+    }
+  },
+);
+
 export default router;

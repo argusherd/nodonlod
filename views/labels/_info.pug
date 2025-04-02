@@ -1,0 +1,24 @@
+include /_mixin.pug
+
++list
+  +listItem(__("Text"))
+    - var text = "text" in old ? old.text : label.text;
+    +input.w-full(
+      @input="$dispatch('data-changed')",
+      name="text",
+      value=text
+    )
+    +error('text')
+
+  +listItem(__("Category"))
+    - var category = "category" in old ? old.category : label.category;
+    +input.w-full(
+      @input="$dispatch('data-changed')",
+      name="category",
+      value=category
+    )
+
+  +listItem(__("Created At"))
+    span= dayjs(label.createdAt).format("YYYY-MM-DD HH:mm:ss")
+  +listItem(__("Updated At"))
+    span= dayjs(label.updatedAt).format("YYYY-MM-DD HH:mm:ss")
