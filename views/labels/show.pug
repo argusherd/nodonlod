@@ -9,6 +9,14 @@ block append body
       title=__("Save")
     )
       include /_mixin/button-savable.pug
+    +buttonInGroup(
+      hx-delete=`/labels/${label.id}/confirm`,
+      hx-target="#modal",
+      title=__("Delete"),
+      type="button"
+    )
+      i.text-xl(class="icon-[material-symbols--delete-outline]")
+      span.hidden(class="sm:inline-block")= __("Delete")
 
   #form.mb-4
     include _info.pug
