@@ -2,3 +2,14 @@ extends /_layout.pug
 
 block append breadcrumb
   +breadcrumb({ href: "/labels", icon: "icon-[mynaui--label]", name: __("Label") })
+
+block append body
+  +tab.mb-4
+    +tabItem(isSamePath(`/labels/${label.id}`))(href=`/labels/${label.id}`)
+      i.text-2xl(class="icon-[material-symbols--info-outline]")
+      span= __("Info")
+    +tabItem(isSamePath(`/labels/${label.id}/media`))(
+      href=`/labels/${label.id}/media`
+    )
+      i.text-2xl(class="icon-[ph--play]")
+      span= __("Media")

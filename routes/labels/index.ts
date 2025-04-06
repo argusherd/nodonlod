@@ -3,8 +3,9 @@ import { body, validationResult } from "express-validator";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import mediumRouter from "./media";
 
-interface LabelRequest extends HasPageRequest {
+export interface LabelRequest extends HasPageRequest {
   label: Label;
 }
 
@@ -96,5 +97,7 @@ router.delete("/:label", async (req: LabelRequest, res) => {
 
   res.set("HX-Location", "/labels").sendStatus(205);
 });
+
+router.use("/:label/media", mediumRouter);
 
 export default router;

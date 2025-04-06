@@ -1,0 +1,13 @@
+include /_mixin.pug
+
++table
+  each medium in media
+    +tr
+      +td
+        +button(
+          hx-delete=`/labels/${label.id}/media/${medium.id}/confirm`,
+          hx-target="#modal"
+        )
+          i.text-2xl(class="icon-[iconamoon--close-light]")
+      +td
+        include /media/_widget.pug
