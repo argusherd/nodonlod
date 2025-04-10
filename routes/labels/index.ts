@@ -4,6 +4,7 @@ import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import mediumRouter from "./media";
+import performerRouter from "./performers";
 
 export interface LabelRequest extends HasPageRequest {
   label: Label;
@@ -99,5 +100,6 @@ router.delete("/:label", async (req: LabelRequest, res) => {
 });
 
 router.use("/:label/media", mediumRouter);
+router.use("/:label/performers", performerRouter);
 
 export default router;
