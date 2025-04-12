@@ -1,0 +1,19 @@
+include /_mixin.pug
+
++table.mb-4.w-full
+  +tbody
+    each performer in performers
+      +tr
+        +td
+          .flex.flex-col.gap-2
+            include /performers/_widget.pug
+
+            .w-20(class="sm:w-40")
+              +button.mx-auto(
+                hx-post=`${basePath}/performers/${performer.id}`,
+                hx-swap="none"
+              )
+                i.text-xl(class="icon-[material-symbols--add]")
+                span= __("Add")
+
++paginator(hx-target="#add-performer")

@@ -14,7 +14,7 @@ include /_mixin.pug
     .flex.flex-col.gap-2
       +buttonGroup
         +buttonInGroup(
-          hx-get=`/media/${medium.id}/performers/create`,
+          hx-get=`/media/${medium.id}/performers/add`,
           hx-target="#modal",
           type="button"
         )

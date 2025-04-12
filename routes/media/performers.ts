@@ -62,7 +62,7 @@ router.get("/create", async (req: MediumRequest & HasPageRequest, res) => {
   });
 });
 
-router.get("/search", async (req: MediumRequest & HasPageRequest, res) => {
+router.get("/add", async (req: MediumRequest & HasPageRequest, res) => {
   const { rows: performers, count } = await Performer.findAndCountAll({
     limit: req.perPage,
     offset: req.offset,
@@ -74,8 +74,11 @@ router.get("/search", async (req: MediumRequest & HasPageRequest, res) => {
     },
   });
 
-  res.render("media/performers/_search", {
-    medium: req.medium,
+  const template =
+    "_list" in req.query ? "performers/add/_list" : "performers/add/index";
+
+  res.set("HX-Trigger", "open-modal").render(template, {
+    basePath: `/media/${req.medium.id}`,
     performers,
     count,
   });
