@@ -49,16 +49,16 @@ router.post(
         .set("HX-Trigger", ["close-modal", "refresh-performers"])
         .sendStatus(201);
     } else
-      res.status(422).render("media/performers/create", {
-        medium: req.medium,
+      res.status(422).render("performers/create", {
+        basePath: `/media/${req.medium.id}`,
         errors: errors.mapped(),
       });
   },
 );
 
 router.get("/create", async (req: MediumRequest & HasPageRequest, res) => {
-  res.set("HX-Trigger", "open-modal").render("media/performers/create", {
-    medium: req.medium,
+  res.set("HX-Trigger", "open-modal").render("performers/create", {
+    basePath: `/media/${req.medium.id}`,
   });
 });
 

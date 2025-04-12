@@ -8,6 +8,10 @@ describe("The medium performer create page", () => {
 
     await supertest(express)
       .get(`/media/${medium.id}/performers/create`)
-      .expect(200);
+      .expect(200)
+      .expect("hx-trigger", "open-modal")
+      .expect((res) => {
+        expect(res.text).toContain(`/media/${medium.id}/performers`);
+      });
   });
 });

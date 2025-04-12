@@ -1,6 +1,6 @@
 include /_mixin.pug
 
-form(action="/performers", hx-target="#modal", method="post")
+form(action=`${basePath}/performers`, hx-target="#modal", method="post")
   h2.mb-4.text-lg.font-bold.text-gray-700(class="dark:text-gray-300")= __("Create a new performer")
 
   +list.mb-4

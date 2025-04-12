@@ -20,6 +20,13 @@ include /_mixin.pug
         )
           i.text-xl(class="icon-[material-symbols--add]")
           span= __("Add")
+        +buttonInGroup(
+          hx-get=`/media/${medium.id}/performers/create`,
+          hx-target="#modal",
+          type="button"
+        )
+          i.text-xl(class="icon-[gridicons--create]")
+          span= __("Create")
 
       #performers.flex.flex-wrap.gap-2(
         hx-get=`/media/${medium.id}/performers`,

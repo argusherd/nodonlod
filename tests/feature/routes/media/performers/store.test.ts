@@ -21,7 +21,11 @@ describe("The medium performer store route", () => {
       .post(`/media/${medium.id}/performers`)
       .type("form")
       .send({ name: "foo" })
-      .expect(201);
+      .expect(201)
+      .expect((res) => {
+        expect(res.headers["hx-trigger"]).toContain("close-modal");
+        expect(res.headers["hx-trigger"]).toContain("refresh-performers");
+      });
 
     const performers = await medium.$get("performers");
 
