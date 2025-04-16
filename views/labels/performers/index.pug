@@ -8,6 +8,12 @@ block append body
     )
       i.text-xl(class="icon-[material-symbols--add]")
       span= __("Add")
+    +buttonInGroup(
+      hx-get=`/labels/${label.id}/performers/create`,
+      hx-target="#modal"
+    )
+      i.text-xl(class="icon-[gridicons--create]")
+      span= __("Create")
 
   #performers(
     hx-get=`/labels/${label.id}/performers?_list`,

@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import { LabelRequest } from ".";
 import Performer from "../../database/models/performer";
+import { __ } from "../middlewares/i18n";
 
 interface PerformerRequest extends LabelRequest {
   performer: Performer;
@@ -29,6 +31,40 @@ router.get("/", async (req: LabelRequest, res) => {
   res.render(template, {
     label: req.label,
     performers: await req.label.$get("performers"),
+  });
+});
+
+router.post(
+  "/",
+  body("name")
+    .notEmpty({ ignore_whitespace: true })
+    .withMessage(__("The name is missing.")),
+  async (req: LabelRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      const performer = await Performer.create({
+        name: req.body.name,
+        thumbnail: req.body.thumbnail || null,
+        description: req.body.description || null,
+      });
+
+      await req.label.$add("performer", performer);
+
+      res
+        .set("HX-Trigger", ["close-modal", "refresh-performers"])
+        .sendStatus(201);
+    } else
+      res.status(422).render("performers/create", {
+        basePath: `/labels/${req.label.id}`,
+        errors: errors.mapped(),
+      });
+  },
+);
+
+router.get("/create", async (req: LabelRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("performers/create", {
+    basePath: `/labels/${req.label.id}`,
   });
 });
 
