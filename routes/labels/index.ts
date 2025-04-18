@@ -5,6 +5,7 @@ import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import mediumRouter from "./media";
 import performerRouter from "./performers";
+import playlistRouter from "./playlists";
 
 export interface LabelRequest extends HasPageRequest {
   label: Label;
@@ -101,5 +102,6 @@ router.delete("/:label", async (req: LabelRequest, res) => {
 
 router.use("/:label/media", mediumRouter);
 router.use("/:label/performers", performerRouter);
+router.use("/:label/playlists", playlistRouter);
 
 export default router;

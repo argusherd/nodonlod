@@ -18,3 +18,8 @@ block append body
     )
       i.text-2xl(class="icon-[fluent--people-team-20-regular]")
       span= __("Performer")
+    +tabItem(isSamePath(`/labels/${label.id}/playlists`))(
+      href=`/labels/${label.id}/playlists`
+    )
+      i.text-2xl(class="icon-[mage--playlist]")
+      span= __("Playlist")

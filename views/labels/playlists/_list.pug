@@ -1,0 +1,17 @@
+include /_mixin.pug
+
++table.mb-4.w-full
+  +tbody
+    each playlist in playlists
+      +tr
+        +td
+          +button.ml-auto(
+            hx-delete=`/labels/${label.id}/playlists/${playlist.id}`,
+            hx-swap="none",
+            title=__("Remove")
+          )
+            i.text-xl(class="icon-[iconamoon--close-light]")
+
+        +td
+          .flex.items-center.gap-2
+            include /playlists/_widget.pug
