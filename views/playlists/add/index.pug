@@ -2,7 +2,7 @@ include /_mixin.pug
 
 .mb-2.flex.gap-2
   +input.grow(
-    hx-get=`${basePath}/add?_list`,
+    hx-get=`${basePath}/playlists/add?_list`,
     hx-target="#search-result",
     hx-trigger="input changed delay:500ms, load",
     name="title",
