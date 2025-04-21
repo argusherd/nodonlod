@@ -96,4 +96,17 @@ router.post("/:playlist", async (req: PlaylistRequest, res) => {
   res.set("HX-Trigger", ["close-modal", "refresh-playlists"]).sendStatus(205);
 });
 
+router.delete("/:playlist/confirm", (req: PlaylistRequest, res) => {
+  res.set("HX-Trigger", "open-modal").render("_delete", {
+    message: __("Are you sure you want to remove this playlist?"),
+    route: `/labels/${req.label.id}/playlists/${req.playlist.id}`,
+  });
+});
+
+router.delete("/:playlist", async (req: PlaylistRequest, res) => {
+  await req.label.$remove("playlist", req.playlist);
+
+  res.set("HX-Trigger", "refresh-playlists").sendStatus(205);
+});
+
 export default router;

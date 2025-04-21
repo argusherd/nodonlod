@@ -110,6 +110,16 @@ router.post("/:playlist", async (req: MediumRequest & PlaylistRequest, res) => {
 });
 
 router.delete(
+  "/:playlist/confirm",
+  (req: MediumRequest & PlaylistRequest, res) => {
+    res.set("HX-Trigger", "open-modal").render("_delete", {
+      message: __("Are you sure you want to remove this playlist?"),
+      route: `/media/${req.medium.id}/playlists/${req.playlist.id}`,
+    });
+  },
+);
+
+router.delete(
   "/:playlist",
   async (req: MediumRequest & PlaylistRequest, res) => {
     await req.medium.$remove("playlist", req.playlist);

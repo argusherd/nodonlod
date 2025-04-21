@@ -6,8 +6,8 @@ include /_mixin.pug
       +tr
         +td
           +button.ml-auto(
-            hx-delete=`/labels/${label.id}/playlists/${playlist.id}`,
-            hx-swap="none",
+            hx-delete=`/labels/${label.id}/playlists/${playlist.id}/confirm`,
+            hx-target="#modal",
             title=__("Remove")
           )
             i.text-xl(class="icon-[iconamoon--close-light]")
