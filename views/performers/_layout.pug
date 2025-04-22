@@ -20,3 +20,8 @@ block body
     )
       i.text-2xl(class="icon-[ph--play]")
       span= __("Media")
+    +tabItem(isSamePath(`/performers/${performer.id}/playlists`))(
+      href=`/performers/${performer.id}/playlists`
+    )
+      i.text-2xl(class="icon-[mage--playlist]")
+      span= __("Playlist")
