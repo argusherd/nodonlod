@@ -1,25 +1,38 @@
-import Medium from "@/database/models/medium";
 import express from "@/routes";
-import * as playModule from "@/src/currently-playing";
 import mediaPlayer from "@/src/media-player";
+import dayjs from "dayjs";
 import supertest from "supertest";
 import { createMedium } from "../../setup/create-model";
 
 describe("The medium play route", () => {
   it("instructs the application to play the medium", async () => {
-    await createMedium();
-
-    const medium = await Medium.findOne();
+    const medium = await createMedium();
     const mockedPlay = jest.fn();
 
-    jest.spyOn(playModule, "play").mockImplementation(mockedPlay);
+    jest.spyOn(mediaPlayer, "play").mockImplementation(mockedPlay);
+
+    await supertest(express).get(`/media/${medium.id}/play`).expect(200);
+
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url);
+  });
+
+  it("displays the current medium and the next medium you can play", async () => {
+    const medium = await createMedium();
+    const nextMedium = await createMedium({
+      createdAt: dayjs().subtract(1, "day").toDate(),
+    });
+
+    jest.spyOn(mediaPlayer, "play").mockImplementation();
 
     await supertest(express)
-      .get(`/media/${medium?.id}/play`)
-      .expect(202)
-      .expect("HX-Trigger", "show-playing");
-
-    expect(mockedPlay).toHaveBeenCalledWith(medium);
+      .get(`/media/${medium.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        console.log(res.text);
+        expect(res.text).toContain(`/media/${medium.id}`);
+        expect(res.text).toContain(medium.title);
+        expect(res.text).toContain(`/media/${nextMedium.id}/play`);
+      });
   });
 
   it("cannot instruct the media player to play a medium that does not exist", async () => {

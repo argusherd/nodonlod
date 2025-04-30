@@ -22,10 +22,7 @@ mixin controlIcon(iconClass="")
     .space-y-6.rounded-t-xl.border.border-slate-100.bg-white.p-4.pb-6.transition-all.transition-all.duration-500.duration-500(
       class="sm:min-w-96 sm:space-y-8 sm:p-10 sm:pb-8 lg:space-y-6 lg:p-6 xl:space-y-8 xl:p-10 xl:pb-8 dark:border-transparent dark:border-b-slate-500 dark:bg-slate-800"
     )
-      .flex.items-center.space-x-4(
-        hx-get="/play",
-        hx-trigger="show-playing from:body"
-      )
+      #show-playing
 
       .space-y-2
         .group.relative(
@@ -75,8 +72,13 @@ mixin controlIcon(iconClass="")
               x-text="dayjs.neatDuration(duration)"
             )
     .flex.items-center.rounded-b-xl.bg-slate-50.text-slate-500.transition-all.transition-all.duration-500.duration-500(
-      @last-one-played.window="isLastOne = true",
-      @not-last-one.window="isLastOne = false",
+      @track-ended.window=`
+        if (currentNextMode) {
+          if (currentRepeatMode == RepeatMode.Single) $dispatch('replay')
+          else if (currentNextMode == NextMode.Random) $dispatch('play-random')
+          else $dispatch('play-next')
+        }
+      `,
       class="dark:bg-slate-600 dark:text-slate-200",
       x-data=`{
         NextMode: {
@@ -91,9 +93,12 @@ mixin controlIcon(iconClass="")
         },
         currentNextMode: 0,
         currentRepeatMode: 0,
-        isLastOne: false,
       }`
     )
+      #next-medium
+
+      #random-medium
+
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
         button.flex.items-center.text-2xl(
           @click="currentNextMode = (currentNextMode + 1) % Object.keys(NextMode).length"
@@ -168,22 +173,9 @@ mixin controlIcon(iconClass="")
           +controlIcon("icon-[material-symbols--replay]")
 
       .flex.flex-auto.items-center.justify-evenly.gap-1.px-1
-        input(
-          :value="currentNextMode == NextMode.Random ? true : ''",
-          name="isRandom",
-          type="hidden"
-        )
-        button#repeat-btn.text-2xl(
-          @track-ended.window=`
-            if (currentRepeatMode == RepeatMode.Single) $dispatch('replay')
-            else if (currentRepeatMode == RepeatMode.All) $dispatch('play-next')
-            else if (currentNextMode == NextMode.Random) $dispatch('play-next')
-            else if (currentNextMode != NextMode.Not && !isLastOne) $dispatch('play-next')
-          `,
+        button.text-2xl(
+          @click="$dispatch('play-next')",
           class="icon-[mdi--next-title]",
-          hx-include="[name='isRandom']",
-          hx-put="/play/next",
-          hx-trigger="play-next from:body, click",
           type="button"
         )
 

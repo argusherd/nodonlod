@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import Medium from "../../database/models/medium";
 import Performer from "../../database/models/performer";
 import PlayQueue from "../../database/models/play-queue";
-import { play } from "../../src/currently-playing";
+import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import chapterRouter from "./chapters";
@@ -82,9 +83,31 @@ router.put(
 );
 
 router.get("/:medium/play", async (req: MediumRequest, res) => {
-  await play(req.medium);
+  mediaPlayer.play(req.medium.url);
 
-  res.set("HX-Trigger", "show-playing").sendStatus(202);
+  let nextMedium = await Medium.findOne({
+    where: {
+      createdAt: { [Op.lte]: req.medium.createdAt },
+      id: { [Op.not]: req.medium.id },
+    },
+    order: [["createdAt", "DESC"], "id"],
+  });
+
+  if (!nextMedium)
+    nextMedium = await Medium.findOne({ order: [["createdAt", "DESC"], "id"] });
+
+  const count = await Medium.count();
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomMedium = await Medium.findOne({
+    offset: randomOffset,
+  });
+
+  res.render("player/show", {
+    medium: req.medium,
+    from: `/media/${req.medium.id}`,
+    next: `/media/${nextMedium?.id}/play`,
+    random: `/media/${randomMedium?.id}/play`,
+  });
 });
 
 router.post("/:medium/queue", async (req: MediumRequest, res) => {
