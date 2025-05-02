@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import { PlaylistRequest } from ".";
 import Chapter from "../../database/models/chapter";
 import Medium from "../../database/models/medium";
 import Playlistable from "../../database/models/playlistable";
-import { play } from "../../src/currently-playing";
+import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 
 interface PlaylistableRequest extends PlaylistRequest {
@@ -80,9 +81,41 @@ router.delete("/:playlistable", async (req: PlaylistableRequest, res) => {
 });
 
 router.get("/:playlistable/play", async (req: PlaylistableRequest, res) => {
-  await play(req.playlistable);
+  const medium = await req.playlistable.$get("medium");
+  const chapter = await req.playlistable.$get("chapter");
 
-  res.set("HX-Trigger", "show-playing").sendStatus(202);
+  mediaPlayer.play(medium?.url || "", chapter?.startTime, chapter?.endTime);
+
+  let nextPlaylistable = await Playlistable.findOne({
+    where: {
+      playlistId: req.playlist.id,
+      order: { [Op.gt]: req.playlistable.order },
+    },
+    order: ["order"],
+  });
+
+  if (!nextPlaylistable)
+    nextPlaylistable = await Playlistable.findOne({
+      where: { playlistId: req.playlist.id },
+      order: ["order"],
+    });
+
+  const count = await req.playlist.$count("playlistables");
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomPlaylistable = await Playlistable.findOne({
+    where: { playlistId: req.playlist.id },
+    offset: randomOffset,
+    order: ["order"],
+  });
+
+  res.render("player/show", {
+    playlist: req.playlist,
+    medium,
+    chapter,
+    from: `/playlists/${req.playlist.id}/playlistables`,
+    next: `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`,
+    random: `/playlists/${req.playlist.id}/playlistables/${randomPlaylistable?.id}/play`,
+  });
 });
 
 export default router;
