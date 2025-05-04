@@ -1,7 +1,9 @@
 import { Router } from "express";
+import { Op } from "sequelize";
 import Chapter from "../../database/models/chapter";
+import Medium from "../../database/models/medium";
 import PlayQueue from "../../database/models/play-queue";
-import { play } from "../../src/currently-playing";
+import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import playlistRouter from "./playlists";
@@ -24,9 +26,39 @@ router.param("chapter", async (req: ChapterRequest, res, next) => {
 });
 
 router.get("/:chapter/play", async (req: ChapterRequest, res) => {
-  await play(req.chapter);
+  const medium = (await req.chapter.$get("medium")) as Medium;
 
-  res.set("HX-Trigger", "show-playing").sendStatus(202);
+  mediaPlayer.play(medium.url, req.chapter.startTime, req.chapter.endTime);
+
+  let nextChapter = await Chapter.findOne({
+    where: {
+      startTime: { [Op.gt]: req.chapter.startTime },
+      mediumId: medium.id,
+    },
+    order: ["startTime"],
+  });
+
+  if (!nextChapter)
+    nextChapter = await Chapter.findOne({
+      where: { mediumId: medium.id },
+      order: ["startTime"],
+    });
+
+  const count = await medium.$count("chapters");
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomChapter = await Chapter.findOne({
+    where: { mediumId: medium.id },
+    offset: randomOffset,
+    order: ["startTime"],
+  });
+
+  res.render("player/show", {
+    medium,
+    chapter: req.chapter,
+    from: `/media/${medium.id}/chapters`,
+    next: `/chapters/${nextChapter?.id}/play`,
+    random: `/chapters/${randomChapter?.id}/play`,
+  });
 });
 
 router.post("/:chapter/queue", async (req: ChapterRequest, res) => {
