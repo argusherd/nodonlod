@@ -28,7 +28,6 @@ describe("The medium play route", () => {
       .get(`/media/${medium.id}/play`)
       .expect(200)
       .expect((res) => {
-        console.log(res.text);
         expect(res.text).toContain(`/media/${medium.id}`);
         expect(res.text).toContain(medium.title);
         expect(res.text).toContain(`/media/${nextMedium.id}/play`);

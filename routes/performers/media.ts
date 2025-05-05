@@ -2,6 +2,8 @@ import { Router } from "express";
 import { Op } from "sequelize";
 import { PerformerRequest } from ".";
 import Medium from "../../database/models/medium";
+import Performer from "../../database/models/performer";
+import mediaPlayer from "../../src/media-player";
 
 interface MediumRequest extends PerformerRequest {
   medium: Medium;
@@ -55,6 +57,39 @@ router.post("/:medium", async (req: MediumRequest, res) => {
   await req.performer.$add("medium", req.medium);
 
   res.set("HX-Trigger", ["close-modal", "refresh-media"]).sendStatus(205);
+});
+
+router.get("/:medium/play", async (req: MediumRequest, res) => {
+  mediaPlayer.play(req.medium.url);
+
+  let nextMedium = await Medium.findOne({
+    include: { model: Performer, where: { id: req.performer.id } },
+    where: {
+      createdAt: { [Op.gte]: req.medium.createdAt },
+      id: { [Op.not]: req.medium.id },
+    },
+    order: ["createdAt"],
+  });
+
+  if (!nextMedium)
+    nextMedium = await Medium.findOne({
+      include: { model: Performer, where: { id: req.performer.id } },
+      order: ["createdAt"],
+    });
+
+  const count = await req.performer.$count("media");
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomMedium = await Medium.findOne({
+    include: { model: Performer, where: { id: req.performer.id } },
+    offset: randomOffset,
+  });
+
+  res.render("player/show", {
+    medium: req.medium,
+    from: `/performers/${req.performer.id}/media`,
+    next: `/performers/${req.performer.id}/media/${nextMedium?.id}/play`,
+    random: `/performers/${req.performer.id}/media/${randomMedium?.id}/play`,
+  });
 });
 
 router.delete("/:medium/confirm", (req: MediumRequest, res) => {

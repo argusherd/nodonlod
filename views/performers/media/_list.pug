@@ -4,10 +4,17 @@ include /_mixin.pug
   each medium in media
     +tr
       +td
-        +button(
-          hx-delete=`/performers/${performer.id}/media/${medium.id}/confirm`,
-          hx-target="#modal"
-        )
-          i.text-2xl(class="icon-[iconamoon--close-light]")
+        +verticalButtonGroup
+          +buttonInGroup(
+            hx-get=`/performers/${performer.id}/media/${medium.id}/play`,
+            hx-swap="none",
+            title=__("Play media from this performer")
+          )
+            i.text-2xl(class="icon-[teenyicons--play-solid]")
+          +buttonInGroup(
+            hx-delete=`/performers/${performer.id}/media/${medium.id}/confirm`,
+            hx-target="#modal"
+          )
+            i.text-2xl(class="icon-[iconamoon--close-light]")
       +td
         include /media/_widget.pug
