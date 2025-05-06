@@ -1,7 +1,9 @@
 import { Router } from "express";
 import { Op } from "sequelize";
 import { LabelRequest } from ".";
+import Label from "../../database/models/label";
 import Medium from "../../database/models/medium";
+import mediaPlayer from "../../src/media-player";
 
 interface MediumRequest extends LabelRequest {
   medium: Medium;
@@ -53,6 +55,39 @@ router.post("/:medium", async (req: MediumRequest, res) => {
   await req.label.$add("medium", req.medium);
 
   res.set("HX-Trigger", ["close-modal", "refresh-media"]).sendStatus(205);
+});
+
+router.get("/:medium/play", async (req: MediumRequest, res) => {
+  mediaPlayer.play(req.medium.url);
+
+  let nextMedium = await Medium.findOne({
+    include: { model: Label, required: true, where: { id: req.label.id } },
+    where: {
+      title: { [Op.gte]: req.medium.title },
+      id: { [Op.not]: req.medium.id },
+    },
+    order: ["title"],
+  });
+
+  if (!nextMedium)
+    nextMedium = await Medium.findOne({
+      include: { model: Label, required: true, where: { id: req.label.id } },
+      order: ["title"],
+    });
+
+  const count = await req.label.$count("media");
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomMedium = await Medium.findOne({
+    include: { model: Label, required: true, where: { id: req.label.id } },
+    offset: randomOffset,
+  });
+
+  res.render("player/show", {
+    medium: req.medium,
+    from: `/labels/${req.label.id}/media`,
+    next: `/labels/${req.label.id}/media/${nextMedium?.id}/play`,
+    random: `/labels/${req.label.id}/media/${randomMedium?.id}/play`,
+  });
 });
 
 router.delete("/:medium/confirm", (req: MediumRequest, res) => {
