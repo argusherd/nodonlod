@@ -4,7 +4,8 @@ import { Op } from "sequelize";
 import Chapter from "../database/models/chapter";
 import Medium from "../database/models/medium";
 import PlayQueue from "../database/models/play-queue";
-import { currentlyPlaying, play } from "../src/currently-playing";
+import { currentlyPlaying } from "../src/currently-playing";
+import mediaPlayer from "../src/media-player";
 import { __ } from "./middlewares/i18n";
 
 interface HasPlayQueue extends Request {
@@ -84,9 +85,32 @@ router.put(
 );
 
 router.get("/:playQueue/play", async (req: HasPlayQueue, res) => {
-  await play(req.playQueue);
+  const medium = (await req.playQueue.$get("medium")) as Medium;
+  const chapter = await req.playQueue.$get("chapter");
 
-  res.set("HX-Trigger", "show-playing").sendStatus(205);
+  mediaPlayer.play(medium.url, chapter?.startTime, chapter?.endTime);
+
+  let nextQueue = await PlayQueue.findOne({
+    where: { order: { [Op.gt]: req.playQueue.order } },
+    order: ["order"],
+  });
+
+  if (!nextQueue) nextQueue = await PlayQueue.findOne({ order: ["order"] });
+
+  const count = await PlayQueue.count();
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomQueue = await PlayQueue.findOne({
+    offset: randomOffset,
+    order: ["order"],
+  });
+
+  res.render("player/show", {
+    medium,
+    chapter,
+    from: chapter ? `/media/${medium.id}/chapters` : `/media/${medium.id}`,
+    next: `/play-queues/${nextQueue?.id}/play`,
+    random: `/play-queues/${randomQueue?.id}`,
+  });
 });
 
 export default router;

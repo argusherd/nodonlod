@@ -1,21 +1,51 @@
-import PlayQueue from "@/database/models/play-queue";
 import express from "@/routes";
-import * as playModule from "@/src/currently-playing";
+import mediaPlayer from "@/src/media-player";
 import supertest from "supertest";
-import { createPlayQueue } from "../../setup/create-model";
+import {
+  createChapter,
+  createMedium,
+  createPlayQueue,
+} from "../../setup/create-model";
 
 describe("The play the item in the play queue route", () => {
   it("instructs the application to play the item in the play queue", async () => {
-    await createPlayQueue();
-
-    const playQueue = await PlayQueue.findOne();
-    const mockedPlay = jest.spyOn(playModule, "play").mockImplementation();
+    const medium = await createMedium();
+    const chapter = await createChapter({
+      mediumId: medium.id,
+      startTime: 10,
+      endTime: 20,
+    });
+    const playQueue = await createPlayQueue({
+      mediumId: medium.id,
+      chapterId: chapter.id,
+    });
+    const mockedPlay = jest.spyOn(mediaPlayer, "play").mockImplementation();
 
     await supertest(express)
-      .get(`/play-queues/${playQueue?.id}/play`)
-      .expect(205)
-      .expect("HX-Trigger", "show-playing");
+      .get(`/play-queues/${playQueue.id}/play`)
+      .expect(200);
 
-    expect(mockedPlay).toHaveBeenCalledWith(playQueue);
+    expect(mockedPlay).toHaveBeenCalledWith(medium.url, 10, 20);
+  });
+
+  it("displays the current item and next item in the play queue", async () => {
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
+    const playQueue1 = await createPlayQueue({
+      mediumId: medium1.id,
+      order: 1,
+    });
+    const playQueue2 = await createPlayQueue({
+      mediumId: medium2.id,
+      order: 2,
+    });
+
+    await supertest(express)
+      .get(`/play-queues/${playQueue1.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`/media/${medium1.id}`);
+        expect(res.text).toContain(`/play-queues/${playQueue2.id}/play`);
+      });
   });
 });
