@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
+import Chapter from "../../database/models/chapter";
+import Medium from "../../database/models/medium";
 import PlayQueue, {
   PlayQueueCreationAttributes,
 } from "../../database/models/play-queue";
 import Playlist from "../../database/models/playlist";
 import Playlistable from "../../database/models/playlistable";
-import { play } from "../../src/currently-playing";
+import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
 import labelRouter from "./labels";
@@ -103,13 +106,45 @@ router.put(
 
 router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
   const firstItem = await Playlistable.findOne({
+    include: [Medium, Chapter],
     order: [["order", "ASC"]],
     where: { playlistId: req.playlist.id },
   });
 
-  await play(firstItem);
+  if (!firstItem) {
+    res.sendStatus(204);
+    return;
+  }
 
-  res.sendStatus(202);
+  const medium = firstItem?.medium;
+  const chapter = firstItem?.chapter;
+
+  mediaPlayer.play(medium?.url || "", chapter?.startTime, chapter?.endTime);
+
+  const nextPlaylistable = await Playlistable.findOne({
+    order: ["order"],
+    where: {
+      playlistId: req.playlist.id,
+      order: { [Op.gt]: firstItem?.order },
+    },
+  });
+
+  const count = await req.playlist.$count("playlistables");
+  const randomOffset = Math.floor(Math.random() * count);
+  const randomPlaylistable = await Playlistable.findOne({
+    offset: randomOffset,
+    order: ["order"],
+    where: { playlistId: req.playlist.id },
+  });
+
+  res.render("player/show", {
+    playlist: req.playlist,
+    medium,
+    chapter,
+    from: `/playlists/${req.playlist.id}/playlistables`,
+    next: `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`,
+    random: `/playlists/${req.playlist.id}/playlistables/${randomPlaylistable?.id}/play`,
+  });
 });
 
 router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
