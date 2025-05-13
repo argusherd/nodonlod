@@ -44,8 +44,10 @@ include /_mixin.pug
 
           each item in items
             li(
-              class=`${current && current.id == item.id && "bg-gray-100 dark:bg-gray-800"}`,
+              :class="isCurrent && 'bg-gray-100 dark:bg-gray-800'",
+              @currently-playing.window=`isCurrent = $event.detail.value == "${item.id}"`,
               class="hover:bg-gray-100 dark:hover:bg-gray-800",
+              x-data=`{ isCurrent: ${current && current == item.id} }`,
               x-sort:item=item.id
             )
               .flex.items-center.gap-2.py-1.pr-2
