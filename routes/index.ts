@@ -14,7 +14,6 @@ import pagination from "./middlewares/pagination";
 import queryString from "./middlewares/query-string";
 import reqExposure from "./middlewares/req-exposure";
 import performerRouter from "./performers";
-import playRouter from "./play";
 import playQueueRouter from "./play-queues";
 import playerRouter from "./player";
 import playlistRouter from "./playlists";
@@ -57,6 +56,5 @@ express.use("/electron", electronRouter);
 express.use("/uploaders", uploaderRouter);
 express.use("/performers", performerRouter);
 express.use("/labels", labelRouter);
-express.use("/play", playRouter);
 
 export default express;
