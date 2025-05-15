@@ -38,7 +38,7 @@ router.get("/add", async (req: ChapterRequest, res) => {
     "_list" in req.query ? "playlists/add/_list" : "playlists/add/index";
 
   res.set("HX-Trigger", "open-modal").render(template, {
-    basePath: `/chapters/${req.chapter.id}/playlists`,
+    basePath: `/chapters/${req.chapter.id}`,
     playlists,
     count,
   });
