@@ -20,6 +20,7 @@ interface OptionalPerformerCreationAttributes {
   id: string;
   description: string;
   thumbnail: string;
+  rating: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +54,9 @@ export default class Performer extends Model<
 
   @Column
   thumbnail: string;
+
+  @Column
+  rating: number;
 
   @CreatedAt
   createdAt: Date;

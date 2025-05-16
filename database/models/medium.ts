@@ -33,6 +33,7 @@ interface OptionalMediumCreationAttributes {
   uploaderId: string;
   description: string;
   thumbnail: string | null;
+  rating: number | null;
   ageLimit: number;
   uploadDate: Date;
   createdAt: Date;
@@ -91,6 +92,9 @@ export default class Medium extends Model<
 
   @Column
   thumbnail: string;
+
+  @Column
+  rating: number;
 
   @Default(0)
   @Column

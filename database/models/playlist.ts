@@ -27,6 +27,7 @@ interface OptionalPlaylistCreationAttributes {
   domain: string;
   thumbnail: string;
   description: string;
+  rating: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,6 +72,9 @@ export default class Playlist extends Model<
 
   @Column
   description: string;
+
+  @Column
+  rating: number;
 
   @CreatedAt
   createdAt: Date;

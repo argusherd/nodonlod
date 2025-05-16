@@ -44,6 +44,9 @@ export const up: Migration = async ({ context: queryInterface }) => {
       thumbnail: {
         type: DataType.TEXT,
       },
+      rating: {
+        type: DataType.INTEGER,
+      },
       age_limit: {
         type: DataType.INTEGER,
         defaultValue: 0,

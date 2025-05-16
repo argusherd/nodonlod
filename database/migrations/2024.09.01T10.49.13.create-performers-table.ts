@@ -17,6 +17,9 @@ export const up: Migration = async ({ context: queryInterface }) => {
     thumbnail: {
       type: DataType.TEXT,
     },
+    rating: {
+      type: DataType.INTEGER,
+    },
     created_at: {
       type: DataType.DATE,
     },
