@@ -119,6 +119,20 @@ router.post("/:medium/queue", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
+router.put(
+  "/:medium/rating",
+  body("rating").isInt({ min: 1, max: 5 }).optional(),
+  async (req: MediumRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.medium.update({ rating: req.body.rating || null });
+
+      res.sendStatus(204);
+    } else res.sendStatus(422);
+  },
+);
+
 router.delete("/:medium/confirm", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
     message: __("Are you sure you want to delete this medium?"),

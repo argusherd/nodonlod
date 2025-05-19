@@ -49,6 +49,16 @@ include /_mixin.pug
   +listItem(__("Duration"))
     span= dayjs.neatDuration(medium.duration)
 
+  +listItem(__("Rating"))
+    .flex.gap-1
+      each val in [1, 2, 3, 4 ,5]
+        span.cursor-pointer.text-xl(
+          class=val <= medium.rating ? "icon-[mdi--star]" : "icon-[mdi--star-outline]",
+          hx-put=`/media/${medium.id}/rating`,
+          hx-swap="none",
+          hx-vals=`{"rating": ${val}}`
+        )
+
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : medium.description;
     +textarea#description(
