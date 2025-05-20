@@ -33,3 +33,25 @@ mixin buttonInGroup
       class="hover:bg-gray-100 disabled:cursor-not-allowed sm:px-4 sm:py-2 sm:text-base dark:text-gray-300 dark:hover:bg-gray-800"
     )&attributes(attributes)
       block
+
+mixin setRating(basePath = "", rating = null)
+  .flex.gap-1(
+    @mouseenter="show = true",
+    @mouseleave="show = false",
+    x-data=`{ rating: ${rating}, show: false }`
+  )
+    each val in [1, 2, 3, 4 ,5]
+      span.cursor-pointer.text-xl(
+        :class=`${val} <= rating ? "icon-[mdi--star]" : "icon-[mdi--star-outline]"`,
+        @click=`rating = ${val}`,
+        hx-put=`${basePath}/rating`,
+        hx-swap="none",
+        hx-vals=`{"rating": ${val}}`
+      )
+    span.cursor-pointer.text-xl(
+      @click="rating = null",
+      class="icon-[mdi--star-off]",
+      hx-put=`${basePath}/rating`,
+      hx-swap="none",
+      x-show="show"
+    )
