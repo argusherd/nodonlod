@@ -158,6 +158,20 @@ router.post("/:playlist/queue", async (req: PlaylistRequest, res) => {
   res.set("HX-Trigger", "refresh-play-queues").sendStatus(201);
 });
 
+router.put(
+  "/:playlist/rating",
+  body("rating").isInt({ min: 1, max: 5 }).optional(),
+  async (req: PlaylistRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.playlist.update({ rating: req.body.rating || null });
+
+      res.sendStatus(204);
+    } else res.sendStatus(422);
+  },
+);
+
 router.delete("/:playlist/confirm", (req: PlaylistRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
     message: __("Are you sure you want to delete this playlist?"),

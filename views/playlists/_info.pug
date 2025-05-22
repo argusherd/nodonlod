@@ -17,6 +17,9 @@ include /_mixin.pug
   +listItem(__("Thumbnail"))
     +inputThumbnail(playlist.thumbnail)(@input="$dispatch('data-changed')")
 
+  +listItem(__("Rating"))
+    +setRating(`/playlists/${playlist.id}`, playlist.rating)
+
   +listItem(__("Description"))
     - var description = "description" in old ? old.description : playlist.description;
     +textarea.w-full(
