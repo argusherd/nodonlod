@@ -84,6 +84,20 @@ router.put(
   },
 );
 
+router.put(
+  "/:performer/rating",
+  body("rating").isInt({ min: 1, max: 5 }).optional(),
+  async (req: PerformerRequest, res) => {
+    const errors = validationResult(req);
+
+    if (errors.isEmpty()) {
+      await req.performer.update({ rating: req.body.rating || null });
+
+      res.sendStatus(204);
+    } else res.sendStatus(422);
+  },
+);
+
 router.delete("/:performer/confirm", (req: PerformerRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
     message: __("Are you sure you want to delete this performer?"),
