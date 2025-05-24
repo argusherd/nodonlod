@@ -12,6 +12,13 @@
       href=`/playlists/${playlist.id}`
     ) #{ playlist.title }
 
+    if playlist.rating
+      .flex.gap-1
+        each val in [1, 2, 3, 4 ,5]
+          span.text-xl(
+            class=val <= playlist.rating ? "icon-[mdi--star]" : "icon-[mdi--star-outline]"
+          )
+
     p.line-clamp-3.whitespace-break-spaces.break-all.text-gray-700(
       class="mt-0.5 dark:text-gray-400"
     ) #{ playlist.description }
