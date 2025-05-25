@@ -33,13 +33,28 @@ form.mb-4.flex.flex-col.gap-2(
         )
           i.text-2xl(class="icon-[clarity--directory-line]")
 
-  .flex.gap-2.text-sm.text-gray-600(class="dark:text-gray-300")
-    +input#isConvertible.size-4(
-      checked,
-      name="isConvertible",
-      type="checkbox"
-    )
-    label.cursor-pointer(for="isConvertible")= __("Automatically convert extracted information into playable media")
+  .flex.flex-col.gap-2.text-sm(x-data="{ isConvertible: true }")
+    .flex.gap-2
+      +input#isConvertible.size-4(
+        name="isConvertible",
+        type="checkbox",
+        x-model="isConvertible"
+      )
+      label.cursor-pointer(for="isConvertible")= __("Automatically convert extracted information into playable media")
+
+    .ml-4.flex.gap-2(x-show="isConvertible")
+      +input#shouldPreserveChapters.size-4(
+        name="shouldPreserveChapters",
+        type="checkbox"
+      )
+      label.cursor-pointer(for="shouldPreserveChapters")= __("Also preserve chapters")
+
+    .ml-4.flex.gap-2(x-show="isConvertible")
+      +input#shouldPreserveTags.size-4(
+        name="shouldPreserveTags",
+        type="checkbox"
+      )
+      label.cursor-pointer(for="shouldPreserveTags")= __("Also preserve tags")
 
   .flex.flex-col.gap-2.text-sm(x-data="{ show: false }")
     .flex.flex-wrap.gap-2

@@ -101,4 +101,28 @@ describe("The extraction store route", () => {
       .expect(201)
       .expect("HX-Location", JSON.stringify(location));
   });
+
+  it("can specify the extraction to preserve chapters", async () => {
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: videoURL, shouldPreserveChapters: true })
+      .expect(201);
+
+    const extraction = await Extraction.findOne();
+
+    expect(extraction?.shouldPreserveChapters).toBeTruthy();
+  });
+
+  it("can specify the extraction to preserve tags", async () => {
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: videoURL, shouldPreserveTags: true })
+      .expect(201);
+
+    const extraction = await Extraction.findOne();
+
+    expect(extraction?.shouldPreserveTags).toBeTruthy();
+  });
 });

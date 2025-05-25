@@ -55,6 +55,8 @@ router.post(
         url: req.body.url,
         isContinuous: Boolean(req.body.isContinuous),
         isConvertible: Boolean(req.body.isConvertible),
+        shouldPreserveChapters: Boolean(req.body.shouldPreserveChapters),
+        shouldPreserveTags: Boolean(req.body.shouldPreserveTags),
         page: req.body.page || undefined,
       });
 

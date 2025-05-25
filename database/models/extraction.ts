@@ -19,6 +19,8 @@ interface OptionalExtractionCreationAttributes {
   isProcessing: boolean;
   isContinuous: boolean;
   isConvertible: boolean;
+  shouldPreserveChapters: boolean;
+  shouldPreserveTags: boolean;
   page: number;
   createdAt: Date;
   updatedAt: Date;
@@ -73,6 +75,14 @@ export default class Extraction extends Model<
   @Default(true)
   @Column
   isConvertible: boolean;
+
+  @Default(false)
+  @Column
+  shouldPreserveChapters: boolean;
+
+  @Default(false)
+  @Column
+  shouldPreserveTags: boolean;
 
   @Default(1)
   @Column

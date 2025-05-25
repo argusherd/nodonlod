@@ -30,6 +30,14 @@ export const up: Migration = async ({ context: queryInterface }) => {
       type: DataType.BOOLEAN,
       defaultValue: true,
     },
+    should_preserve_chapters: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
+    should_preserve_tags: {
+      type: DataType.BOOLEAN,
+      defaultValue: false,
+    },
     page: {
       type: DataType.INTEGER,
       defaultValue: 1,

@@ -25,6 +25,9 @@ export default async function processOnePendingExtraction() {
   worker.on("message", async (rawInfo: RawMedium | RawPlaylist) => {
     const converter = new RawInfoConverter();
 
+    converter.shouldPreserveChapters = extraction.shouldPreserveChapters;
+    converter.shouldPreserveTags = extraction.shouldPreserveTags;
+
     if (extraction.isConvertible) await converter.convertAll(rawInfo);
 
     await extraction.update({
