@@ -9,6 +9,19 @@ block body
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
+  form(action="/media")
+    +select(name="sort")
+      option(value="createdAt")= __("Created at")
+      option(value="duration")= __("Duration")
+      option(value="rating")= __("Rating")
+      option(value="title")= __("Title")
+
+    +select(name="sortBy")
+      option(value="asc")= __("ASC")
+      option(value="desc")= __("DESC")
+
+    +button(type="submit")= __("Filter")
+
   .mb-4.flex.flex-col.gap-4
     each medium in media
       include _widget.pug

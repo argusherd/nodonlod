@@ -22,7 +22,7 @@ describe("The medium index page", () => {
       });
   });
 
-  it("lists 10 media based on the createdAt column in descending order per page", async () => {
+  it("lists 10 media based on the createdAt column in descending order per page by default", async () => {
     const inFirstPage: Medium[] = [];
     const inSecondPage = await createMedium({
       createdAt: dayjs().subtract(1, "hour").toDate(),
@@ -66,5 +66,21 @@ describe("The medium index page", () => {
         expect(res.text).toContain(`/performers/${performer1.id}`);
         expect(res.text).toContain(`/performers/${performer2.id}`);
       });
+  });
+
+  it("can only sort the list in ascending or descending order", async () => {
+    await supertest(express).get("/media?sortBy=asc").expect(200);
+    await supertest(express).get("/media?sortBy=desc").expect(200);
+
+    await supertest(express).get("/media?sortBy=foo").expect(422);
+  });
+
+  it("can only sort the list based on createdAt, duration, rating, or title column", async () => {
+    await supertest(express).get("/media?sort=createdAt").expect(200);
+    await supertest(express).get("/media?sort=duration").expect(200);
+    await supertest(express).get("/media?sort=rating").expect(200);
+    await supertest(express).get("/media?sort=title").expect(200);
+
+    await supertest(express).get("/media?sort=description").expect(422);
   });
 });

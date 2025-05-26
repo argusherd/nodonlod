@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
+import { body, oneOf, query, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Medium from "../../database/models/medium";
 import Performer from "../../database/models/performer";
@@ -29,19 +29,44 @@ router.param("medium", async (req: MediumRequest, res, next) => {
   }
 });
 
-router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: media, count } = await Medium.findAndCountAll({
-    limit: req.perPage,
-    include: [{ model: Performer, order: [["name", "ASC"]] }],
-    offset: req.offset,
-    order: [["createdAt", "DESC"]],
-  });
+router.get(
+  "/",
+  oneOf([
+    query("sort").optional().isString().equals("createdAt"),
+    query("sort").optional().isString().equals("duration"),
+    query("sort").optional().isString().equals("rating"),
+    query("sort").optional().isString().equals("title"),
+  ]),
+  oneOf([
+    query("sortBy").optional().isString().toLowerCase().equals("asc"),
+    query("sortBy").optional().isString().toLowerCase().equals("desc"),
+  ]),
+  async (req: HasPageRequest, res) => {
+    const errors = validationResult(req);
 
-  res.render("media/index", {
-    media,
-    count,
-  });
-});
+    if (!errors.isEmpty()) {
+      res.sendStatus(422);
+      return;
+    }
+
+    const { rows: media, count } = await Medium.findAndCountAll({
+      limit: req.perPage,
+      include: [{ model: Performer, order: [["name", "ASC"]] }],
+      offset: req.offset,
+      order: [
+        [
+          (req.query.sort as string) || "createdAt",
+          (req.query.sortBy as string) || "desc",
+        ],
+      ],
+    });
+
+    res.render("media/index", {
+      media,
+      count,
+    });
+  },
+);
 
 router.get("/:medium", async (req: MediumRequest, res) => {
   res.render("media/show", {
