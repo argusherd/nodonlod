@@ -9,18 +9,30 @@ block body
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
-  form(action="/media")
+  form.mb-4.flex.items-center.gap-2(
+    action="/media",
+    hx-trigger="change from:select, change from:input"
+  )
+    - var sort = qs().sort || "createdAt";
+    - var sortBy = qs().sortBy || "desc";
+
     +select(name="sort")
-      option(value="createdAt")= __("Created at")
-      option(value="duration")= __("Duration")
-      option(value="rating")= __("Rating")
-      option(value="title")= __("Title")
+      option(selected=sort == "createdAt", value="createdAt")= __("Created at")
+      option(selected=sort == "duration", value="duration")= __("Duration")
+      option(selected=sort == "rating", value="rating")= __("Rating")
+      option(selected=sort == "title", value="title")= __("Title")
 
-    +select(name="sortBy")
-      option(value="asc")= __("ASC")
-      option(value="desc")= __("DESC")
+    .flex(x-data=`{ sortBy: "${sortBy}" }`)
+      +input.hidden(
+        name="sortBy",
+        x-init="$watch('sortBy', () => $dispatch('change'))",
+        x-model="sortBy"
+      )
 
-    +button(type="submit")= __("Filter")
+      span.cursor-pointer.text-3xl(
+        :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'",
+        @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'"
+      )
 
   .mb-4.flex.flex-col.gap-4
     each medium in media

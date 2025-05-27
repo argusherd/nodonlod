@@ -8,28 +8,32 @@ export interface HasQsResponse extends Response {
 }
 
 export class ParsedQs {
-  query: Record<string, any>;
+  [key: string]: any;
 
-  constructor(query: Record<string, any>) {
-    this.query = Object.assign({}, query);
+  constructor(obj: Record<string, any>) {
+    Object.assign(this, obj);
   }
 
   omit(key: string): ParsedQs {
-    const { [key]: _omitted, ...rest } = this.query;
-
-    this.query = rest;
+    delete this[key];
 
     return this;
   }
 
   set(key: string, value: any): ParsedQs {
-    this.query[key] = value;
+    this[key] = value;
 
     return this;
   }
 
   toString(): string {
-    return stringify(this.query);
+    return stringify(
+      Object.fromEntries(
+        Object.entries(this).filter(
+          ([_, value]) => typeof value !== "function",
+        ),
+      ),
+    );
   }
 }
 
