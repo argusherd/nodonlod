@@ -83,4 +83,25 @@ describe("The medium index page", () => {
 
     await supertest(express).get("/media?sort=description").expect(422);
   });
+
+  it("can search the title and description of media", async () => {
+    const medium1 = await createMedium({ title: "foo" });
+    const medium2 = await createMedium({ description: "bar" });
+
+    await supertest(express)
+      .get(`/media?search=foo`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(medium1.id);
+        expect(res.text).not.toContain(medium2.id);
+      });
+
+    await supertest(express)
+      .get(`/media?search=bar`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(medium2.id);
+        expect(res.text).not.toContain(medium1.id);
+      });
+  });
 });

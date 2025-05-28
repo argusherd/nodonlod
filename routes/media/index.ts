@@ -59,6 +59,14 @@ router.get(
           (req.query.sortBy as string) || "desc",
         ],
       ],
+      where: {
+        ...(req.query.search && {
+          [Op.or]: [
+            { title: { [Op.substring]: req.query.search } },
+            { description: { [Op.substring]: req.query.search } },
+          ],
+        }),
+      },
     });
 
     res.render("media/index", {

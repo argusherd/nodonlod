@@ -9,30 +9,45 @@ block body
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
-  form.mb-4.flex.items-center.gap-2(
+  form.mb-4.flex.flex-wrap.items-center.justify-between.gap-2(
     action="/media",
     hx-trigger="change from:select, change from:input"
   )
-    - var sort = qs().sort || "createdAt";
-    - var sortBy = qs().sortBy || "desc";
+    - var query = qs();
 
-    +select(name="sort")
-      option(selected=sort == "createdAt", value="createdAt")= __("Created at")
-      option(selected=sort == "duration", value="duration")= __("Duration")
-      option(selected=sort == "rating", value="rating")= __("Rating")
-      option(selected=sort == "title", value="title")= __("Title")
+    .flex.gap-2
+      +input(
+        name="search",
+        placeholder=__("Search"),
+        type="search",
+        value=query.search
+      )
 
-    .flex(x-data=`{ sortBy: "${sortBy}" }`)
-      +input.hidden(
+      +button(type="submit")
+        span.text-2xl(class="icon-[material-symbols--search]")
+
+    .flex.items-center.gap-2(x-data=`{ sortBy: "${query.sortBy || "desc"}" }`)
+      - var sort = query.sort || "createdAt";
+      +select(name="sort", title=__("Sort"))
+        option(selected=sort == "createdAt", value="createdAt")= __("Created at")
+        option(selected=sort == "duration", value="duration")= __("Duration")
+        option(selected=sort == "rating", value="rating")= __("Rating")
+        option(selected=sort == "title", value="title")= __("Title")
+
+      +input#sortBy.hidden(
         name="sortBy",
         x-init="$watch('sortBy', () => $dispatch('change'))",
         x-model="sortBy"
       )
 
-      span.cursor-pointer.text-3xl(
-        :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'",
-        @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'"
+      +button.flex(
+        @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'",
+        title=__("Sort by"),
+        type="button"
       )
+        span.text-2xl(
+          :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'"
+        )
 
   .mb-4.flex.flex-col.gap-4
     each medium in media
