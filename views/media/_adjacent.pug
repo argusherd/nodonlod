@@ -1,0 +1,7 @@
+include /_mixin.pug
+
+.flex.gap-2
+  - var query = qs();
+
+  +button(href=`/media/${previous.id}?${qs.toString()}`)= __("Previous")
+  +button(href=`/media/${next.id}?${qs.toString()}`)= __("Next")

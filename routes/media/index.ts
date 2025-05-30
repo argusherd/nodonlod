@@ -143,6 +143,59 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
   });
 });
 
+router.get(
+  "/:medium/adjacent",
+  query("sort").toLowerCase(),
+  query("sortBy").toLowerCase(),
+  async (req: MediumRequest, res) => {
+    const querySort = req.query.sort as string;
+    const querySortBy = req.query.sortBy as string;
+    const supportedSort = ["createdAt", "duration", "rating", "title"];
+    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
+
+    let next = await Medium.findOne({
+      limit: 1,
+      order: [[sort, sortBy]],
+      where: {
+        id: { [Op.ne]: req.medium.id },
+        [sort]:
+          sortBy == "desc"
+            ? { [Op.lte]: req.medium.get(sort) }
+            : { [Op.gte]: req.medium.get(sort) },
+      },
+    });
+
+    if (!next)
+      next = await Medium.findOne({
+        limit: 1,
+        order: [[sort, sortBy]],
+      });
+
+    const reversedSortBy = sortBy == "desc" ? "asc" : "desc";
+
+    let previous = await Medium.findOne({
+      limit: 1,
+      order: [[sort, reversedSortBy]],
+      where: {
+        id: { [Op.ne]: req.medium.id },
+        [sort]:
+          reversedSortBy == "desc"
+            ? { [Op.lte]: req.medium.get(sort) }
+            : { [Op.gte]: req.medium.get(sort) },
+      },
+    });
+
+    if (!previous)
+      previous = await Medium.findOne({
+        limit: 1,
+        order: [[sort, reversedSortBy]],
+      });
+
+    res.render("media/_adjacent", { previous, next });
+  },
+);
+
 router.post("/:medium/queue", async (req: MediumRequest, res) => {
   await PlayQueue.create({
     mediumId: req.medium.id,
