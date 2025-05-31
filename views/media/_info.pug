@@ -86,3 +86,8 @@ include /_mixin.pug
     span= dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss")
   +listItem(__("Updated At"))
     span= dayjs(medium.updatedAt).format("YYYY-MM-DD HH:mm:ss")
+
+#adjacent.mb-4.flex.gap-2(
+  hx-get=`/media/${medium.id}/adjacent?${qs().toString()}`,
+  hx-trigger="load"
+)

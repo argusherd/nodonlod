@@ -1,0 +1,28 @@
+.flex.items-center.gap-2(
+  x-data=`{ sort: "${query.sort || "createdAt"}", sortBy: "${query.sortBy || "desc"}" }`
+)
+  +select(
+    name="sort",
+    title=__("Sort"),
+    x-init="$watch('sort', () => $dispatch('sort-changed'))",
+    x-model="sort"
+  )
+    option(value="createdAt")= __("Created at")
+    option(value="duration")= __("Duration")
+    option(value="rating")= __("Rating")
+    option(value="title")= __("Title")
+
+  +input#sortBy.hidden(
+    name="sortBy",
+    x-init="$watch('sortBy', () => $dispatch('sort-changed'))",
+    x-model="sortBy"
+  )
+
+  +button.flex(
+    @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'",
+    title=__("Sort by"),
+    type="button"
+  )
+    span.text-2xl(
+      :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'"
+    )

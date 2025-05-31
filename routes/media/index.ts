@@ -192,7 +192,7 @@ router.get(
         order: [[sort, reversedSortBy]],
       });
 
-    res.render("media/_adjacent", { previous, next });
+    res.render("media/_adjacent", { medium: req.medium, previous, next });
   },
 );
 

@@ -1,7 +1,14 @@
 include /_mixin.pug
 
-.flex.gap-2
-  - var query = qs();
+- var query = qs();
 
-  +button(href=`/media/${previous.id}?${qs.toString()}`)= __("Previous")
-  +button(href=`/media/${next.id}?${qs.toString()}`)= __("Next")
++button(href=`/media/${previous.id}?${query.toString()}`, type="button")= __("Previous")
+
+form.flex.gap-2(
+  action=`/media/${medium.id}/adjacent`,
+  hx-target="#adjacent",
+  hx-trigger="sort-changed from:body"
+)
+  include _sort.pug
+
++button(href=`/media/${next.id}?${query.toString()}`, type="button")= __("Next")

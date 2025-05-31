@@ -55,8 +55,8 @@ describe("The medium adjacent route", () => {
       .expect(200)
       .expect((res) => {
         expect(descendingOrder.test(res.text)).toBeTruthy();
-        expect(res.text).toContain(`/media/${previous.id}`);
-        expect(res.text).toContain(`/media/${next.id}`);
+        expect(res.text).toContain(`/media/${previous.id}?sortBy=asc`);
+        expect(res.text).toContain(`/media/${next.id}?sortBy=asc`);
         expect(res.text).not.toContain(`/media/${last.id}`);
         expect(res.text).not.toContain(`/media/${first.id}`);
       });
@@ -125,8 +125,8 @@ describe("The medium adjacent route", () => {
       .get(`/media/${medium.id}/adjacent?sort=duration`)
       .expect(200)
       .expect((res) => {
-        expect(res.text).toContain(`/media/${previous.id}`);
-        expect(res.text).toContain(`/media/${next.id}`);
+        expect(res.text).toContain(`/media/${previous.id}?sort=duration`);
+        expect(res.text).toContain(`/media/${next.id}?sort=duration`);
         expect(res.text).not.toContain(`/media/${last.id}`);
         expect(res.text).not.toContain(`/media/${first.id}`);
       });
