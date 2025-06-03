@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, oneOf, query, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Medium from "../../database/models/medium";
 import Performer from "../../database/models/performer";
@@ -17,6 +17,7 @@ export interface MediumRequest extends HasPageRequest {
 }
 
 const router = Router();
+const supportedSort = ["createdAt", "duration", "rating", "title"];
 
 router.param("medium", async (req: MediumRequest, res, next) => {
   const medium = await Medium.findByPk(req.params.medium);
@@ -31,34 +32,19 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 
 router.get(
   "/",
-  oneOf([
-    query("sort").optional().isString().equals("createdAt"),
-    query("sort").optional().isString().equals("duration"),
-    query("sort").optional().isString().equals("rating"),
-    query("sort").optional().isString().equals("title"),
-  ]),
-  oneOf([
-    query("sortBy").optional().isString().toLowerCase().equals("asc"),
-    query("sortBy").optional().isString().toLowerCase().equals("desc"),
-  ]),
+  query("sort").toLowerCase(),
+  query("sortBy").toLowerCase(),
   async (req: HasPageRequest, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      res.sendStatus(422);
-      return;
-    }
+    const querySort = req.query.sort as string;
+    const querySortBy = req.query.sortBy as string;
+    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
 
     const { rows: media, count } = await Medium.findAndCountAll({
       limit: req.perPage,
       include: [{ model: Performer, order: [["name", "ASC"]] }],
       offset: req.offset,
-      order: [
-        [
-          (req.query.sort as string) || "createdAt",
-          (req.query.sortBy as string) || "desc",
-        ],
-      ],
+      order: [[sort, sortBy]],
       where: {
         ...(req.query.search && {
           [Op.or]: [
@@ -150,7 +136,6 @@ router.get(
   async (req: MediumRequest, res) => {
     const querySort = req.query.sort as string;
     const querySortBy = req.query.sortBy as string;
-    const supportedSort = ["createdAt", "duration", "rating", "title"];
     const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
     const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
 

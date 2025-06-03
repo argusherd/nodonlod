@@ -68,20 +68,28 @@ describe("The medium index page", () => {
       });
   });
 
-  it("can only sort the list in ascending or descending order", async () => {
-    await supertest(express).get("/media?sortBy=asc").expect(200);
-    await supertest(express).get("/media?sortBy=desc").expect(200);
+  it("can sort the list based on other columns in ascending or descending order", async () => {
+    const earlier = await createMedium({
+      createdAt: dayjs().subtract(1, "hour").toDate(),
+      title: "foo",
+    });
+    const later = await createMedium({ title: "bar" });
 
-    await supertest(express).get("/media?sortBy=foo").expect(422);
-  });
+    await supertest(express)
+      .get("/media?sort=title")
+      .expect((res) => {
+        const inOreder = new RegExp(`${earlier.id}.*${later.id}`);
 
-  it("can only sort the list based on createdAt, duration, rating, or title column", async () => {
-    await supertest(express).get("/media?sort=createdAt").expect(200);
-    await supertest(express).get("/media?sort=duration").expect(200);
-    await supertest(express).get("/media?sort=rating").expect(200);
-    await supertest(express).get("/media?sort=title").expect(200);
+        expect(inOreder.test(res.text)).toBeTruthy();
+      });
 
-    await supertest(express).get("/media?sort=description").expect(422);
+    await supertest(express)
+      .get("/media?sort=title&sortBy=asc")
+      .expect((res) => {
+        const inOreder = new RegExp(`${later.id}.*${earlier.id}`);
+
+        expect(inOreder.test(res.text)).toBeTruthy();
+      });
   });
 
   it("can search the title and description of media", async () => {
