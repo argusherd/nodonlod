@@ -48,4 +48,27 @@ describe("The playlist index page", () => {
           expect(res.text).not.toContain(playlist.id);
       });
   });
+
+  it("can sort the list by other columns in ascending or descending order", async () => {
+    const playlist1 = await createPlaylist({ title: "foo" });
+    const playlist2 = await createPlaylist({ title: "bar" });
+
+    await supertest(express)
+      .get("/playlists?sort=title&sortBy=asc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(`${playlist2.id}.*${playlist1.id}`);
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+
+    await supertest(express)
+      .get("/playlists?sort=title&sortBy=desc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(`${playlist1.id}.*${playlist2.id}`);
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+  });
 });

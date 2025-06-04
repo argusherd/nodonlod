@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Chapter from "../../database/models/chapter";
 import Medium from "../../database/models/medium";
@@ -32,18 +32,29 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
   }
 });
 
-router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: playlists, count } = await Playlist.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["createdAt", "DESC"]],
-  });
+router.get(
+  "/",
+  query("sort").toLowerCase(),
+  query("sortBy").toLowerCase(),
+  async (req: HasPageRequest, res) => {
+    const querySort = req.query.sort as string;
+    const querySortBy = (req.query.sortBy as string) || "desc";
+    const supportedSort = ["createdAt", "rating", "title"];
+    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
 
-  res.render("playlists/index", {
-    playlists,
-    count,
-  });
-});
+    const { rows: playlists, count } = await Playlist.findAndCountAll({
+      limit: req.perPage,
+      offset: req.offset,
+      order: [[sort, sortBy]],
+    });
+
+    res.render("playlists/index", {
+      playlists,
+      count,
+    });
+  },
+);
 
 router.get("/create", async (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("playlists/create");
