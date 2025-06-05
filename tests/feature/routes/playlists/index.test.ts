@@ -71,4 +71,33 @@ describe("The playlist index page", () => {
         expect(inOrder.test(res.text)).toBeTruthy();
       });
   });
+
+  it("can search the title or the decription", async () => {
+    const playlist1 = await createPlaylist({ title: "foo" });
+    const playlist2 = await createPlaylist({ description: "foo bar" });
+
+    await supertest(express)
+      .get("/playlists?search=foo")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(playlist1.id);
+        expect(res.text).toContain(playlist2.id);
+      });
+
+    await supertest(express)
+      .get("/playlists?search=bar")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(playlist1.id);
+        expect(res.text).toContain(playlist2.id);
+      });
+
+    await supertest(express)
+      .get("/playlists?search=baz")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(playlist1.id);
+        expect(res.text).not.toContain(playlist2.id);
+      });
+  });
 });

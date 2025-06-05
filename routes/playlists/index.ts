@@ -47,6 +47,14 @@ router.get(
       limit: req.perPage,
       offset: req.offset,
       order: [[sort, sortBy]],
+      where: {
+        ...(req.query.search && {
+          [Op.or]: [
+            { title: { [Op.substring]: req.query.search } },
+            { description: { [Op.substring]: req.query.search } },
+          ],
+        }),
+      },
     });
 
     res.render("playlists/index", {

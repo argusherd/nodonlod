@@ -9,11 +9,22 @@ block body
       i.text-2xl(class="icon-[gridicons--create]")
       span #{ __("Create") }
 
-  form.mb-4.flex.flex-wrap.gap-2(
+  form.mb-4.flex.flex-wrap.justify-between.gap-2(
     action="/playlists",
     hx-trigger="sort-changed from:body"
   )
     - var query = qs();
+
+    .flex.gap-2
+      +input(
+        name="search",
+        placeholder=__("Search"),
+        type="search",
+        value=query.search
+      )
+
+      +button(type="submit")
+        span.text-2xl(class="icon-[material-symbols--search]")
 
     .flex.items-center.gap-2(
       x-data=`{ sort: "${query.sort || "createdAt"}", sortBy: "${query.sortBy || "desc"}" }`
