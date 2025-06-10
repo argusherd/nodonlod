@@ -25,10 +25,16 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
+  const querySort = req.query.sort as string;
+  const querySortBy = req.query.sortBy as string;
+  const supportedSort = ["createdAt", "name", "rating"];
+  const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+  const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
+
   const { rows: performers, count } = await Performer.findAndCountAll({
     limit: req.perPage,
     offset: req.offset,
-    order: [["name", "ASC"]],
+    order: [[sort, sortBy]],
   });
 
   res.render("performers/index", { count, performers });
