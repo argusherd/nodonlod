@@ -70,4 +70,36 @@ describe("The performer index page", () => {
         expect(inOrder.test(res.text)).toBeTruthy();
       });
   });
+
+  it("can search the name or the decription", async () => {
+    const performer1 = await createPerformer({ name: "foo" });
+    const performer2 = await createPerformer({
+      name: "foo2",
+      description: "bar",
+    });
+
+    await supertest(express)
+      .get("/performers?search=foo")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(performer1.id);
+        expect(res.text).toContain(performer2.id);
+      });
+
+    await supertest(express)
+      .get("/performers?search=bar")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(performer1.id);
+        expect(res.text).toContain(performer2.id);
+      });
+
+    await supertest(express)
+      .get("/performers?search=baz")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(performer1.id);
+        expect(res.text).not.toContain(performer2.id);
+      });
+  });
 });

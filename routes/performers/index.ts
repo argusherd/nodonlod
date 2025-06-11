@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import Performer from "../../database/models/performer";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
@@ -35,6 +36,14 @@ router.get("/", async (req: HasPageRequest, res) => {
     limit: req.perPage,
     offset: req.offset,
     order: [[sort, sortBy]],
+    where: {
+      ...(req.query.search && {
+        [Op.or]: [
+          { name: { [Op.substring]: req.query.search } },
+          { description: { [Op.substring]: req.query.search } },
+        ],
+      }),
+    },
   });
 
   res.render("performers/index", { count, performers });
