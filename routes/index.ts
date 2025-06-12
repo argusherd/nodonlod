@@ -7,6 +7,7 @@ import neatDuration from "../src/neat-duration";
 import chapterRouter from "./chapters";
 import electronRouter from "./electron";
 import extractionRouter from "./extractions";
+import homeRouter from "./home";
 import labelRouter from "./labels";
 import mediumRouter from "./media/index";
 import i18nMiddleware from "./middlewares/i18n";
@@ -38,14 +39,11 @@ express.use(reqExposure);
 express.locals.basedir = join(__dirname, relativePath);
 express.locals.dayjs = dayjs;
 
-express.get("/", async (_req, res) => {
-  res.render("home");
-});
-
 express.get("/sidebar", (_req, res) =>
   res.render("_sidebar", { fromBackend: true }),
 );
 
+express.use("/", homeRouter);
 express.use("/extractions", extractionRouter);
 express.use("/media", mediumRouter);
 express.use("/playlists", playlistRouter);

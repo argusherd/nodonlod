@@ -1,5 +1,35 @@
 extends _layout.pug
 
 block body
-  h1.text-green-500 hello world
-  button(@click="dark = !dark") Toggle
+  .grid.grid-cols-2.gap-4
+    a.flex.justify-between.rounded.border.p-4(href="/media")
+      .flex.flex-col
+        h3.text-xl= __("Media")
+
+        span= mediaCount
+
+      i.shrink-0.text-3xl(class="icon-[ph--play] sm:text-6xl")
+
+    a.flex.justify-between.rounded.border.p-4(href="/playlists")
+      .flex.flex-col
+        h3.text-xl= __("Playlist")
+
+        span= playlistCount
+
+      i.shrink-0.text-3xl(class="icon-[mage--playlist] sm:text-6xl")
+
+    a.flex.justify-between.rounded.border.p-4(href="/performers")
+      .flex.flex-col
+        h3.text-xl= __("Performer")
+
+        span= performerCount
+
+      i.shrink-0.text-3xl(class="icon-[fluent--people-team-20-regular] sm:text-6xl")
+
+    a.flex.justify-between.rounded.border.p-4(href="/labels")
+      .flex.flex-col
+        h3.text-xl= __("Label")
+
+        span= labelCount
+
+      i.shrink-0.text-3xl(class="icon-[mynaui--label] sm:text-6xl")
