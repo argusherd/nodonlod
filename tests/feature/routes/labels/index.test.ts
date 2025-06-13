@@ -18,4 +18,58 @@ describe("The label index page", () => {
         expect(res.text).toContain(`/labels/${label2.id}`);
       });
   });
+
+  it("can sort labels by text in ascending or descending order", async () => {
+    const label1 = await createLabel({ text: "foo" });
+    const label2 = await createLabel({ text: "bar" });
+
+    await supertest(express)
+      .get("/labels?sortBy=asc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(`${label2.id}.*${label1.id}`, "s");
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+
+    await supertest(express)
+      .get("/labels?sortBy=desc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(`${label1.id}.*${label2.id}`, "s");
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+  });
+
+  it("can sort labels by category in ascending or descending order", async () => {
+    const label1 = await createLabel({ category: "john", text: "bar" });
+    const label2 = await createLabel({ category: "john", text: "foo" });
+    const label3 = await createLabel({ category: "doe", text: "foo" });
+    const label4 = await createLabel({ category: "doe", text: "bar" });
+
+    await supertest(express)
+      .get("/labels?sortBy=asc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(
+          `${label4.id}.*${label3.id}.*${label1.id}.*${label2.id}`,
+          "s",
+        );
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+
+    await supertest(express)
+      .get("/labels?sortBy=desc")
+      .expect(200)
+      .expect((res) => {
+        const inOrder = new RegExp(
+          `${label2.id}.*${label1.id}.*${label3.id}.*${label4.id}`,
+          "s",
+        );
+
+        expect(inOrder.test(res.text)).toBeTruthy();
+      });
+  });
 });

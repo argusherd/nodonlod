@@ -18,6 +18,39 @@ block append body
       i.text-2xl(class="icon-[gridicons--create]")
       span= __("Create")
 
+  form.mb-4.flex.flex-wrap.justify-between.gap-2(
+    action="/labels",
+    hx-trigger="sort-changed from:body"
+  )
+    - var query = qs();
+
+    .flex.gap-2
+      +input(
+        name="search",
+        placeholder=__("Search"),
+        type="search",
+        value=query.search
+      )
+
+      +button(type="submit")
+        span.text-2xl(class="icon-[material-symbols--search]")
+
+    .flex.items-center.gap-2(x-data=`{ sortBy: "${query.sortBy || "asc"}" }`)
+      +input#sortBy.hidden(
+        name="sortBy",
+        x-init="$watch('sortBy', () => $dispatch('sort-changed'))",
+        x-model="sortBy"
+      )
+
+      +button.flex(
+        @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'",
+        title=__("Sort by"),
+        type="button"
+      )
+        span.text-2xl(
+          :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'"
+        )
+
   - var noCategory = [];
   - var categories = {};
 

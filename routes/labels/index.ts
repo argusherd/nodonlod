@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, validationResult } from "express-validator";
+import { body, query, validationResult } from "express-validator";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
@@ -24,13 +24,23 @@ router.param("label", async (req: LabelRequest, res, next) => {
   }
 });
 
-router.get("/", async (_req, res) => {
-  const { rows: labels, count } = await Label.findAndCountAll({
-    order: ["text"],
-  });
+router.get(
+  "/",
+  query("sortBy").toLowerCase(),
+  async (req: HasPageRequest, res) => {
+    const querySortBy = req.query.sortBy as string;
+    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "asc";
 
-  res.render("labels/index", { labels, count });
-});
+    const { rows: labels, count } = await Label.findAndCountAll({
+      order: [
+        ["category", sortBy],
+        ["text", sortBy],
+      ],
+    });
+
+    res.render("labels/index", { labels, count });
+  },
+);
 
 router.get("/create", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("labels/create");
