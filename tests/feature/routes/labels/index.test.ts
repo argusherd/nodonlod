@@ -72,4 +72,33 @@ describe("The label index page", () => {
         expect(inOrder.test(res.text)).toBeTruthy();
       });
   });
+
+  it("can search the text and category of labels", async () => {
+    const label1 = await createLabel({ text: "foo" });
+    const label2 = await createLabel({ text: "bar", category: "baz" });
+
+    await supertest(express)
+      .get("/labels?search=fo")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(label1.id);
+        expect(res.text).not.toContain(label2.id);
+      });
+
+    await supertest(express)
+      .get("/labels?search=bar")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(label2.id);
+        expect(res.text).not.toContain(label1.id);
+      });
+
+    await supertest(express)
+      .get("/labels?search=baz")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(label2.id);
+        expect(res.text).not.toContain(label1.id);
+      });
+  });
 });

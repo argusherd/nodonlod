@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { body, query, validationResult } from "express-validator";
+import { Op } from "sequelize";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
@@ -36,6 +37,14 @@ router.get(
         ["category", sortBy],
         ["text", sortBy],
       ],
+      where: {
+        ...(req.query.search && {
+          [Op.or]: [
+            { category: { [Op.substring]: req.query.search } },
+            { text: { [Op.substring]: req.query.search } },
+          ],
+        }),
+      },
     });
 
     res.render("labels/index", { labels, count });
