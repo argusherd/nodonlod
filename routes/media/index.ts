@@ -18,6 +18,14 @@ export interface MediumRequest extends HasPageRequest {
 
 const router = Router();
 const supportedSort = ["createdAt", "duration", "rating", "title"];
+const getSortAndSortBy = (req: HasPageRequest): [string, string] => {
+  const querySort = req.query.sort as string;
+  const querySortBy = req.query.sortBy as string;
+  const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+  const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
+
+  return [sort, sortBy];
+};
 
 router.param("medium", async (req: MediumRequest, res, next) => {
   const medium = await Medium.findByPk(req.params.medium);
@@ -35,10 +43,7 @@ router.get(
   query("sort").toLowerCase(),
   query("sortBy").toLowerCase(),
   async (req: HasPageRequest, res) => {
-    const querySort = req.query.sort as string;
-    const querySortBy = req.query.sortBy as string;
-    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
-    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
+    const [sort, sortBy] = getSortAndSortBy(req);
 
     const { rows: media, count } = await Medium.findAndCountAll({
       limit: req.perPage,
@@ -102,18 +107,24 @@ router.put(
 );
 
 router.get("/:medium/play", async (req: MediumRequest, res) => {
+  const [sort, sortBy] = getSortAndSortBy(req);
+
   mediaPlayer.play(req.medium.url);
 
   let nextMedium = await Medium.findOne({
+    limit: 1,
+    order: [[sort, sortBy]],
     where: {
-      createdAt: { [Op.lte]: req.medium.createdAt },
-      id: { [Op.not]: req.medium.id },
+      id: { [Op.ne]: req.medium.id },
+      [sort]:
+        sortBy == "desc"
+          ? { [Op.lte]: req.medium.get(sort) }
+          : { [Op.gte]: req.medium.get(sort) },
     },
-    order: [["createdAt", "DESC"], "id"],
   });
 
   if (!nextMedium)
-    nextMedium = await Medium.findOne({ order: [["createdAt", "DESC"], "id"] });
+    nextMedium = await Medium.findOne({ order: [[sort, sortBy], "id"] });
 
   const count = await Medium.count();
   const randomOffset = Math.floor(Math.random() * count);
@@ -134,10 +145,7 @@ router.get(
   query("sort").toLowerCase(),
   query("sortBy").toLowerCase(),
   async (req: MediumRequest, res) => {
-    const querySort = req.query.sort as string;
-    const querySortBy = req.query.sortBy as string;
-    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
-    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
+    const [sort, sortBy] = getSortAndSortBy(req);
 
     let next = await Medium.findOne({
       limit: 1,
