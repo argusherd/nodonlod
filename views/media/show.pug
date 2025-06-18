@@ -5,6 +5,7 @@ block append body
     +buttonGroup
       +buttonInGroup(
         hx-get=`/media/${medium.id}/play`,
+        hx-include="#sort",
         hx-swap="none",
         title=__("Play")
       )

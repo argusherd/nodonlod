@@ -1,5 +1,7 @@
+- var query = qs();
+
 #show-playing.flex.items-center.space-x-4(hx-swap-oob="true")
-  a.shrink-0(href=from)
+  a.shrink-0(href=`${from}?${query.toString()}`)
     img.size-20.flex-none.rounded-lg.bg-slate-100.object-cover(
       alt=medium.title,
       class="dark:bg-slate-700",
@@ -28,7 +30,11 @@ if chapter
 else
   #chapter-end-time(hx-swap-oob="true")
 
-#next-medium(hx-get=next, hx-swap-oob="true", hx-trigger="play-next from:body")
+#next-medium(
+  hx-get=`${next}?${query.toString()}`,
+  hx-swap-oob="true",
+  hx-trigger="play-next from:body"
+)
 
 #random-medium(
   hx-get=random,
