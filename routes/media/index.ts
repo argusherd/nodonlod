@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { body, query, validationResult } from "express-validator";
 import { Op } from "sequelize";
+import Extraction from "../../database/models/extraction";
 import Medium from "../../database/models/medium";
 import Performer from "../../database/models/performer";
 import PlayQueue from "../../database/models/play-queue";
@@ -85,6 +86,9 @@ router.put(
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
+      if (req.body.url != req.medium.url)
+        await Extraction.create({ url: req.body.url });
+
       await req.medium.update({
         title: req.body.title,
         url: req.body.url,

@@ -1,3 +1,4 @@
+import Extraction from "@/database/models/extraction";
 import express from "@/routes";
 import supertest from "supertest";
 import { createMedium } from "../../setup/create-model";
@@ -59,5 +60,23 @@ describe("The medium update route", () => {
       .expect((res) => {
         expect(res.text).toContain("The URL is missing");
       });
+  });
+
+  it("creates a new extraction to refresh information if the url is updated", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .put(`/media/${medium.id}`)
+      .type("form")
+      .send({
+        title: "foo",
+        url: "https://foo.com/bar",
+      })
+      .expect(200);
+
+    const extraction = await Extraction.findOne();
+
+    expect(await Extraction.count()).toEqual(1);
+    expect(extraction?.url).toEqual("https://foo.com/bar");
   });
 });
