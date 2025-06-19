@@ -58,6 +58,22 @@ describe("The toMedium method in the RawInfoConverter", () => {
     expect(medium.duration).toEqual(120);
   });
 
+  it("does not update the properties of the existing medium", async () => {
+    const medium = await createMedium({
+      title: "foo",
+      description: "bar",
+      thumbnail: "https://foo.com/bar.jpg",
+    });
+    const rawMedium = createRawMedium({ webpage_url: medium.url });
+
+    await converter.toMedium(rawMedium);
+    await medium.reload();
+
+    expect(medium.title).toEqual("foo");
+    expect(medium.description).toEqual("bar");
+    expect(medium.thumbnail).toEqual("https://foo.com/bar.jpg");
+  });
+
   it("can overwrite some properties when converting the raw-medium", async () => {
     const rawMedium = createRawMedium();
 
