@@ -26,6 +26,7 @@ jobs:
         shell: powershell
         run: |
           iwr -useb get.scoop.sh | iex
+          scoop bucket add extras
           scoop install mpv ffmpeg yt-dlp
 
       - name: Create bin folder
