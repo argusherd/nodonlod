@@ -1,0 +1,56 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Scoop and packages (mpv, ffmpeg, yt-dlp)
+        shell: powershell
+        run: |
+          iwr -useb get.scoop.sh | iex
+          scoop bucket add extras
+          scoop install mpv ffmpeg yt-dlp
+
+      - name: Create bin folder
+        run: mkdir bin
+
+      - name: Copy mpv.exe to bin
+        run: copy "$env:USERPROFILE\scoop\apps\mpv\current\mpv.exe" bin\mpv.exe
+
+      - name: Copy ffprobe.exe to bin
+        run: copy "$env:USERPROFILE\scoop\apps\ffmpeg\current\bin\ffprobe.exe" bin\ffprobe.exe
+
+      - name: Copy yt-dlp.exe to bin
+        run: copy "$env:USERPROFILE\scoop\apps\yt-dlp\current\yt-dlp.exe" bin\yt-dlp.exe
+
+      - name: Build Electron app
+        run: npm run dist
+
+      - name: Zip portable version
+        run: Compress-Archive -Path dist/win-unpacked/* -DestinationPath dist/nodonlod-portable.zip
+
+      - name: Upload Portable App
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/nodonlod-portable.zip
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
