@@ -1,6 +1,8 @@
 extends _layout.pug
 
 block body
+  +button.mb-4(hx-get="/electron/user-data", hx-swap="none")= __("Storage")
+
   .grid.grid-cols-2.gap-4
     a.flex.justify-between.rounded.border.p-4(href="/media")
       .flex.flex-col

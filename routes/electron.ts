@@ -1,4 +1,5 @@
-import { dialog } from "electron";
+import { exec } from "child_process";
+import { dialog, app as electron } from "electron";
 import { Router } from "express";
 
 const router = Router();
@@ -33,6 +34,12 @@ router.get("/directory", async (_req, res) => {
   });
 
   res.render("extractions/_input-url.pug", { url: filePaths.at(0) });
+});
+
+router.get("/user-data", async (_req, res) => {
+  exec(`start "" "${electron.getPath("userData")}"`);
+
+  res.sendStatus(200);
 });
 
 export default router;
