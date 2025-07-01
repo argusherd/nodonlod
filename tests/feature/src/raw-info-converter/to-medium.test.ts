@@ -74,6 +74,22 @@ describe("The toMedium method in the RawInfoConverter", () => {
     expect(medium.thumbnail).toEqual("https://foo.com/bar.jpg");
   });
 
+  it("updates the properties of the existing medium if the property is empty", async () => {
+    const medium = await createMedium({
+      title: "",
+      description: "",
+      thumbnail: "https://foo.com/bar.jpg",
+    });
+    const rawMedium = createRawMedium({ webpage_url: medium.url });
+
+    await converter.toMedium(rawMedium);
+    await medium.reload();
+
+    expect(medium.title).toEqual(rawMedium.title);
+    expect(medium.description).toEqual(rawMedium.description);
+    expect(medium.thumbnail).toEqual("https://foo.com/bar.jpg");
+  });
+
   it("can overwrite some properties when converting the raw-medium", async () => {
     const rawMedium = createRawMedium();
 
@@ -110,24 +126,6 @@ describe("The toMedium method in the RawInfoConverter", () => {
     expect(medium?.description).toEqual("New description");
     expect(medium?.thumbnail).toEqual("https://foo.com/bar.jpg");
     expect(medium?.ageLimit).toEqual(18);
-  });
-
-  it("can overwrite some properties with empty values when converting the raw-medium", async () => {
-    const rawMedium = createRawMedium({ age_limit: 18 });
-
-    await converter.toMedium(rawMedium, {
-      title: "",
-      description: "",
-      thumbnail: "",
-      ageLimit: "",
-    });
-
-    const medium = await Medium.findOne();
-
-    expect(medium?.title).toEqual("");
-    expect(medium?.description).toEqual("");
-    expect(medium?.thumbnail).toEqual("");
-    expect(medium?.ageLimit).toEqual(0);
   });
 
   it("calls the preserveUploader method when converting a raw-medium into a medium", async () => {

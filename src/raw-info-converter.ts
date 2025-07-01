@@ -84,9 +84,9 @@ export default class RawInfoConverter {
     const uploader = await this.preserveUploader(rawMedium);
 
     const overwritable = {
-      title: title ?? medium?.title ?? rawMedium.title,
-      description: description ?? medium?.description ?? rawMedium.description,
-      thumbnail: thumbnail ?? medium?.thumbnail ?? rawMedium.thumbnail,
+      title: title || medium?.title || rawMedium.title,
+      description: description || medium?.description || rawMedium.description,
+      thumbnail: thumbnail || medium?.thumbnail || rawMedium.thumbnail,
       ageLimit: ageLimit !== undefined ? Number(ageLimit) : rawMedium.age_limit,
     };
 
