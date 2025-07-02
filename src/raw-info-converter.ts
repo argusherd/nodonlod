@@ -58,9 +58,11 @@ export default class RawInfoConverter {
     });
 
     const overwritable = {
-      title: title || rawPlaylist.title || rawPlaylist.id,
-      thumbnail: thumbnail ?? rawPlaylist.thumbnails?.at(0)?.url,
-      description: description ?? rawPlaylist.description,
+      title: title || playlist?.title || rawPlaylist.title || rawPlaylist.id,
+      thumbnail:
+        thumbnail || playlist?.thumbnail || rawPlaylist.thumbnails?.at(0)?.url,
+      description:
+        description || playlist?.description || rawPlaylist.description,
     };
 
     if (playlist) return await playlist.update(overwritable);

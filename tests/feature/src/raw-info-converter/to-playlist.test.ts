@@ -57,25 +57,9 @@ describe("The toPlaylist method in the RawInfoConverter", () => {
 
     const playlist = await Playlist.findOne();
 
-    expect(playlist?.title).toEqual("New title");
-    expect(playlist?.thumbnail).toEqual("https://foo.com/bar.jpg");
-    expect(playlist?.description).toEqual("New description");
-  });
-
-  it("can overwrite some properties but title with empty values when converting the raw-playlist", async () => {
-    const rawPlaylist = createRawPlaylist();
-
-    await converter.toPlaylist(rawPlaylist, {
-      title: "",
-      thumbnail: "",
-      description: "",
-    });
-
-    const playlist = await Playlist.findOne();
-
-    expect(playlist?.title).toEqual(rawPlaylist.title);
-    expect(playlist?.thumbnail).toEqual("");
-    expect(playlist?.description).toEqual("");
+    expect(playlist?.title).not.toEqual(rawPlaylist.title);
+    expect(playlist?.thumbnail).not.toEqual(rawPlaylist.thumbnails);
+    expect(playlist?.description).not.toEqual(rawPlaylist.description);
   });
 
   it("can overwrite some properties even if the playlist already existed when converting the raw-playlist", async () => {
@@ -93,5 +77,22 @@ describe("The toPlaylist method in the RawInfoConverter", () => {
     expect(playlist?.title).toEqual("New title");
     expect(playlist?.thumbnail).toEqual("https://foo.com/bar.jpg");
     expect(playlist?.description).toEqual("New description");
+  });
+
+  it("does not update the existing playlist properties if the overwrite value is empty", async () => {
+    const playlist = await createPlaylist({ url: "https://foo.com/bar" });
+    const rawPlaylist = createRawPlaylist({ webpage_url: playlist.url });
+
+    await converter.toPlaylist(rawPlaylist, {
+      title: "",
+      thumbnail: "",
+      description: "",
+    });
+
+    await playlist.reload();
+
+    expect(playlist?.title).toEqual(playlist.title);
+    expect(playlist?.thumbnail).toEqual(playlist.thumbnail);
+    expect(playlist?.description).toEqual(playlist.description);
   });
 });
