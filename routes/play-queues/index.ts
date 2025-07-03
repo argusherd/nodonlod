@@ -1,11 +1,11 @@
 import { Request, Router } from "express";
 import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
-import Chapter from "../database/models/chapter";
-import Medium from "../database/models/medium";
-import PlayQueue from "../database/models/play-queue";
-import mediaPlayer from "../src/media-player";
-import { __ } from "./middlewares/i18n";
+import Chapter from "../../database/models/chapter";
+import Medium from "../../database/models/medium";
+import PlayQueue from "../../database/models/play-queue";
+import mediaPlayer from "../../src/media-player";
+import { __ } from "../middlewares/i18n";
 
 interface HasPlayQueue extends Request {
   playQueue: PlayQueue;
