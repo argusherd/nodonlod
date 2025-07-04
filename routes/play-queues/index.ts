@@ -6,6 +6,7 @@ import Medium from "../../database/models/medium";
 import PlayQueue from "../../database/models/play-queue";
 import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
+import playlistRouter from "./playlists";
 
 interface HasPlayQueue extends Request {
   playQueue: PlayQueue;
@@ -119,5 +120,7 @@ router.get("/:playQueue/play", async (req: HasPlayQueue, res) => {
       random: `/play-queues/${randomQueue?.id}/play`,
     });
 });
+
+router.use("/playlists", playlistRouter);
 
 export default router;
