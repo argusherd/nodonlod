@@ -9,6 +9,12 @@ import { __ } from "../middlewares/i18n";
 
 const router = Router();
 
+router.get("/create", async (_req, res) => {
+  res
+    .set("HX-Trigger", "open-modal")
+    .render("playlists/create", { basePath: "/play-queues" });
+});
+
 router.post(
   "/",
   body("title")

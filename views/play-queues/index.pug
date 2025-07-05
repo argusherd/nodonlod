@@ -11,14 +11,18 @@ include /_mixin.pug
     h2.text-base.font-semibold.leading-6.text-gray-900(class="dark:text-gray-200") #{ __("Play Queue") }
 
     +buttonGroup
-      +buttonInGroup(hx-delete="/play-queues")
-        i.text-3xl(class="icon-[material-symbols-light--delete-sweep-outline]")
-        span #{ __("Clear") }
+      +buttonInGroup(
+        hx-get="/play-queues/playlists/create",
+        hx-target="#modal",
+        title=__("Save")
+      )
+        i.text-xl(class="icon-[material-symbols--save-outline]")
 
-      - var attributes = { "@click": "show = false" };
-      +buttonInGroup&attributes(attributes)
-        i.text-3xl(class="icon-[iconamoon--close-thin]")
-        span #{ __("Close") }
+      +buttonInGroup(hx-delete="/play-queues", title=__("Clear"))
+        i.text-xl(class="icon-[material-symbols--delete-outline]")
+
+      +buttonInGroup.flex(@click="show = false", title=__("Close"))
+        i.text-xl(class="icon-[iconamoon--close-light]")
 
 .relative.my-4.flex-1.px-4(class="sm:px-5")
   .absolute.inset-0.px-4(class="sm:px-5")
