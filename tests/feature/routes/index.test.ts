@@ -50,4 +50,40 @@ describe("The home route", () => {
         expect(inOrder.test(res.text)).toBeTruthy();
       });
   });
+
+  it("groups items into different sections", async () => {
+    const justNow = await createMedium();
+    const in1Hour = await createMedium({
+      createdAt: dayjs().subtract(10, "m").toDate(),
+    });
+
+    await supertest(express)
+      .get("/")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(justNow.id);
+        expect(res.text).toContain(in1Hour.id);
+        expect(res.text).toContain("Just now");
+        expect(res.text).toContain("In an hour");
+        expect(res.text).not.toContain("Today");
+        expect(res.text).not.toContain("In the last week");
+      });
+
+    const today = await createMedium({
+      createdAt: dayjs().subtract(10, "h").toDate(),
+    });
+    const inLastWeek = await createMedium({
+      createdAt: dayjs().subtract(1, "d").toDate(),
+    });
+
+    await supertest(express)
+      .get("/")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(today.id);
+        expect(res.text).toContain(inLastWeek.id);
+        expect(res.text).toContain("Today");
+        expect(res.text).toContain("In the last week");
+      });
+  });
 });

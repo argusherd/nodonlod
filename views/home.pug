@@ -1,18 +1,53 @@
 extends _layout.pug
 
+mixin widgetList(list)
+  each item in list
+    if "uploaderId" in item
+      - var medium = item;
+      include /media/_widget.pug
+    else if "name" in item
+      - var performer = item;
+      include /performers/_widget.pug
+    else
+      - var playlist = item;
+      include /playlists/_widget.pug
+
 block body
+  - var inMinute = [];
+  - var inHour = [];
+  - var inDay = [];
+  - var inWeek = [];
+  - var now = dayjs();
+
+  each item in items
+    - var diffInSeconds = now.diff(item.createdAt, "s");
+
+    if diffInSeconds < 60
+      - inMinute.push(item);
+    else if diffInSeconds < 3600
+      - inHour.push(item);
+    else if diffInSeconds < 86400
+      - inDay.push(item);
+    else
+      - inWeek.push(item);
+
   +button.mb-4(hx-get="/electron/user-data", hx-swap="none")= __("Storage")
 
   p.mb-4= __("The most recent items you created")
 
   .flex.flex-col.gap-4
-    each item in items
-      if "uploaderId" in item
-        - var medium = item;
-        include /media/_widget.pug
-      else if "name" in item
-        - var performer = item;
-        include /performers/_widget.pug
-      else
-        - var playlist = item;
-        include /playlists/_widget.pug
+    if inMinute.length
+      small= __("Just now")
+      +widgetList(inMinute)
+
+    if inHour.length
+      small= __("In an hour")
+      +widgetList(inHour)
+
+    if inDay.length
+      small= __("Today")
+      +widgetList(inDay)
+
+    if inWeek.length
+      small= __("In the last week")
+      +widgetList(inWeek)

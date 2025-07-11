@@ -6,6 +6,7 @@ import persist from "@alpinejs/persist";
 import sort from "@alpinejs/sort";
 import Alpine from "alpinejs";
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import "htmx.org/dist/ext/alpine-morph";
 import "htmx.org/dist/ext/ws";
 import neatDuration from "../../src/neat-duration";
@@ -15,6 +16,7 @@ import { HTMXEvent } from "./renderer";
 import wsEvent from "./ws-event";
 
 dayjs.extend(neatDuration);
+dayjs.extend(relativeTime);
 
 window.dayjs = dayjs;
 window.Alpine = Alpine;
