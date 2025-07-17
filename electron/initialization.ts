@@ -79,6 +79,7 @@ function setUpMediaEvent() {
   );
   mediaPlayer.on("volume", (volume) => wss.json("volume", volume));
   mediaPlayer.on("mute", (mute) => wss.json("mute", mute));
+  mediaPlayer.on("error", () => wss.json("event", "error"));
 }
 
 export async function onDevWatch() {

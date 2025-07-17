@@ -10,6 +10,7 @@ interface PlayerObserver {
   emit(event: "stop"): void;
   emit(event: "volume", value: number): void;
   emit(event: "mute", value: boolean): void;
+  emit(event: "error"): void;
 
   /**
    * @param event
@@ -25,6 +26,7 @@ interface PlayerObserver {
   on(event: "stop", listener: () => void): void;
   on(event: "volume", listener: (value: number) => void): void;
   on(event: "mute", listener: (mute: boolean) => void): void;
+  on(event: "error", listener: () => void): void;
   on(event: string, listener: (...args: any[]) => void): void;
 }
 
@@ -33,6 +35,7 @@ interface IpcMessage {
   name: "duration" | "time-pos" | "volume" | "mute";
   data?: any;
   request_id?: number;
+  reason?: string;
 }
 
 export interface MediaPlayer {
@@ -121,7 +124,10 @@ const socketOnData = (data: Buffer) => {
   for (let section of String(data).trim().split("\n")) {
     const message: IpcMessage = JSON.parse(section);
 
-    if (message.event === "end-file") playerObserver.emit("stop");
+    if (message.event === "end-file") {
+      if (message.reason == "error") playerObserver.emit("error");
+      else playerObserver.emit("stop");
+    }
 
     if ("data" in message === false) return;
 

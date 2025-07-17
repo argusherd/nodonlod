@@ -158,4 +158,28 @@ describe("The observations after the media player launched", () => {
 
     expect(endOfMedia).toBeTruthy();
   });
+
+  it("can observe the player has error", () => {
+    const ipcMessage =
+      JSON.stringify({
+        event: "end-file",
+        reason: "error",
+        playlist_entry_id: 1,
+        file_error: "unrecognized file format",
+      }) + "\n";
+
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(ipcMessage));
+      }),
+    );
+
+    let hasError = false;
+
+    mediaPlayer.on("error", () => (hasError = true));
+    mediaPlayer.launch();
+
+    expect(hasError).toBeTruthy();
+  });
 });
