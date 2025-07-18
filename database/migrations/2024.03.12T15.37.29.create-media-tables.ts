@@ -54,6 +54,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
       upload_date: {
         type: DataType.DATEONLY,
       },
+      has_error: {
+        type: DataType.BOOLEAN,
+        defaultValue: false,
+      },
       created_at: {
         type: DataType.DATE,
       },

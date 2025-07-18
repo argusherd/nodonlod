@@ -36,6 +36,7 @@ interface OptionalMediumCreationAttributes {
   rating: number | null;
   ageLimit: number;
   uploadDate: Date;
+  hasError: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -107,6 +108,10 @@ export default class Medium extends Model<
 
     return dayjs(this.getDataValue("uploadDate")).toDate();
   }
+
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  hasError: boolean;
 
   @CreatedAt
   createdAt: Date;
