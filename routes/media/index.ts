@@ -143,6 +143,7 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
     from: `/media/${req.medium.id}`,
     next: `/media/${nextMedium?.id}/play`,
     random: `/media/${randomMedium?.id}/play`,
+    hasError: `/media/${req.medium.id}/error`,
   });
 });
 

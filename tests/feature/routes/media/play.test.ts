@@ -41,4 +41,17 @@ describe("The medium play route", () => {
 
     await supertest(express).get(`/media/NOT_EXISTS/play`).expect(404);
   });
+
+  it("displays the url for reporting errors", async () => {
+    const medium = await createMedium();
+
+    jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await supertest(express)
+      .get(`/media/${medium.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`/media/${medium.id}/error`);
+      });
+  });
 });

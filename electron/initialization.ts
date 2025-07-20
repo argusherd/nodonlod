@@ -74,12 +74,12 @@ function setUpMediaEvent() {
   });
   mediaPlayer.on("end", () => wss.json("event", "track-ended"));
   mediaPlayer.on("stop", () => wss.json("event", "track-stopped"));
+  mediaPlayer.on("error", () => wss.json("event", "track-error"));
   mediaPlayer.on("current-time", (currentTime) =>
     wss.json("currentTime", currentTime),
   );
   mediaPlayer.on("volume", (volume) => wss.json("volume", volume));
   mediaPlayer.on("mute", (mute) => wss.json("mute", mute));
-  mediaPlayer.on("error", () => wss.json("event", "error"));
 }
 
 export async function onDevWatch() {

@@ -36,6 +36,14 @@ else
   hx-trigger="play-next from:body"
 )
 
+if hasError
+  #has-error(
+    @track-error.window="$dispatch('track-ended')",
+    hx-get=`${hasError}`,
+    hx-swap-oob="true",
+    hx-trigger="track-error from:body"
+  )
+
 #random-medium(
   hx-get=random,
   hx-swap-oob="true",
