@@ -79,4 +79,21 @@ describe("The medium update route", () => {
     expect(await Extraction.count()).toEqual(1);
     expect(extraction?.url).toEqual("https://foo.com/bar");
   });
+
+  it("resets the hasError column if the url is updated", async () => {
+    const medium = await createMedium({ hasError: true });
+
+    await supertest(express)
+      .put(`/media/${medium.id}`)
+      .type("form")
+      .send({
+        title: "foo",
+        url: "https://foo.com/bar",
+      })
+      .expect(200);
+
+    await medium.reload();
+
+    expect(medium.hasError).toBeFalsy();
+  });
 });

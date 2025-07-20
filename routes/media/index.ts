@@ -86,8 +86,10 @@ router.put(
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-      if (req.body.url != req.medium.url)
+      if (req.body.url != req.medium.url) {
         await Extraction.create({ url: req.body.url });
+        await req.medium.update({ hasError: false });
+      }
 
       await req.medium.update({
         title: req.body.title,
@@ -215,6 +217,12 @@ router.put(
     } else res.sendStatus(422);
   },
 );
+
+router.put("/:medium/error", async (req: MediumRequest, res) => {
+  await req.medium.update({ hasError: true });
+
+  res.sendStatus(204);
+});
 
 router.delete("/:medium/confirm", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
