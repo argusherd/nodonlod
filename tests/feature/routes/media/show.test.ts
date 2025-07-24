@@ -85,4 +85,17 @@ describe("The medium show page", () => {
         expect(res.text).toContain(`/performers/${performer2.id}`);
       });
   });
+
+  it("displays an error message indicate that the given url is invalid", async () => {
+    const medium = await createMedium({ hasError: true });
+
+    await supertest(express)
+      .get(`/media/${medium.id}`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(
+          "The given URL has an error when accessing it",
+        );
+      });
+  });
 });

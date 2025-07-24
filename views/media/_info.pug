@@ -41,7 +41,12 @@ include /_mixin.pug
       name="url",
       value=url
     )
-    +error("url")
+
+    .flex.flex-col.gap-1
+      +error("url")
+
+      if medium.hasError
+        span.text-red-500= __("The given URL has an error when accessing it")
 
   +listItem(__("Thumbnail"))
     +inputThumbnail(medium.thumbnail)(@input="$dispatch('data-changed')")

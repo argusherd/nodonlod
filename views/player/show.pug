@@ -38,7 +38,7 @@ else
 
 #has-error(
   @track-error.window="$dispatch('track-ended')",
-  hx-get=`/media${medium.id}/error`,
+  hx-put=`/media/${medium.id}/error`,
   hx-swap-oob="true",
   hx-trigger="track-error from:body"
 )
