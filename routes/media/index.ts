@@ -117,7 +117,7 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
 
   mediaPlayer.play(req.medium.url);
 
-  let nextMedium = await Medium.findOne({
+  const nextMedium = await Medium.findOne({
     limit: 1,
     order: [[sort, sortBy]],
     where: {
@@ -128,10 +128,7 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
           : { [Op.gte]: req.medium.get(sort) },
     },
   });
-
-  if (!nextMedium)
-    nextMedium = await Medium.findOne({ order: [[sort, sortBy], "id"] });
-
+  const firstMedium = await Medium.findOne({ order: [[sort, sortBy], "id"] });
   const count = await Medium.count();
   const randomOffset = Math.floor(Math.random() * count);
   const randomMedium = await Medium.findOne({
@@ -141,7 +138,8 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
   res.render("player/show", {
     medium: req.medium,
     from: `/media/${req.medium.id}`,
-    next: `/media/${nextMedium?.id}/play`,
+    first: `/media/${firstMedium?.id}/play`,
+    next: nextMedium ? `/media/${nextMedium?.id}/play` : "",
     random: `/media/${randomMedium?.id}/play`,
   });
 });

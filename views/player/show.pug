@@ -30,11 +30,19 @@ if chapter
 else
   #chapter-end-time(hx-swap-oob="true")
 
-#next-medium(
-  hx-get=`${next}?${query.toString()}`,
-  hx-swap-oob="true",
-  hx-trigger="play-next from:body"
-)
+if next
+  #next-medium(
+    hx-get=`${next}?${query.toString()}`,
+    hx-swap-oob="true",
+    hx-trigger="play-next from:body"
+  )
+else
+  #next-medium(
+    @play-next.window="if (currentRepeatMode == RepeatMode.All) $dispatch('play-first')",
+    hx-get=`${first}?${query.toString()}`,
+    hx-swap-oob="true",
+    hx-trigger="play-first from:body"
+  )
 
 #has-error(
   @track-error.window="$dispatch('track-ended')",

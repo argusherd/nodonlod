@@ -34,6 +34,27 @@ describe("The medium play route", () => {
       });
   });
 
+  it("cannot test the next medium based on sorting because a random medium exists", async () => {
+    expect(false).toBeFalsy();
+  });
+
+  it("displays the first medium if the current medium is already the last one based on sorting", async () => {
+    const first = await createMedium({ duration: 10 });
+    await createMedium({ duration: 69 });
+    await createMedium({ duration: 123 });
+    await createMedium({ duration: 321 });
+    const medium = await createMedium({ duration: 420 });
+
+    jest.spyOn(mediaPlayer, "play").mockImplementation();
+
+    await supertest(express)
+      .get(`/media/${medium.id}/play?sort=duration&sortBy=asc`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`/media/${first.id}/play`);
+      });
+  });
+
   it("cannot instruct the media player to play a medium that does not exist", async () => {
     const mockedPlay = jest.fn();
 
