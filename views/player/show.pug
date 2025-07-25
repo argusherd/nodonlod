@@ -34,14 +34,14 @@ if next
   #next-medium(
     hx-get=`${next}?${query.toString()}`,
     hx-swap-oob="true",
-    hx-trigger="play-next from:body"
+    hx-trigger="play-next from:body, play-next-button from:body"
   )
 else
   #next-medium(
     @play-next.window="if (currentRepeatMode == RepeatMode.All) $dispatch('play-first')",
     hx-get=`${first}?${query.toString()}`,
     hx-swap-oob="true",
-    hx-trigger="play-first from:body"
+    hx-trigger="play-first from:body, play-next-button from:body"
   )
 
 #has-error(
