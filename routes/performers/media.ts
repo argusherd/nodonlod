@@ -62,7 +62,7 @@ router.post("/:medium", async (req: MediumRequest, res) => {
 router.get("/:medium/play", async (req: MediumRequest, res) => {
   mediaPlayer.play(req.medium.url);
 
-  let nextMedium = await Medium.findOne({
+  const nextMedium = await Medium.findOne({
     include: { model: Performer, where: { id: req.performer.id } },
     where: {
       createdAt: { [Op.gte]: req.medium.createdAt },
@@ -70,13 +70,10 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
     },
     order: ["createdAt"],
   });
-
-  if (!nextMedium)
-    nextMedium = await Medium.findOne({
-      include: { model: Performer, where: { id: req.performer.id } },
-      order: ["createdAt"],
-    });
-
+  const firstMedium = await Medium.findOne({
+    include: { model: Performer, where: { id: req.performer.id } },
+    order: ["createdAt"],
+  });
   const count = await req.performer.$count("media");
   const randomOffset = Math.floor(Math.random() * count);
   const randomMedium = await Medium.findOne({
@@ -87,7 +84,10 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
   res.render("player/show", {
     medium: req.medium,
     from: `/performers/${req.performer.id}/media`,
-    next: `/performers/${req.performer.id}/media/${nextMedium?.id}/play`,
+    first: `/performers/${req.performer.id}/media/${firstMedium?.id}/play`,
+    next: nextMedium
+      ? `/performers/${req.performer.id}/media/${nextMedium?.id}/play`
+      : "",
     random: `/performers/${req.performer.id}/media/${randomMedium?.id}/play`,
   });
 });

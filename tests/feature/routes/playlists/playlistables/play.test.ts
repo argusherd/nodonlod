@@ -119,9 +119,13 @@ describe("The playlist item play route", () => {
       playlistId: playlist.id,
       order: 1,
     });
-    const lastOne = await createPlaylistable({
+    await createPlaylistable({
       playlistId: playlist.id,
       order: 2,
+    });
+    const lastOne = await createPlaylistable({
+      playlistId: playlist.id,
+      order: 3,
     });
 
     await supertest(express)

@@ -30,20 +30,17 @@ router.get("/:chapter/play", async (req: ChapterRequest, res) => {
 
   mediaPlayer.play(medium.url, req.chapter.startTime, req.chapter.endTime);
 
-  let nextChapter = await Chapter.findOne({
+  const nextChapter = await Chapter.findOne({
     where: {
       startTime: { [Op.gt]: req.chapter.startTime },
       mediumId: medium.id,
     },
     order: ["startTime"],
   });
-
-  if (!nextChapter)
-    nextChapter = await Chapter.findOne({
-      where: { mediumId: medium.id },
-      order: ["startTime"],
-    });
-
+  const firstChapter = await Chapter.findOne({
+    where: { mediumId: medium.id },
+    order: ["startTime"],
+  });
   const count = await medium.$count("chapters");
   const randomOffset = Math.floor(Math.random() * count);
   const randomChapter = await Chapter.findOne({
@@ -56,7 +53,8 @@ router.get("/:chapter/play", async (req: ChapterRequest, res) => {
     medium,
     chapter: req.chapter,
     from: `/media/${medium.id}/chapters`,
-    next: `/chapters/${nextChapter?.id}/play`,
+    first: `/chapters/${firstChapter?.id}/play`,
+    next: nextChapter ? `/chapters/${nextChapter?.id}/play` : "",
     random: `/chapters/${randomChapter?.id}/play`,
   });
 });

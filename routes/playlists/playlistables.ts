@@ -86,20 +86,17 @@ router.get("/:playlistable/play", async (req: PlaylistableRequest, res) => {
 
   mediaPlayer.play(medium?.url || "", chapter?.startTime, chapter?.endTime);
 
-  let nextPlaylistable = await Playlistable.findOne({
+  const nextPlaylistable = await Playlistable.findOne({
     where: {
       playlistId: req.playlist.id,
       order: { [Op.gt]: req.playlistable.order },
     },
     order: ["order"],
   });
-
-  if (!nextPlaylistable)
-    nextPlaylistable = await Playlistable.findOne({
-      where: { playlistId: req.playlist.id },
-      order: ["order"],
-    });
-
+  const firstPlaylistable = await Playlistable.findOne({
+    where: { playlistId: req.playlist.id },
+    order: ["order"],
+  });
   const count = await req.playlist.$count("playlistables");
   const randomOffset = Math.floor(Math.random() * count);
   const randomPlaylistable = await Playlistable.findOne({
@@ -113,7 +110,10 @@ router.get("/:playlistable/play", async (req: PlaylistableRequest, res) => {
     medium,
     chapter,
     from: `/playlists/${req.playlist.id}/playlistables`,
-    next: `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`,
+    first: `/playlists/${req.playlist.id}/playlistables/${firstPlaylistable?.id}/play`,
+    next: nextPlaylistable
+      ? `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`
+      : "",
     random: `/playlists/${req.playlist.id}/playlistables/${randomPlaylistable?.id}/play`,
   });
 });

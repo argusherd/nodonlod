@@ -48,4 +48,17 @@ describe("The play the item in the play queue route", () => {
         expect(res.text).toContain(`/play-queues/${playQueue2.id}/play`);
       });
   });
+
+  it("displays the first item if the current item is already the last one", async () => {
+    const firstQueue = await createPlayQueue({ order: 1 });
+    await createPlayQueue({ order: 2 });
+    const lastQueue = await createPlayQueue({ order: 3 });
+
+    await supertest(express)
+      .get(`/play-queues/${lastQueue.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`/play-queues/${firstQueue.id}/play`);
+      });
+  });
 });

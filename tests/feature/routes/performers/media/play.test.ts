@@ -1,5 +1,6 @@
 import express from "@/routes";
 import mediaPlayer from "@/src/media-player";
+import dayjs from "dayjs";
 import supertest from "supertest";
 import { createMedium, createPerformer } from "../../../setup/create-model";
 
@@ -35,6 +36,28 @@ describe("The performer medium play route", () => {
         expect(res.text).toContain("https://foo.com/bar.jpg");
         expect(res.text).toContain(
           `/performers/${performer.id}/media/${medium2.id}/play`,
+        );
+      });
+  });
+
+  it("displays the first medium if the current medium is already the last one based on sorting", async () => {
+    const performer = await createPerformer();
+    const firstMedium = await createMedium({
+      createdAt: dayjs().subtract(1, "day").toDate(),
+    });
+    const middleMedium = await createMedium();
+    const lastMedium = await createMedium({
+      createdAt: dayjs().add(1, "day").toDate(),
+    });
+
+    await performer.$add("medium", [firstMedium, middleMedium, lastMedium]);
+
+    await supertest(express)
+      .get(`/performers/${performer.id}/media/${lastMedium.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(
+          `/performers/${performer.id}/media/${firstMedium.id}/play`,
         );
       });
   });

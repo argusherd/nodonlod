@@ -38,4 +38,22 @@ describe("The label medium play route", () => {
         );
       });
   });
+
+  it("displays the first medium if the current medium is already the last one based on sorting", async () => {
+    const label = await createLabel();
+    const firstMedium = await createMedium({ title: "a" });
+    const middleMedium = await createMedium({ title: "b" });
+    const lastMedium = await createMedium({ title: "c" });
+
+    await label.$add("medium", [firstMedium, middleMedium, lastMedium]);
+
+    await supertest(express)
+      .get(`/labels/${label.id}/media/${lastMedium.id}/play`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(
+          `/labels/${label.id}/media/${firstMedium.id}/play`,
+        );
+      });
+  });
 });

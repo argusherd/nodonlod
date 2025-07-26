@@ -161,7 +161,10 @@ router.get("/:playlist/play", async (req: PlaylistRequest, res) => {
     medium,
     chapter,
     from: `/playlists/${req.playlist.id}/playlistables`,
-    next: `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`,
+    first: `/playlists/${req.playlist.id}/playlistables/${firstItem.id}/play`,
+    next: nextPlaylistable
+      ? `/playlists/${req.playlist.id}/playlistables/${nextPlaylistable?.id}/play`
+      : "",
     random: `/playlists/${req.playlist.id}/playlistables/${randomPlaylistable?.id}/play`,
   });
 });

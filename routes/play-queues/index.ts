@@ -93,13 +93,11 @@ router.get("/:playQueue/play", async (req: HasPlayQueue, res) => {
   mediaPlayer.play(medium.url, chapter?.startTime, chapter?.endTime);
   current = req.playQueue.id;
 
-  let nextQueue = await PlayQueue.findOne({
+  const nextQueue = await PlayQueue.findOne({
     where: { order: { [Op.gt]: req.playQueue.order } },
     order: ["order"],
   });
-
-  if (!nextQueue) nextQueue = await PlayQueue.findOne({ order: ["order"] });
-
+  const firstQueue = await PlayQueue.findOne({ order: ["order"] });
   const count = await PlayQueue.count();
   const randomOffset = Math.floor(Math.random() * count);
   const randomQueue = await PlayQueue.findOne({
@@ -116,7 +114,8 @@ router.get("/:playQueue/play", async (req: HasPlayQueue, res) => {
       medium,
       chapter,
       from: chapter ? `/media/${medium.id}/chapters` : `/media/${medium.id}`,
-      next: `/play-queues/${nextQueue?.id}/play`,
+      first: `/play-queues/${firstQueue?.id}/play`,
+      next: nextQueue ? `/play-queues/${nextQueue?.id}/play` : "",
       random: `/play-queues/${randomQueue?.id}/play`,
     });
 });
