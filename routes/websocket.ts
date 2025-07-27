@@ -8,7 +8,7 @@ export interface WSS {
     socket: internal.Duplex,
     head: Buffer,
   ) => void;
-  json: (key: string, value: any) => void;
+  json: (payload: object) => void;
 }
 
 const wsServer = new WebSocketServer({ noServer: true });
@@ -22,8 +22,8 @@ const wss: WSS = {
     wsServer.handleUpgrade(request, socket, head, (ws) => {
       ws.emit("connection", ws, request);
     }),
-  json: (key: string, value: any) =>
-    wsServer.clients.forEach((ws) => ws.send(JSON.stringify({ [key]: value }))),
+  json: (payload: object) =>
+    wsServer.clients.forEach((ws) => ws.send(JSON.stringify(payload))),
 };
 
 export default wss;
