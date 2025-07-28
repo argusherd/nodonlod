@@ -74,7 +74,9 @@ function setUpMediaEvent() {
   });
   mediaPlayer.on("end", () => wss.json({ event: "track-ended" }));
   mediaPlayer.on("stop", () => wss.json({ event: "track-stopped" }));
-  mediaPlayer.on("error", () => wss.json({ event: "track-error" }));
+  mediaPlayer.on("error", (message) =>
+    wss.json({ event: "track-error", data: message }),
+  );
   mediaPlayer.on("current-time", (currentTime) => wss.json({ currentTime }));
   mediaPlayer.on("volume", (volume) => wss.json({ volume }));
   mediaPlayer.on("mute", (mute) => wss.json({ mute }));

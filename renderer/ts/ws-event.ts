@@ -6,7 +6,7 @@ const wsEvent = () => ({
       try {
         const payload = JSON.parse(message.data);
 
-        if ("event" in payload) this.$dispatch(payload.event);
+        if ("event" in payload) this.$dispatch(payload.event, payload.data);
       } catch (e) {}
     };
   },

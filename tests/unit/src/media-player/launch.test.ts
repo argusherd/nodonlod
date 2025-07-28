@@ -175,11 +175,11 @@ describe("The observations after the media player launched", () => {
       }),
     );
 
-    let hasError = false;
+    let fileError = "";
 
-    mediaPlayer.on("error", () => (hasError = true));
+    mediaPlayer.on("error", (message) => (fileError = message as string));
     mediaPlayer.launch();
 
-    expect(hasError).toBeTruthy();
+    expect(fileError).toEqual("unrecognized file format");
   });
 });
