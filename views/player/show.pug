@@ -44,12 +44,14 @@ else
     hx-trigger="play-first from:body, play-next-button from:body"
   )
 
-#has-error(
-  @track-error.window="$dispatch('track-ended')",
+form#has-error(
+  @track-error.window="message = $event.detail; $nextTick(() => { $dispatch('track-ended'); $dispatch('send-medium-error'); })",
   hx-put=`/media/${medium.id}/error`,
   hx-swap-oob="true",
-  hx-trigger="track-error from:body"
+  hx-trigger="send-medium-error from:body",
+  x-data="{ message: '' }"
 )
+  input(name="message", type="hidden", x-model="message")
 
 #random-medium(
   hx-get=random,

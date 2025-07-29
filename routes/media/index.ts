@@ -88,7 +88,7 @@ router.put(
     if (errors.isEmpty()) {
       if (req.body.url != req.medium.url) {
         await Extraction.create({ url: req.body.url });
-        await req.medium.update({ hasError: false });
+        await req.medium.update({ hasError: null });
       }
 
       await req.medium.update({
@@ -217,7 +217,7 @@ router.put(
 );
 
 router.put("/:medium/error", async (req: MediumRequest, res) => {
-  await req.medium.update({ hasError: true });
+  await req.medium.update({ hasError: req.body.message });
 
   res.sendStatus(204);
 });
