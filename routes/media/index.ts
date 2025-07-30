@@ -222,6 +222,12 @@ router.put("/:medium/error", async (req: MediumRequest, res) => {
   res.sendStatus(204);
 });
 
+router.put("/:medium/succeed", async (req: MediumRequest, res) => {
+  await req.medium.update({ hasError: null });
+
+  res.sendStatus(204);
+});
+
 router.delete("/:medium/confirm", async (req: MediumRequest, res) => {
   res.set("HX-Trigger", "open-modal").render("_delete", {
     message: __("Are you sure you want to delete this medium?"),

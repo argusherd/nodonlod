@@ -53,6 +53,12 @@ form#has-error(
 )
   input(name="message", type="hidden", x-model="message")
 
+#medium-succeed(
+  hx-put=`/media/${medium.id}/succeed`,
+  hx-swap-oob="true",
+  hx-trigger="track-started from:body"
+)
+
 #random-medium(
   hx-get=random,
   hx-swap-oob="true",
