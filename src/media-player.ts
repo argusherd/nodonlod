@@ -215,7 +215,7 @@ const mediaPlayer: MediaPlayer = {
     mediaInfo.ended = true;
   },
   replay: () => {
-    if (!isConnected) {
+    if (!isConnected || mediaInfo.duration == Number.MAX_VALUE) {
       mediaPlayer.play(mediaInfo.url, mediaInfo.startTime, mediaInfo.endTime);
       return;
     }

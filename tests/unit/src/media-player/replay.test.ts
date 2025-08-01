@@ -4,11 +4,18 @@ import { commandPrompt, mediaPlayer } from "./setup";
 describe("The replay feature in the media player", () => {
   it("can instruct the player to replay the previous media", () => {
     const mockedWrite = jest.fn();
+    const durationMessage =
+      JSON.stringify({
+        event: "property-change",
+        name: "duration",
+        data: 420,
+      }) + "\n";
 
     jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
     jest.mocked(Socket.prototype.on).mockImplementation(
       jest.fn().mockImplementation((event, listener) => {
         if (event === "connect") listener();
+        if (event === "data") listener(Buffer.from(durationMessage));
       }),
     );
 
@@ -45,6 +52,24 @@ describe("The replay feature in the media player", () => {
     const loadUrl = commandPrompt(["loadfile", ""]);
 
     expect(mockedWrite).toHaveBeenCalledWith(loadUrl);
+    expect(mockedWrite).not.toHaveBeenCalledWith(seekToStart);
+  });
+
+  it("only replays the media if the duration is valid", () => {
+    const mockedWrite = jest.fn();
+
+    jest.mocked(Socket.prototype.write).mockImplementation(mockedWrite);
+    jest.mocked(Socket.prototype.on).mockImplementation(
+      jest.fn().mockImplementation((event, listener) => {
+        if (event === "connect") listener();
+      }),
+    );
+
+    mediaPlayer.launch();
+    mediaPlayer.replay();
+
+    const seekToStart = commandPrompt(["seek", 0, "absolute"]);
+
     expect(mockedWrite).not.toHaveBeenCalledWith(seekToStart);
   });
 });
