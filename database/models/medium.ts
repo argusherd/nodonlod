@@ -35,6 +35,7 @@ interface OptionalMediumCreationAttributes {
   thumbnail: string | null;
   rating: number | null;
   ageLimit: number;
+  playCount: number;
   uploadDate: Date;
   hasError: string | null;
   createdAt: Date;
@@ -100,6 +101,10 @@ export default class Medium extends Model<
   @Default(0)
   @Column
   ageLimit: number;
+
+  @Default(0)
+  @Column
+  playCount: number;
 
   @IsDate
   @Column(DataType.DATE)

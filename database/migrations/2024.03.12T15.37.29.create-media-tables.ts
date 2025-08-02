@@ -51,6 +51,10 @@ export const up: Migration = async ({ context: queryInterface }) => {
         type: DataType.INTEGER,
         defaultValue: 0,
       },
+      play_count: {
+        type: DataType.INTEGER,
+        defaultValue: 0,
+      },
       upload_date: {
         type: DataType.DATEONLY,
       },
