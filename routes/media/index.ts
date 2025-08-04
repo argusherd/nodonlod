@@ -216,6 +216,12 @@ router.put(
   },
 );
 
+router.put("/:medium/play-count", async (req: MediumRequest, res) => {
+  await req.medium.increment("playCount");
+
+  res.sendStatus(204);
+});
+
 router.put("/:medium/error", async (req: MediumRequest, res) => {
   await req.medium.update({ hasError: req.body.message });
 
