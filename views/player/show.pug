@@ -24,11 +24,20 @@ if chapter
   #chapter-end-time.text-slate-400.transition-all.duration-500(
     class="dark:text-slate-500",
     hx-swap-oob="true",
-    title=__("Chapter End Time"),
-    x-text=`dayjs.neatDuration(${chapter.endTime}) + ' |'`
+    title=__("Chapter End Time")
   )
+    span(x-text=`dayjs.neatDuration(${chapter.endTime}) + ' |'`)
+
+    #track-played(
+      hx-put=`/media/${medium.id}/play-count`,
+      hx-trigger="track-ended from:body"
+    )
 else
   #chapter-end-time(hx-swap-oob="true")
+    #track-played(
+      hx-put=`/media/${medium.id}/play-count`,
+      hx-trigger="track-played from:body"
+    )
 
 if next
   #next-medium(
