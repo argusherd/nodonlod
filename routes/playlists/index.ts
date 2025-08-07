@@ -34,7 +34,6 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
 
 router.get(
   "/",
-  query("sort").toLowerCase(),
   query("sortBy").toLowerCase(),
   async (req: HasPageRequest, res) => {
     const querySort = req.query.sort as string;

@@ -23,8 +23,6 @@ const getSortAndSortBy = (req: HasPageRequest): [string, string] => {
   const querySort = req.query.sort as string;
   const querySortBy = req.query.sortBy as string;
   const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
-  console.log(req.url);
-  console.log(querySort, supportedSort.includes(querySort), sort);
   const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
 
   return [sort, sortBy];
@@ -43,7 +41,6 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 
 router.get(
   "/",
-  query("sort").toLowerCase(),
   query("sortBy").toLowerCase(),
   async (req: HasPageRequest, res) => {
     const [sort, sortBy] = getSortAndSortBy(req);
@@ -148,7 +145,6 @@ router.get("/:medium/play", async (req: MediumRequest, res) => {
 
 router.get(
   "/:medium/adjacent",
-  query("sort").toLowerCase(),
   query("sortBy").toLowerCase(),
   async (req: MediumRequest, res) => {
     const [sort, sortBy] = getSortAndSortBy(req);
