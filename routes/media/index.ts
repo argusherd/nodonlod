@@ -18,11 +18,13 @@ export interface MediumRequest extends HasPageRequest {
 }
 
 const router = Router();
-const supportedSort = ["createdAt", "duration", "rating", "title"];
+const supportedSort = ["createdAt", "duration", "playCount", "rating", "title"];
 const getSortAndSortBy = (req: HasPageRequest): [string, string] => {
   const querySort = req.query.sort as string;
   const querySortBy = req.query.sortBy as string;
   const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
+  console.log(req.url);
+  console.log(querySort, supportedSort.includes(querySort), sort);
   const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
 
   return [sort, sortBy];

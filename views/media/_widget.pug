@@ -33,6 +33,11 @@
       class="mt-0.5 dark:text-gray-400"
     ) #{ medium.description }
 
+    .flex.flex-col.gap-2.text-gray-700(class="sm:flex-row dark:text-gray-400")
+      span= __("Play count") + ": " + medium.playCount.toLocaleString("en-US")
+      span.hidden(class="sm:inline-block") •
+      span= __("Created at") + ": " + dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss")
+
     +buttonGroup.mt-auto
       +buttonInGroup(
         hx-get=`/media/${medium.id}/play`,

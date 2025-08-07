@@ -6,7 +6,7 @@ import { createMedium, createPerformer } from "../../setup/create-model";
 
 describe("The medium index page", () => {
   it("lists media and provides a link for each medium", async () => {
-    const medium1 = await createMedium();
+    const medium1 = await createMedium({ playCount: 69420 });
     const medium2 = await createMedium();
 
     await supertest(express)
@@ -15,10 +15,14 @@ describe("The medium index page", () => {
       .expect((res) => {
         expect(res.text).toContain(medium1.title);
         expect(res.text).toContain(medium2.title);
-        expect(res.text).toContain(`"/media/${medium1.id}"`);
-        expect(res.text).toContain(`"/media/${medium2.id}"`);
+        expect(res.text).toContain(`"/media/${medium1.id}?"`);
+        expect(res.text).toContain(`"/media/${medium2.id}?"`);
         expect(res.text).toContain(`/media/${medium2.id}/play`);
         expect(res.text).toContain(`/media/${medium2.id}/play`);
+        expect(res.text).toContain("69,420");
+        expect(res.text).toContain(
+          dayjs(medium1.createdAt).format("YYYY-MM-DD HH:mm:ss"),
+        );
       });
   });
 
