@@ -81,7 +81,7 @@ describe("The medium update route", () => {
   });
 
   it("resets the hasError column if the url is updated", async () => {
-    const medium = await createMedium({ hasError: true });
+    const medium = await createMedium({ hasError: "file not found" });
 
     await supertest(express)
       .put(`/media/${medium.id}`)
@@ -94,6 +94,6 @@ describe("The medium update route", () => {
 
     await medium.reload();
 
-    expect(medium.hasError).toBeFalsy();
+    expect(medium.hasError).toBeNull();
   });
 });

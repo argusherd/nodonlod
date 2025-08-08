@@ -63,7 +63,8 @@ describe("The playlist items index page", () => {
     });
 
     const displayOrder = new RegExp(
-      `.*${chapter.title}.*${medium2.title}.*${medium1.title}.*`,
+      `${chapter.title}.*${medium2.title}.*${medium1.title}`,
+      "s",
     );
 
     await supertest(express)

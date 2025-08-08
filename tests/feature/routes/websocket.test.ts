@@ -21,6 +21,6 @@ describe("The websocket server", () => {
       expect(data.toString()).toContain(JSON.stringify({ duration: 123 }));
     });
 
-    wss.json("duration", 123);
+    wss.json({ duration: 123 });
   });
 });
