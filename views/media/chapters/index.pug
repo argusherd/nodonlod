@@ -78,8 +78,7 @@ block append body
                     )
                       +buttonInGroup.relative(
                         @click="show = false",
-                        hx-get=`/chapters/${chapter.id}/edit`,
-                        hx-swap="innerHTML",
+                        hx-get=`/media/${medium.id}/chapters/${chapter.id}/edit`,
                         hx-target="#modal",
                         type="button"
                       )
