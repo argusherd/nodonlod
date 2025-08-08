@@ -83,6 +83,8 @@ include /_mixin.pug
           i.text-xl(
             :class="copying ? 'icon-[material-symbols--check]' : 'icon-[ph--copy]'"
           )
+  +listItem(__("Play Count"))
+    span= medium.playCount.toLocaleString("en-US")
   if medium.uploadDate
     +listItem(__("Upload Date"))
       span= dayjs(medium.uploadDate).format("YYYY-MM-DD")

@@ -20,6 +20,7 @@ describe("The medium show page", () => {
       duration: 123,
       description: "My description",
       thumbnail: "https://foo.com/bar.jpg",
+      playCount: 69420,
       uploadDate: new Date("1995-01-01"),
     });
 
@@ -35,6 +36,7 @@ describe("The medium show page", () => {
         expect(res.text).toContain("My description");
         expect(res.text).toContain("https://foo.com/bar.jpg");
         expect(res.text).toContain("1995-01-01");
+        expect(res.text).toContain("69,420");
         expect(res.text).toContain(
           dayjs(medium.createdAt).format("YYYY-MM-DD HH:mm:ss"),
         );
@@ -87,15 +89,13 @@ describe("The medium show page", () => {
   });
 
   it("displays an error message indicate that the given url is invalid", async () => {
-    const medium = await createMedium({ hasError: true });
+    const medium = await createMedium({ hasError: "file not found" });
 
     await supertest(express)
       .get(`/media/${medium.id}`)
       .expect(200)
       .expect((res) => {
-        expect(res.text).toContain(
-          "The given URL has an error when accessing it",
-        );
+        expect(res.text).toContain("file not found");
       });
   });
 });
