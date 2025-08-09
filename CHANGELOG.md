@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.2.0](https://github.com/argusherd/nodonlod/compare/0.1.0...0.2.0) (2025-08-09)
+
+### Features
+
+* add has_error column to the medium to show that an error occurs when playing ([16bf341](https://github.com/argusherd/nodonlod/commit/16bf341a43f7ab7109add3247f8a1047abcaf323))
+* add medium error route to indicate the url has error ([5f5d628](https://github.com/argusherd/nodonlod/commit/5f5d6285b6d5673e94ae198c42e1352334e2b63f))
+* add medium play count route to increase the play count by one ([2f57567](https://github.com/argusherd/nodonlod/commit/2f57567f9f70b792579adae9c19ddadd89dcdb95))
+* add medium succeed route to clear medium error ([a98f41b](https://github.com/argusherd/nodonlod/commit/a98f41b2a1439bf8636704d01df4f41a29f88f3c))
+* add play queue playlist store route to convert item into playlistables ([6b6de7f](https://github.com/argusherd/nodonlod/commit/6b6de7f97823f46012046b0802912cc5149f9b8f))
+* add play_count column to the media table and medium model ([be88dfb](https://github.com/argusherd/nodonlod/commit/be88dfb4801320447823a746e9290f0171b98bc0))
+* add route and button to open play queue playlist create form ([af3348f](https://github.com/argusherd/nodonlod/commit/af3348f21af05a101eacc37e7a01c53cb94979b0))
+* add route to open electron.js userData folder ([6775cf8](https://github.com/argusherd/nodonlod/commit/6775cf8eb1728e0debc24e2ef4c14a9e8ccc42a2))
+* add the error reporting in the player ([9f78e7c](https://github.com/argusherd/nodonlod/commit/9f78e7cfbe9de46a6e07ec7751154e9724d9ce74))
+* display play count in the medium show page ([ed50a9f](https://github.com/argusherd/nodonlod/commit/ed50a9f1471c9a11ac4c48c38f23d758780865a7))
+* group items into different sections on the home page ([7e03795](https://github.com/argusherd/nodonlod/commit/7e037958ffca38a341d0561f9ce629f7c5c42e04))
+* media player emits error event if the resource has issue ([605ab5d](https://github.com/argusherd/nodonlod/commit/605ab5d54cdb767057a299f56e0f7e4cabb3cf2b))
+* medium increases play count by one after 20% been played, 30 seconds elapsed, or chapter ends ([c663444](https://github.com/argusherd/nodonlod/commit/c663444dcff3b0a702f0041ffa0974acd868d024))
+* show the given medium url has an error in the info template ([ddc62fd](https://github.com/argusherd/nodonlod/commit/ddc62fdc07aee359fbdf2b56c9bed9d27a1dfc25))
+* sort the media by play count ([abd364d](https://github.com/argusherd/nodonlod/commit/abd364dfe02c6cf08bda37bf43b2fbd2e1b0633f))
+
+### Bug Fixes
+
+* errors after medium and websocket spec changed ([6936676](https://github.com/argusherd/nodonlod/commit/6936676721cb8d7ab2ea12bf03546c90f2e5fd93))
+* lowercased query is not included in supported sort ([08fb2ca](https://github.com/argusherd/nodonlod/commit/08fb2ca2f2aa1c22d7ed553e5f2de0f027bd223b))
+* media player replays regardless of whether the media is valid causing the start event to be emitted ([0d85df8](https://github.com/argusherd/nodonlod/commit/0d85df8dcdf63fd42509ca01193a00bb785a85e3))
+* play next button cannot loop back to the first medium manually ([34db861](https://github.com/argusherd/nodonlod/commit/34db8617a913cc57f1095a43bf46b257a531e5d4))
+* player blocking the underneath elements with margin ([391d2ac](https://github.com/argusherd/nodonlod/commit/391d2accf200f7373768652920e1c09be91905e3))
+* raw info converter updates the medium's properties if they are empty ([fa65d13](https://github.com/argusherd/nodonlod/commit/fa65d13a4114ddd629296670689c9d90b204e29b))
+* raw info converter upgrades the existing playlist's porperties if they are empty ([e8af0e7](https://github.com/argusherd/nodonlod/commit/e8af0e752c63cbd3753d67c19e3ba4783e21dc02))
+* widget title causing overflow ([16b1ec2](https://github.com/argusherd/nodonlod/commit/16b1ec2b58324a6a729786e38fadb806c6b4b4cb))
+* wrong chapter edit page route ([19d9b1d](https://github.com/argusherd/nodonlod/commit/19d9b1deda03f998e7d974ec67b5566d5141bcf4))
+
+### Refactorings
+
+* create medium error route in the player show template instead of pass it from response params ([80b4eb9](https://github.com/argusherd/nodonlod/commit/80b4eb9e27d03ebe5bef105bb1c19fdfdac143da))
+* media player emit error with message ([aba5e99](https://github.com/argusherd/nodonlod/commit/aba5e9972e33a49cd01d6fbc4ea5b98f06574af5))
+* medium hasError should come with a message ([146201a](https://github.com/argusherd/nodonlod/commit/146201a02f29c92960f06b8b53641d81338b8fe6))
+* player loops back to the first medium only if repeat all is activated ([e50b2b0](https://github.com/argusherd/nodonlod/commit/e50b2b038928a7df4561f44534efabc516d754dd))
+* provide the first item when playing the current item in order to loop back ([10345b3](https://github.com/argusherd/nodonlod/commit/10345b3484108278ac977e20715ab40b9b361535))
+* put play queue routes to a dedicated folder ([bf24e20](https://github.com/argusherd/nodonlod/commit/bf24e20695564c6fd93d17a7d059b6c425da2641))
+* show the most recent items in the home page ([eb921a0](https://github.com/argusherd/nodonlod/commit/eb921a09cb188fe8563025df0e6ef10e72917849))
+* websocket json api accept object instead of key value pair for better support complicated structure ([570dac6](https://github.com/argusherd/nodonlod/commit/570dac68e93ab221c46068ad38714392bbafb5b9))
+
 ## 0.1.0 (2025-06-20)
 
 ### Features
