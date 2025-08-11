@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.1](https://github.com/argusherd/nodonlod/compare/0.2.0...0.2.1) (2025-08-11)
+
+### Bug Fixes
+
+* the automatically generated tag cannot trigger the release workflow ([b010fce](https://github.com/argusherd/nodonlod/commit/b010fce8f9124b935038b4f3ca72e2e2021f60be))
+
 ## [0.2.0](https://github.com/argusherd/nodonlod/compare/0.1.0...0.2.0) (2025-08-09)
 
 ### Features
