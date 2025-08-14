@@ -7,11 +7,18 @@ Try nodonload.
 Nodonload is a personal media platform resource management tool.
 By integrating [mpv](https://mpv.io/) and [yt-dlp](https://github.com/yt-dlp/yt-dlp), you can access your collection in a single place.
 
+## Why no download?
+
+There are already tons of tools that help you download resources from different media platforms.
+
+I personally don't want to maintain so many local files, and the quality of the streaming is compatible with my needs. I just need a simple tool that can easily organize my collections.
+
 ## Target audience
 
 ✅ You will benefit from nodonload if your usage habits conform to the following situations.
 
 - All your collections come from online media platforms like [YouTube](https://www.youtube.com/), [SoundCloud](https://soundcloud.com/), or any other platform that [yt-dlp supports](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
+- You are comfortable with the quality of the streaming.
 - Only a few local files need to be managed.
 - You want to manually create your own playlists and labels in order to sort collections more clearly.
 - You collections can be easily swapped by an alternative version or link.
@@ -19,6 +26,7 @@ By integrating [mpv](https://mpv.io/) and [yt-dlp](https://github.com/yt-dlp/yt-
 ❌ You will not benefit from nodonload if your usage habits conform to the following situations.
 
 - All your collections come from [Spotify](https://open.spotify.com/), [Netflix](https://www.netflix.com/), or any other online media platforms that are **NOT** on [the yt-dlp supported list](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md).
+- You have high standards for the quality of media.
 - The majority of your collections are local files. (It will be a pain to migrate to another device.)
 - You don't want to manually manage every single one of your collections.
 - You don't want to rely on a third-party tool.
