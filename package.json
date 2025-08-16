@@ -1,6 +1,6 @@
 {
   "name": "nodonlod",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Your personal media platform resource collection/database.",
   "main": "main/index.js",
   "scripts": {

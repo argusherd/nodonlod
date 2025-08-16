@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2](https://github.com/argusherd/nodonlod/compare/0.2.1...0.2.2) (2025-08-16)
+
+### Bug Fixes
+
+* performers and media performers store route does not store thumbnail and description ([25b6bbf](https://github.com/argusherd/nodonlod/commit/25b6bbf1885940608ff57daf7a1b29836fd30f33))
+
 ## [0.2.1](https://github.com/argusherd/nodonlod/compare/0.2.0...0.2.1) (2025-08-11)
 
 ### Bug Fixes
