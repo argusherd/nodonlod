@@ -60,7 +60,11 @@ router.post(
     const errors = validationResult(req);
 
     if (errors.isEmpty()) {
-      const performer = await Performer.create({ name: req.body.name });
+      const performer = await Performer.create({
+        name: req.body.name,
+        thumbnail: req.body.thumbnail || null,
+        description: req.body.description || null,
+      });
 
       res.set("HX-Location", `/performers/${performer.id}`).sendStatus(201);
     } else

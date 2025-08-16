@@ -20,7 +20,11 @@ describe("The medium performer store route", () => {
     await supertest(express)
       .post(`/media/${medium.id}/performers`)
       .type("form")
-      .send({ name: "foo" })
+      .send({
+        name: "foo",
+        thumbnail: "https://foo.com/bar.jpg",
+        description: "baz",
+      })
       .expect(201)
       .expect((res) => {
         expect(res.headers["hx-trigger"]).toContain("close-modal");
@@ -31,5 +35,7 @@ describe("The medium performer store route", () => {
 
     expect(performers).toHaveLength(1);
     expect(performers.at(0)?.name).toEqual("foo");
+    expect(performers.at(0)?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(performers.at(0)?.description).toEqual("baz");
   });
 });

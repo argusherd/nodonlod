@@ -9,6 +9,8 @@ describe("The store performer route", () => {
       .type("form")
       .send({
         name: "foo",
+        thumbnail: "https://foo.com/bar.jpg",
+        description: "baz",
       })
       .expect(201);
 
@@ -17,6 +19,8 @@ describe("The store performer route", () => {
     const performer = await Performer.findOne();
 
     expect(performer?.name).toEqual("foo");
+    expect(performer?.thumbnail).toEqual("https://foo.com/bar.jpg");
+    expect(performer?.description).toEqual("baz");
   });
 
   it("needs a name to create a performer", async () => {
