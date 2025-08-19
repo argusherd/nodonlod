@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.4](https://github.com/argusherd/nodonlod/compare/0.2.3...0.2.4) (2025-08-19)
+
+### Bug Fixes
+
+* media count wrong with associations in the media index page ([a619bb3](https://github.com/argusherd/nodonlod/commit/a619bb37aad9ba5655416e2bfb2bf1e82aad20bc))
+
 ## [0.2.3](https://github.com/argusherd/nodonlod/compare/0.2.2...0.2.3) (2025-08-19)
 
 ### Bug Fixes
