@@ -42,7 +42,7 @@ router.get("/", async (req: HasPageRequest, res) => {
 
 router.post(
   "/",
-  body("url").notEmpty().withMessage("The URL is missing."),
+  body("url").notEmpty().trim().withMessage("The URL is missing."),
   body("page")
     .isNumeric({ no_symbols: true })
     .withMessage("The page should be positive interger")

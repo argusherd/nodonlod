@@ -125,4 +125,16 @@ describe("The extraction store route", () => {
 
     expect(extraction?.shouldPreserveTags).toBeTruthy();
   });
+
+  it("stores the url without leading or trailing spaces", async () => {
+    await supertest(express)
+      .post("/extractions")
+      .type("form")
+      .send({ url: ` ${videoURL} ` })
+      .expect(201);
+
+    const extraction = await Extraction.findOne();
+
+    expect(extraction?.url).toEqual(videoURL);
+  });
 });

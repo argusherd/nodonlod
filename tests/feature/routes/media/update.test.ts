@@ -96,4 +96,25 @@ describe("The medium update route", () => {
 
     expect(medium.hasError).toBeNull();
   });
+
+  it("updates the url without leading or trailing spaces", async () => {
+    const medium = await createMedium();
+
+    await supertest(express)
+      .put(`/media/${medium.id}`)
+      .type("form")
+      .send({
+        title: "foo",
+        url: " https://foo.com/bar ",
+      })
+      .expect(200);
+
+    const extraction = await Extraction.findOne();
+
+    await medium.reload();
+
+    expect(await Extraction.count()).toEqual(1);
+    expect(extraction?.url).toEqual("https://foo.com/bar");
+    expect(medium.url).toEqual("https://foo.com/bar");
+  });
 });

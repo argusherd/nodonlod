@@ -80,7 +80,7 @@ router.get("/:medium", async (req: MediumRequest, res) => {
 router.put(
   "/:medium",
   body("title").notEmpty().withMessage(__("The title is missing.")),
-  body("url").notEmpty().withMessage(__("The URL is missing.")),
+  body("url").notEmpty().trim().withMessage(__("The URL is missing.")),
   async (req: MediumRequest, res) => {
     const errors = validationResult(req);
 
