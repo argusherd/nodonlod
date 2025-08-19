@@ -46,6 +46,7 @@ router.get(
     const [sort, sortBy] = getSortAndSortBy(req);
 
     const { rows: media, count } = await Medium.findAndCountAll({
+      distinct: true,
       limit: req.perPage,
       include: [{ model: Performer, order: [["name", "ASC"]] }],
       offset: req.offset,

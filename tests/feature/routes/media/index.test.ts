@@ -116,4 +116,22 @@ describe("The medium index page", () => {
         expect(res.text).not.toContain(medium1.id);
       });
   });
+
+  it("distinguishes the media count with associations", async () => {
+    const medium1 = await createMedium();
+    const medium2 = await createMedium();
+    const performer1 = await createPerformer();
+    const performer2 = await createPerformer();
+    const performer3 = await createPerformer();
+
+    await medium1.$add("performer", [performer1, performer2]);
+    await medium2.$add("performer", [performer3]);
+
+    await supertest(express)
+      .get("/media")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(`1-2 (2)`);
+      });
+  });
 });
