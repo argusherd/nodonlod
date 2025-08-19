@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3](https://github.com/argusherd/nodonlod/compare/0.2.2...0.2.3) (2025-08-19)
+
+### Bug Fixes
+
+* medium and extraction url should not have leading or trailing spaces ([23e5806](https://github.com/argusherd/nodonlod/commit/23e5806b87c4f25602eaca80d0bdef80cf000f62))
+
 ## [0.2.2](https://github.com/argusherd/nodonlod/compare/0.2.1...0.2.2) (2025-08-16)
 
 ### Bug Fixes
