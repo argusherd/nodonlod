@@ -12,6 +12,9 @@ mixin widgetList(list)
       - var playlist = item;
       include /playlists/_widget.pug
 
+block append breadcrumb
+  span.ml-auto.text-gray-400= __("Version") + " " + version
+
 block body
   - var inMinute = [];
   - var inHour = [];

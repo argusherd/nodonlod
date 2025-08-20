@@ -1,5 +1,6 @@
 import express from "@/routes";
 import dayjs from "dayjs";
+import { app } from "electron";
 import supertest from "supertest";
 import {
   createMedium,
@@ -84,6 +85,17 @@ describe("The home route", () => {
         expect(res.text).toContain(inLastWeek.id);
         expect(res.text).toContain("Today");
         expect(res.text).toContain("In the last week");
+      });
+  });
+
+  it("displays the version of the app", async () => {
+    jest.spyOn(app, "getVersion").mockReturnValue("4.2.0");
+
+    await supertest(express)
+      .get("/")
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain("4.2.0");
       });
   });
 });

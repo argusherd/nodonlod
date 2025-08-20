@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { app } from "electron";
 import { Router } from "express";
 import { Op } from "sequelize";
 import { Model } from "sequelize-typescript";
@@ -9,6 +10,7 @@ import Playlist from "../../database/models/playlist";
 const router = Router();
 
 router.get("/", async (_req, res) => {
+  const version = app.getVersion();
   const items: Model[] = [
     ...(await Medium.findAll({
       where: { createdAt: { [Op.gte]: dayjs().subtract(7, "d").toDate() } },
@@ -23,7 +25,7 @@ router.get("/", async (_req, res) => {
 
   items.sort((a, b) => b.createdAt - a.createdAt);
 
-  res.render("home", { items });
+  res.render("home", { version, items });
 });
 
 export default router;
