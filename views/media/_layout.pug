@@ -1,5 +1,8 @@
 extends ../_layout.pug
 
+block vars
+  - var title = medium.title;
+
 block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 

@@ -1,5 +1,7 @@
 include _mixin.pug
 
+block vars
+
 - var isSamePath = (path) => fullPath == path;
 
 doctype html
@@ -7,7 +9,7 @@ html(lang=`${getLocale()}`)
   head
     meta(charset="UTF-8")
     meta(content="width=device-width, initial-scale=1.0", name="viewport")
-    title nodonlod
+    title= title ? title + " - Nodonlod" : "Nodonlod"
     link(href="/css/app.css", rel="stylesheet")
     script(defer, src="/js/app.js")
 
