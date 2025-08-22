@@ -152,7 +152,8 @@ router.post(
 router.delete("/:extraction", async (req: ExtractionRequest, res) => {
   await req.extraction.destroy();
 
-  if (req.query._list === undefined) res.set("HX-Location", "/extractions");
+  if (req.query._list === undefined)
+    res.set("HX-Location", "/extractions/create");
   else res.set("HX-Trigger", "refresh-extractions");
 
   res.sendStatus(204);
