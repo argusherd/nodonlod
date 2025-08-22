@@ -14,6 +14,9 @@ mixin raw-info(rawInfo)
     - var rawMedium = rawInfo;
     include _raw-medium.pug
 
+block vars
+  - var title = extraction.url;
+
 block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
   +breadcrumb({ href: '/extractions/create', icon: "icon-[gridicons--create]", name: __("Create") })
