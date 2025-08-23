@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.0](https://github.com/argusherd/nodonlod/compare/0.2.4...0.3.0) (2025-08-23)
+
+### Features
+
+* display app version in the home page ([6bdab78](https://github.com/argusherd/nodonlod/commit/6bdab78968215d9ff52048a300df378eaa660849))
+* display title in extraction pages ([7cfb660](https://github.com/argusherd/nodonlod/commit/7cfb660e9d2374d8a2182b2dbf612d5e88449a8e))
+* display title in the label, performer, playlist, and uploader pages ([dba75fd](https://github.com/argusherd/nodonlod/commit/dba75fd9dac2082d2a38dec3e5f11076d272e168))
+* display title in the media pages ([5e07267](https://github.com/argusherd/nodonlod/commit/5e07267baa31ce06ace85914b799a4b9c818cef5))
+
+### Bug Fixes
+
+* delete extraction from show page leads to _list instead of index page ([030f8fa](https://github.com/argusherd/nodonlod/commit/030f8faf3c81f8e12252d9936e04000fe48c0d9f))
+
 ## [0.2.4](https://github.com/argusherd/nodonlod/compare/0.2.3...0.2.4) (2025-08-19)
 
 ### Bug Fixes
