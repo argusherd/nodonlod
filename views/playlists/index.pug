@@ -1,5 +1,8 @@
 extends ../_layout.pug
 
+block vars
+  - var title = __("Playlist");
+
 block append breadcrumb
   +breadcrumb({ href: "/playlists", icon: "icon-[mage--playlist]", name: __("Playlist") })
 

@@ -5,6 +5,9 @@ mixin labels(labels = [])
     each label in labels
       +button(href=`/labels/${label.id}`)= label.text
 
+block vars
+  - var title = __("Label");
+
 block append breadcrumb
   +breadcrumb({ href: "/labels", icon: "icon-[mynaui--label]", name: __("Label") })
 

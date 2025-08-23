@@ -1,5 +1,8 @@
 extends ../_layout.pug
 
+block vars
+  - var title = performer.name;
+
 block append breadcrumb
   +breadcrumb({ href: '/performers', icon: "icon-[fluent--people-team-20-regular]", name: __("Performer") })
 

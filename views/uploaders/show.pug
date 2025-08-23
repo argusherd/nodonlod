@@ -1,5 +1,8 @@
 extends ../_layout.pug
 
+block vars
+  - var title = uploader.name;
+
 block append breadcrumb
   +breadcrumb({ href: "/uploaders", icon: "icon-[iconoir--upload-data-window]", name: __("Uploader") })
 
