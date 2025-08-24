@@ -24,7 +24,9 @@ html(lang=`${getLocale()}`)
     include _sidebar.pug
 
     .px-2(class="sm:ml-16")
-      .sticky.top-0.z-10.bg-white.py-2(class="sm:py-4 dark:bg-gray-900")
+      .sticky.top-0.z-10.flex.flex-col.gap-2.bg-white.py-2(
+        class="sm:gap-4 sm:py-4 dark:bg-gray-900"
+      )
         .flex.flex-wrap.items-center.gap-2.text-gray-600(class="dark:text-gray-200")
           button.text-2xl(
             @click="$dispatch('open-slide-over')",
@@ -37,6 +39,8 @@ html(lang=`${getLocale()}`)
             a.flex.items-center.gap-2(class="hover:underline", href="/")
               i.text-xl(class="icon-[heroicons--home]")
               span.hidden(class="sm:inline-block") #{ __("Home") }
+
+        block sticky
 
       block body
 

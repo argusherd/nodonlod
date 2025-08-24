@@ -1,7 +1,7 @@
 extends _layout.pug
 
-block append body
-  +buttonGroup.mb-4
+block append sticky
+  +buttonGroup
     +buttonInGroup(
       hx-include="#form",
       hx-put=`/labels/${label.id}`,
@@ -18,5 +18,6 @@ block append body
       i.text-xl(class="icon-[material-symbols--delete-outline]")
       span.hidden(class="sm:inline-block")= __("Delete")
 
+block body
   #form.mb-4
     include _info.pug

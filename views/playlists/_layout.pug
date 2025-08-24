@@ -6,8 +6,8 @@ block vars
 block append breadcrumb
   +breadcrumb({ href: "/playlists", icon: "icon-[mage--playlist]", name: __("Playlist") })
 
-block body
-  +tab.mb-4
+block sticky
+  +tab
     +tabItem(isSamePath(`/playlists/${playlist.id}`))(
       href=`/playlists/${playlist.id}`
     )

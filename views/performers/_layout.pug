@@ -6,8 +6,8 @@ block vars
 block append breadcrumb
   +breadcrumb({ href: '/performers', icon: "icon-[fluent--people-team-20-regular]", name: __("Performer") })
 
-block body
-  +tab.mb-4
+block sticky
+  +tab
     +tabItem(isSamePath(`/performers/${performer.id}`))(
       href=`/performers/${performer.id}`
     )

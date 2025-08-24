@@ -6,8 +6,8 @@ block vars
 block append breadcrumb
   +breadcrumb({ href: '/media', icon: "icon-[ph--play]", name: __("Media") })
 
-block body
-  +tab.mb-4
+block sticky
+  +tab
     +tabItem(isSamePath(`/media/${medium.id}`))(href=`/media/${medium.id}`)
       i.text-2xl(class="icon-[material-symbols--info-outline]")
       span= __("Info")

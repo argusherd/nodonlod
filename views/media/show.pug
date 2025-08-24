@@ -1,38 +1,38 @@
 extends _layout.pug
 
-block append body
-  .sticky.top-10.z-10.bg-white.pb-4(class="sm:top-14 dark:bg-gray-900")
-    +buttonGroup
-      +buttonInGroup(
-        hx-get=`/media/${medium.id}/play`,
-        hx-include="#sort",
-        hx-swap="none",
-        title=__("Play")
-      )
-        i.text-xl(class="icon-[teenyicons--play-solid]")
-        span.hidden(class="sm:inline-block")= __("Play")
-      +buttonInGroup(
-        hx-post=`/media/${medium.id}/queue`,
-        hx-swap="none",
-        title=__("Add to The Queue")
-      )
-        i.text-xl(class="icon-[ph--stack-light]")
-        span.hidden(class="sm:inline-block")= __("Queue")
-      +buttonInGroup#save-btn(
-        hx-include="#form",
-        hx-put=`/media/${medium.id}`,
-        hx-target="#form",
-        title=__("Save")
-      )
-        include /_mixin/button-savable.pug
-      +buttonInGroup(
-        hx-delete=`/media/${medium.id}/confirm`,
-        hx-target="#modal",
-        title=__("Delete"),
-        type="button"
-      )
-        i.text-xl(class="icon-[material-symbols--delete-outline]")
-        span.hidden(class="sm:inline-block")= __("Delete")
+block append sticky
+  +buttonGroup
+    +buttonInGroup(
+      hx-get=`/media/${medium.id}/play`,
+      hx-include="#sort",
+      hx-swap="none",
+      title=__("Play")
+    )
+      i.text-xl(class="icon-[teenyicons--play-solid]")
+      span.hidden(class="sm:inline-block")= __("Play")
+    +buttonInGroup(
+      hx-post=`/media/${medium.id}/queue`,
+      hx-swap="none",
+      title=__("Add to The Queue")
+    )
+      i.text-xl(class="icon-[ph--stack-light]")
+      span.hidden(class="sm:inline-block")= __("Queue")
+    +buttonInGroup#save-btn(
+      hx-include="#form",
+      hx-put=`/media/${medium.id}`,
+      hx-target="#form",
+      title=__("Save")
+    )
+      include /_mixin/button-savable.pug
+    +buttonInGroup(
+      hx-delete=`/media/${medium.id}/confirm`,
+      hx-target="#modal",
+      title=__("Delete"),
+      type="button"
+    )
+      i.text-xl(class="icon-[material-symbols--delete-outline]")
+      span.hidden(class="sm:inline-block")= __("Delete")
 
+block body
   #form.mb-4
     include _info.pug
