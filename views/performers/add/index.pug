@@ -1,6 +1,7 @@
 include /_mixin.pug
 
 +input.mb-4.w-full(
+  autofocus,
   hx-get=`${basePath}/performers/add?_list`,
   hx-target="#add-performer",
   hx-trigger="input changed delay:500ms",

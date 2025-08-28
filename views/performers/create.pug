@@ -5,7 +5,7 @@ form(action=`${basePath || ''}/performers`, hx-target="#modal", method="post")
 
   +list.mb-4
     +listItem(__("Name"))
-      +input.w-full(name="name", type="text", value=old.name)
+      +input.w-full(autofocus, name="name", type="text", value=old.name)
 
       +error("name")
 
