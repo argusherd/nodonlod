@@ -15,8 +15,8 @@ describe("The medium index page", () => {
       .expect((res) => {
         expect(res.text).toContain(medium1.title);
         expect(res.text).toContain(medium2.title);
-        expect(res.text).toContain(`"/media/${medium1.id}?"`);
-        expect(res.text).toContain(`"/media/${medium2.id}?"`);
+        expect(res.text).toContain(`"/media/${medium1.id}?`);
+        expect(res.text).toContain(`"/media/${medium2.id}?`);
         expect(res.text).toContain(`/media/${medium2.id}/play`);
         expect(res.text).toContain(`/media/${medium2.id}/play`);
         expect(res.text).toContain("69,420");

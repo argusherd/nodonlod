@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Chapter from "../../database/models/chapter";
 import Medium from "../../database/models/medium";
@@ -11,6 +11,7 @@ import Playlistable from "../../database/models/playlistable";
 import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import labelRouter from "./labels";
 import mediumRouter from "./media";
 import playlistableRouter from "./playlistables";
@@ -20,6 +21,7 @@ export interface PlaylistRequest extends HasPageRequest {
 }
 
 const router = Router();
+const supportedSort = ["createdAt", "rating", "title"];
 
 router.param("playlist", async (req: PlaylistRequest, res, next) => {
   const playlist = await Playlist.findByPk(req.params.playlist);
@@ -34,18 +36,12 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
 
 router.get(
   "/",
-  query("sortBy").toLowerCase(),
+  sortAndSortBy(supportedSort),
   async (req: HasPageRequest, res) => {
-    const querySort = req.query.sort as string;
-    const querySortBy = (req.query.sortBy as string) || "desc";
-    const supportedSort = ["createdAt", "rating", "title"];
-    const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
-    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
-
     const { rows: playlists, count } = await Playlist.findAndCountAll({
       limit: req.perPage,
       offset: req.offset,
-      order: [[sort, sortBy]],
+      order: [[req.query.sort as string, req.query.sortBy as string]],
       where: {
         ...(req.query.search && {
           [Op.or]: [

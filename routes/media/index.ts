@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Extraction from "../../database/models/extraction";
 import Medium from "../../database/models/medium";
@@ -8,6 +8,7 @@ import PlayQueue from "../../database/models/play-queue";
 import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import chapterRouter from "./chapters";
 import labelRouter from "./labels";
 import performerRouter from "./performers";
@@ -19,14 +20,6 @@ export interface MediumRequest extends HasPageRequest {
 
 const router = Router();
 const supportedSort = ["createdAt", "duration", "playCount", "rating", "title"];
-const getSortAndSortBy = (req: HasPageRequest): [string, string] => {
-  const querySort = req.query.sort as string;
-  const querySortBy = req.query.sortBy as string;
-  const sort = supportedSort.includes(querySort) ? querySort : "createdAt";
-  const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "desc";
-
-  return [sort, sortBy];
-};
 
 router.param("medium", async (req: MediumRequest, res, next) => {
   const medium = await Medium.findByPk(req.params.medium);
@@ -41,16 +34,14 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 
 router.get(
   "/",
-  query("sortBy").toLowerCase(),
+  sortAndSortBy(supportedSort),
   async (req: HasPageRequest, res) => {
-    const [sort, sortBy] = getSortAndSortBy(req);
-
     const { rows: media, count } = await Medium.findAndCountAll({
       distinct: true,
       limit: req.perPage,
       include: [{ model: Performer, order: [["name", "ASC"]] }],
       offset: req.offset,
-      order: [[sort, sortBy]],
+      order: [[req.query.sort as string, req.query.sortBy as string]],
       where: {
         ...(req.query.search && {
           [Op.or]: [
@@ -112,43 +103,49 @@ router.put(
   },
 );
 
-router.get("/:medium/play", async (req: MediumRequest, res) => {
-  const [sort, sortBy] = getSortAndSortBy(req);
+router.get(
+  "/:medium/play",
+  sortAndSortBy(supportedSort),
+  async (req: MediumRequest, res) => {
+    const sort = req.query.sort as string;
+    const sortBy = req.query.sortBy as string;
 
-  mediaPlayer.play(req.medium.url);
+    mediaPlayer.play(req.medium.url);
 
-  const nextMedium = await Medium.findOne({
-    limit: 1,
-    order: [[sort, sortBy]],
-    where: {
-      id: { [Op.ne]: req.medium.id },
-      [sort]:
-        sortBy == "desc"
-          ? { [Op.lte]: req.medium.get(sort) }
-          : { [Op.gte]: req.medium.get(sort) },
-    },
-  });
-  const firstMedium = await Medium.findOne({ order: [[sort, sortBy], "id"] });
-  const count = await Medium.count();
-  const randomOffset = Math.floor(Math.random() * count);
-  const randomMedium = await Medium.findOne({
-    offset: randomOffset,
-  });
+    const nextMedium = await Medium.findOne({
+      limit: 1,
+      order: [[sort, sortBy]],
+      where: {
+        id: { [Op.ne]: req.medium.id },
+        [sort]:
+          sortBy == "desc"
+            ? { [Op.lte]: req.medium.get(sort) }
+            : { [Op.gte]: req.medium.get(sort) },
+      },
+    });
+    const firstMedium = await Medium.findOne({ order: [[sort, sortBy], "id"] });
+    const count = await Medium.count();
+    const randomOffset = Math.floor(Math.random() * count);
+    const randomMedium = await Medium.findOne({
+      offset: randomOffset,
+    });
 
-  res.render("player/show", {
-    medium: req.medium,
-    from: `/media/${req.medium.id}`,
-    first: `/media/${firstMedium?.id}/play`,
-    next: nextMedium ? `/media/${nextMedium?.id}/play` : "",
-    random: `/media/${randomMedium?.id}/play`,
-  });
-});
+    res.render("player/show", {
+      medium: req.medium,
+      from: `/media/${req.medium.id}`,
+      first: `/media/${firstMedium?.id}/play`,
+      next: nextMedium ? `/media/${nextMedium?.id}/play` : "",
+      random: `/media/${randomMedium?.id}/play`,
+    });
+  },
+);
 
 router.get(
   "/:medium/adjacent",
-  query("sortBy").toLowerCase(),
+  sortAndSortBy(supportedSort),
   async (req: MediumRequest, res) => {
-    const [sort, sortBy] = getSortAndSortBy(req);
+    const sort = req.query.sort as string;
+    const sortBy = req.query.sortBy as string;
 
     let next = await Medium.findOne({
       limit: 1,

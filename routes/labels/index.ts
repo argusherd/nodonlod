@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { body, query, validationResult } from "express-validator";
+import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
+import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import mediumRouter from "./media";
 import performerRouter from "./performers";
 import playlistRouter from "./playlists";
@@ -25,31 +26,24 @@ router.param("label", async (req: LabelRequest, res, next) => {
   }
 });
 
-router.get(
-  "/",
-  query("sortBy").toLowerCase(),
-  async (req: HasPageRequest, res) => {
-    const querySortBy = req.query.sortBy as string;
-    const sortBy = ["asc", "desc"].includes(querySortBy) ? querySortBy : "asc";
+router.get("/", sortAndSortBy([]), async (req: HasPageRequest, res) => {
+  const { rows: labels, count } = await Label.findAndCountAll({
+    order: [
+      ["category", req.query.sortBy as string],
+      ["text", req.query.sortBy as string],
+    ],
+    where: {
+      ...(req.query.search && {
+        [Op.or]: [
+          { category: { [Op.substring]: req.query.search } },
+          { text: { [Op.substring]: req.query.search } },
+        ],
+      }),
+    },
+  });
 
-    const { rows: labels, count } = await Label.findAndCountAll({
-      order: [
-        ["category", sortBy],
-        ["text", sortBy],
-      ],
-      where: {
-        ...(req.query.search && {
-          [Op.or]: [
-            { category: { [Op.substring]: req.query.search } },
-            { text: { [Op.substring]: req.query.search } },
-          ],
-        }),
-      },
-    });
-
-    res.render("labels/index", { labels, count });
-  },
-);
+  res.render("labels/index", { labels, count });
+});
 
 router.get("/create", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("labels/create");
