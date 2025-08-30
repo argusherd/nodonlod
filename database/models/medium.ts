@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Optional } from "sequelize";
+import { Op, Optional } from "sequelize";
 import {
   AllowNull,
   BeforeDestroy,
@@ -152,6 +152,36 @@ export default class Medium extends Model<
 
     await Performable.destroy({
       where: { performableId: instance.id, performableType: "medium" },
+    });
+  }
+
+  static async query({
+    limit,
+    offset,
+    search,
+    sort = "createdAt",
+    sortBy = "desc",
+  }: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sort?: string;
+    sortBy?: "asc" | "desc";
+  } = {}) {
+    return await Medium.findAndCountAll({
+      distinct: true,
+      limit,
+      include: [{ model: Performer, order: [["name", "ASC"]] }],
+      offset,
+      order: [[sort, sortBy]],
+      where: {
+        ...(search && {
+          [Op.or]: [
+            { title: { [Op.substring]: search } },
+            { description: { [Op.substring]: search } },
+          ],
+        }),
+      },
     });
   }
 }

@@ -9,7 +9,7 @@ import {
   createPerformer,
   createPlaylist,
   createUploader,
-} from "../../setup/create-model";
+} from "../../../setup/create-model";
 
 describe("The medium model", () => {
   it("can persist one record to the database", async () => {
