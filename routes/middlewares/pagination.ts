@@ -3,6 +3,7 @@ import { Request, Response, Router } from "express";
 export interface HasPageRequest extends Request {
   currentPage: number;
   perPage: number;
+  limit: number;
   offset: number;
 }
 
@@ -10,6 +11,7 @@ export interface HasPageResponse extends Response {
   locals: {
     currentPage: number;
     perPage: number;
+    limit: number;
   };
 }
 
@@ -21,6 +23,7 @@ router.use((req: HasPageRequest, res: HasPageResponse, next) => {
 
   req.currentPage = page;
   req.perPage = limit;
+  req.limit = limit;
   req.offset = Math.max(page - 1, 0) * limit;
   res.locals.currentPage = page;
   res.locals.perPage = limit;

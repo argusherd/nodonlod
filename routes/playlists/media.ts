@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { Op } from "sequelize";
 import { PlaylistRequest } from ".";
 import Medium from "../../database/models/medium";
 
@@ -21,16 +20,7 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 });
 
 router.get("/add", async (req: PlaylistRequest, res) => {
-  const { rows: media, count } = await Medium.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["title", "ASC"]],
-    where: {
-      ...(req.query.search && {
-        title: { [Op.substring]: req.query.search as string },
-      }),
-    },
-  });
+  const { rows: media, count } = await Medium.query({ ...req, ...req.query });
 
   const template = "_list" in req.query ? "media/add/_list" : "media/add";
 

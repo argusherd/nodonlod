@@ -3,7 +3,6 @@ import { body, validationResult } from "express-validator";
 import { Op } from "sequelize";
 import Extraction from "../../database/models/extraction";
 import Medium from "../../database/models/medium";
-import Performer from "../../database/models/performer";
 import PlayQueue from "../../database/models/play-queue";
 import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
@@ -36,21 +35,7 @@ router.get(
   "/",
   sortAndSortBy(supportedSort),
   async (req: HasPageRequest, res) => {
-    const { rows: media, count } = await Medium.findAndCountAll({
-      distinct: true,
-      limit: req.perPage,
-      include: [{ model: Performer, order: [["name", "ASC"]] }],
-      offset: req.offset,
-      order: [[req.query.sort as string, req.query.sortBy as string]],
-      where: {
-        ...(req.query.search && {
-          [Op.or]: [
-            { title: { [Op.substring]: req.query.search } },
-            { description: { [Op.substring]: req.query.search } },
-          ],
-        }),
-      },
-    });
+    const { rows: media, count } = await Medium.query({ ...req, ...req.query });
 
     res.render("media/index", {
       media,

@@ -33,16 +33,7 @@ router.get("/", async (req: PerformerRequest, res) => {
 });
 
 router.get("/add", async (req: PerformerRequest, res) => {
-  const { rows: media, count } = await Medium.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["title", "ASC"]],
-    where: {
-      ...(req.query.search && {
-        title: { [Op.substring]: req.query.search as string },
-      }),
-    },
-  });
+  const { rows: media, count } = await Medium.query({ ...req, ...req.query });
 
   const template = "_list" in req.query ? "media/add/_list" : "media/add/index";
 
