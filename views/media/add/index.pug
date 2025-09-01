@@ -1,13 +1,21 @@
 include /_mixin.pug
 
-+input.mb-4.w-full(
-  autofocus,
-  hx-get=`${basePath}/media/add?_list`,
+form.mb-4.flex.flex-wrap.items-center.justify-between.gap-2(
+  action=`${basePath}/media/add?_list`,
+  hx-swap="show:none",
   hx-target="#add-medium",
-  hx-trigger="input changed delay:500ms",
-  name="search",
-  placeholder=__("Search")
+  hx-trigger="sort-changed from:body, input from:input changed delay:250ms"
 )
+  - var query = qs();
+
+  +input(
+    autofocus="",
+    name="search",
+    placeholder=__("Search"),
+    type="search"
+  )
+
+  include /media/_sort.pug
 
 #add-medium
   include _list.pug
