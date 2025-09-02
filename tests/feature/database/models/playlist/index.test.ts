@@ -5,7 +5,7 @@ import {
   createMedium,
   createPlaylist,
   createPlaylistable,
-} from "../../setup/create-model";
+} from "../../../setup/create-model";
 
 describe("The playlist model", () => {
   it("can persist one record to the database", async () => {

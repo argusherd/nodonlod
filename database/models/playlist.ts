@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Op, Optional } from "sequelize";
 import {
   AllowNull,
   BeforeDestroy,
@@ -47,6 +47,8 @@ export default class Playlist extends Model<
   PlaylistAttributes,
   PlaylistCreationAttributes
 > {
+  static readonly supportedSort = ["createdAt", "rating", "title"];
+
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)
@@ -98,6 +100,37 @@ export default class Playlist extends Model<
   static async removeBelongsToMany(instance: Playlist) {
     await Labelable.destroy({
       where: { labelableId: instance.id, labelableType: "playlist" },
+    });
+  }
+
+  static async query({
+    limit,
+    offset,
+    search,
+    sort = "createdAt",
+    sortBy = "desc",
+  }: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sort?: string;
+    sortBy?: "asc" | "desc";
+  } = {}) {
+    if (!Playlist.supportedSort.includes(sort)) sort = "createdAt";
+    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
+
+    return await Playlist.findAndCountAll({
+      limit,
+      offset,
+      order: [[sort, sortBy]],
+      where: {
+        ...(search && {
+          [Op.or]: [
+            { title: { [Op.substring]: search } },
+            { description: { [Op.substring]: search } },
+          ],
+        }),
+      },
     });
   }
 
