@@ -18,7 +18,6 @@ export interface MediumRequest extends HasPageRequest {
 }
 
 const router = Router();
-const supportedSort = ["createdAt", "duration", "playCount", "rating", "title"];
 
 router.param("medium", async (req: MediumRequest, res, next) => {
   const medium = await Medium.findByPk(req.params.medium);
@@ -31,18 +30,14 @@ router.param("medium", async (req: MediumRequest, res, next) => {
   }
 });
 
-router.get(
-  "/",
-  sortAndSortBy(supportedSort),
-  async (req: HasPageRequest, res) => {
-    const { rows: media, count } = await Medium.query({ ...req, ...req.query });
+router.get("/", async (req: HasPageRequest, res) => {
+  const { rows: media, count } = await Medium.query({ ...req, ...req.query });
 
-    res.render("media/index", {
-      media,
-      count,
-    });
-  },
-);
+  res.render("media/index", {
+    media,
+    count,
+  });
+});
 
 router.get("/:medium", async (req: MediumRequest, res) => {
   res.render("media/show", {
@@ -90,7 +85,7 @@ router.put(
 
 router.get(
   "/:medium/play",
-  sortAndSortBy(supportedSort),
+  sortAndSortBy(Medium.supportedSort),
   async (req: MediumRequest, res) => {
     const sort = req.query.sort as string;
     const sortBy = req.query.sortBy as string;
@@ -127,7 +122,7 @@ router.get(
 
 router.get(
   "/:medium/adjacent",
-  sortAndSortBy(supportedSort),
+  sortAndSortBy(Medium.supportedSort),
   async (req: MediumRequest, res) => {
     const sort = req.query.sort as string;
     const sortBy = req.query.sortBy as string;

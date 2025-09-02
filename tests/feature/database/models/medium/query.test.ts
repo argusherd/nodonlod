@@ -1,4 +1,5 @@
 import Medium from "@/database/models/medium";
+import dayjs from "dayjs";
 import { createMedium, createPerformer } from "../../../setup/create-model";
 
 describe("The medium query method", () => {
@@ -33,6 +34,25 @@ describe("The medium query method", () => {
 
     expect(inDesc.at(0)?.title).toEqual("c");
     expect(inDesc.at(2)?.title).toEqual("a");
+  });
+
+  it("falls back to createdAt if the sort is not supported", async () => {
+    const medium1 = await createMedium({
+      createdAt: dayjs().add(1, "d").toDate(),
+    });
+    const medium2 = await createMedium({
+      createdAt: dayjs().subtract(1, "d").toDate(),
+    });
+    const medium3 = await createMedium();
+
+    const { rows } = await Medium.query({
+      sort: "not supported",
+      sortBy: "asc",
+    });
+
+    expect(rows.at(0)?.id).toEqual(medium2.id);
+    expect(rows.at(1)?.id).toEqual(medium3.id);
+    expect(rows.at(2)?.id).toEqual(medium1.id);
   });
 
   it("can skip certain number of rows", async () => {

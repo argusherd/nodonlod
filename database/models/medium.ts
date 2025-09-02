@@ -58,6 +58,14 @@ export default class Medium extends Model<
   MediumAttributes,
   MediumCreationAttributes
 > {
+  static readonly supportedSort = [
+    "createdAt",
+    "duration",
+    "playCount",
+    "rating",
+    "title",
+  ];
+
   @PrimaryKey
   @IsUUID(4)
   @Default(DataType.UUIDV4)
@@ -168,6 +176,9 @@ export default class Medium extends Model<
     sort?: string;
     sortBy?: "asc" | "desc";
   } = {}) {
+    if (!Medium.supportedSort.includes(sort)) sort = "createdAt";
+    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
+
     return await Medium.findAndCountAll({
       distinct: true,
       limit,
