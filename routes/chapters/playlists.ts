@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { Op } from "sequelize";
 import { ChapterRequest } from ".";
 import Playlist from "../../database/models/playlist";
 import Playlistable from "../../database/models/playlistable";
@@ -23,15 +22,9 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
 });
 
 router.get("/add", async (req: ChapterRequest, res) => {
-  const { rows: playlists, count } = await Playlist.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["title", "ASC"]],
-    where: {
-      ...(req.query.title && {
-        title: { [Op.substring]: req.query.title as string },
-      }),
-    },
+  const { rows: playlists, count } = await Playlist.query({
+    ...req,
+    ...req.query,
   });
 
   const template =

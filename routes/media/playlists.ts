@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { Op } from "sequelize";
 import { MediumRequest } from ".";
 import Playlist from "../../database/models/playlist";
 import Playlistable from "../../database/models/playlistable";
@@ -72,15 +71,9 @@ router.get("/create", (req: MediumRequest, res) => {
 });
 
 router.get("/add", async (req: MediumRequest & HasPageRequest, res) => {
-  const { rows: playlists, count } = await Playlist.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["title", "ASC"]],
-    where: {
-      ...(req.query.title && {
-        title: { [Op.substring]: req.query.title as string },
-      }),
-    },
+  const { rows: playlists, count } = await Playlist.query({
+    ...req,
+    ...req.query,
   });
 
   const template =

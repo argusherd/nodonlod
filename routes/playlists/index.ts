@@ -38,18 +38,9 @@ router.get(
   "/",
   sortAndSortBy(supportedSort),
   async (req: HasPageRequest, res) => {
-    const { rows: playlists, count } = await Playlist.findAndCountAll({
-      limit: req.perPage,
-      offset: req.offset,
-      order: [[req.query.sort as string, req.query.sortBy as string]],
-      where: {
-        ...(req.query.search && {
-          [Op.or]: [
-            { title: { [Op.substring]: req.query.search } },
-            { description: { [Op.substring]: req.query.search } },
-          ],
-        }),
-      },
+    const { rows: playlists, count } = await Playlist.query({
+      ...req,
+      ...req.query,
     });
 
     res.render("playlists/index", {
