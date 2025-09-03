@@ -1,16 +1,21 @@
 include /_mixin.pug
 
-.mb-2.flex.gap-2
-  +input.grow(
-    autofocus,
-    hx-get=`${basePath}/playlists/add?_list`,
-    hx-target="#search-result",
-    hx-trigger="input changed delay:500ms, load",
-    name="title",
+form.mb-4.flex.flex-wrap.items-center.justify-between.gap-2(
+  action=`${basePath}/playlists/add?_list`,
+  hx-swap="show:none",
+  hx-target="#search-result",
+  hx-trigger="sort-changed from:body, input from:input changed delay:250ms"
+)
+  - var query = qs();
+
+  +input(
+    autofocus="",
+    name="search",
     placeholder=__("Search"),
-    type="search",
-    value=old.name || ""
+    type="search"
   )
+
+  include /playlists/_sort.pug
 
 #search-result
   include _list.pug
