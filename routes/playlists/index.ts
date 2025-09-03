@@ -11,7 +11,6 @@ import Playlistable from "../../database/models/playlistable";
 import mediaPlayer from "../../src/media-player";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
-import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import labelRouter from "./labels";
 import mediumRouter from "./media";
 import playlistableRouter from "./playlistables";
@@ -21,7 +20,6 @@ export interface PlaylistRequest extends HasPageRequest {
 }
 
 const router = Router();
-const supportedSort = ["createdAt", "rating", "title"];
 
 router.param("playlist", async (req: PlaylistRequest, res, next) => {
   const playlist = await Playlist.findByPk(req.params.playlist);
@@ -34,21 +32,17 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
   }
 });
 
-router.get(
-  "/",
-  sortAndSortBy(supportedSort),
-  async (req: HasPageRequest, res) => {
-    const { rows: playlists, count } = await Playlist.query({
-      ...req,
-      ...req.query,
-    });
+router.get("/", async (req: HasPageRequest, res) => {
+  const { rows: playlists, count } = await Playlist.query({
+    ...req,
+    ...req.query,
+  });
 
-    res.render("playlists/index", {
-      playlists,
-      count,
-    });
-  },
-);
+  res.render("playlists/index", {
+    playlists,
+    count,
+  });
+});
 
 router.get("/create", async (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("playlists/create");
