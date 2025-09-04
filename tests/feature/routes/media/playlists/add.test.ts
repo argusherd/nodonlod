@@ -25,23 +25,27 @@ describe("The medium playlist add route", () => {
       });
   });
 
-  it("can filter playlists by title", async () => {
+  it("can search playlists by title or description", async () => {
     const medium = await createMedium();
-    const playlist1 = await createPlaylist();
-    const playlist2 = await createPlaylist();
+    const playlist1 = await createPlaylist({ title: "as foo 1" });
+    const playlist2 = await createPlaylist({ description: "as bar 2" });
 
     await supertest(express)
-      .get(`/media/${medium.id}/playlists/add?title=${playlist1.title}`)
+      .get(`/media/${medium.id}/playlists/add`)
+      .query({ search: "foo" })
       .expect(200)
       .expect((res) => {
-        expect(res.text).toContain(playlist1.title);
-        expect(res.text).toContain(
-          `/media/${medium.id}/playlists/${playlist1.id}`,
-        );
-        expect(res.text).not.toContain(playlist2.title);
-        expect(res.text).not.toContain(
-          `/media/${medium.id}/playlists/${playlist2.id}`,
-        );
+        expect(res.text).toContain(playlist1.id);
+        expect(res.text).not.toContain(playlist2.id);
+      });
+
+    await supertest(express)
+      .get(`/media/${medium.id}/playlists/add`)
+      .query({ search: "bar" })
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(playlist1.id);
+        expect(res.text).toContain(playlist2.id);
       });
   });
 
