@@ -1,13 +1,21 @@
 include /_mixin.pug
 
-+input.mb-4.w-full(
-  autofocus,
-  hx-get=`${basePath}/performers/add?_list`,
+form.mb-4.flex.flex-wrap.justify-between.gap-2(
+  action=`${basePath}/performers/add?_list`,
+  hx-swap="show:none",
   hx-target="#add-performer",
-  hx-trigger="input changed delay:500ms",
-  name="name",
-  placeholder=__("Search")
+  hx-trigger="sort-changed from:body, input from:input changed delay:250ms"
 )
+  - var query = qs();
+
+  +input(
+    autofocus="",
+    name="search",
+    placeholder=__("Search"),
+    type="search"
+  )
+
+  include /performers/_sort.pug
 
 #add-performer
   include _list.pug
