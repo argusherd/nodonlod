@@ -1,4 +1,4 @@
-import { Optional } from "sequelize";
+import { Op, Optional } from "sequelize";
 import {
   AllowNull,
   BelongsToMany,
@@ -40,6 +40,8 @@ export default class Performer extends Model<
   PerformerAttributes,
   PerformerCreationAttributes
 > {
+  static readonly supportedSort = ["createdAt", "name", "rating"];
+
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column
@@ -75,4 +77,35 @@ export default class Performer extends Model<
     foreignKey: "labelableId",
   })
   labels: Label[];
+
+  static async query({
+    limit,
+    offset,
+    search,
+    sort = "createdAt",
+    sortBy = "desc",
+  }: {
+    limit?: number;
+    offset?: number;
+    search?: string;
+    sort?: string;
+    sortBy?: "asc" | "desc";
+  } = {}) {
+    if (!Performer.supportedSort.includes(sort)) sort = "createdAt";
+    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
+
+    return await Performer.findAndCountAll({
+      limit,
+      offset,
+      order: [[sort, sortBy]],
+      where: {
+        ...(search && {
+          [Op.or]: [
+            { name: { [Op.substring]: search } },
+            { description: { [Op.substring]: search } },
+          ],
+        }),
+      },
+    });
+  }
 }

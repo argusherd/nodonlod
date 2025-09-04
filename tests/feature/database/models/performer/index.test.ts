@@ -3,7 +3,7 @@ import {
   createLabel,
   createMedium,
   createPerformer,
-} from "../../setup/create-model";
+} from "../../../setup/create-model";
 
 describe("The performer model", () => {
   it("can belong to many media", async () => {
