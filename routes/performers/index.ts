@@ -1,10 +1,8 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { Op } from "sequelize";
 import Performer from "../../database/models/performer";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
-import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import labelRouter from "./labels";
 import mediumRouter from "./media";
 import playlistRouter from "./playlists";
@@ -14,7 +12,6 @@ export interface PerformerRequest extends HasPageRequest {
 }
 
 const router = Router();
-const supportedSort = ["createdAt", "name", "rating"];
 
 router.param("performer", async (req: PerformerRequest, res, next) => {
   const performer = await Performer.findByPk(req.params.performer);
@@ -27,27 +24,14 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
   }
 });
 
-router.get(
-  "/",
-  sortAndSortBy(supportedSort),
-  async (req: HasPageRequest, res) => {
-    const { rows: performers, count } = await Performer.findAndCountAll({
-      limit: req.perPage,
-      offset: req.offset,
-      order: [[req.query.sort as string, req.query.sortBy as string]],
-      where: {
-        ...(req.query.search && {
-          [Op.or]: [
-            { name: { [Op.substring]: req.query.search } },
-            { description: { [Op.substring]: req.query.search } },
-          ],
-        }),
-      },
-    });
+router.get("/", async (req: HasPageRequest, res) => {
+  const { rows: performers, count } = await Performer.query({
+    ...req,
+    ...req.query,
+  });
 
-    res.render("performers/index", { count, performers });
-  },
-);
+  res.render("performers/index", { count, performers });
+});
 
 router.get("/create", (_req, res) => {
   res.set("HX-Trigger", "open-modal").render("performers/create");

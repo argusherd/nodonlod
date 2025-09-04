@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { Op } from "sequelize";
 import { LabelRequest } from ".";
 import Performer from "../../database/models/performer";
 import { __ } from "../middlewares/i18n";
@@ -69,15 +68,9 @@ router.get("/create", async (req: LabelRequest, res) => {
 });
 
 router.get("/add", async (req: LabelRequest, res) => {
-  const { rows: performers, count } = await Performer.findAndCountAll({
-    limit: req.perPage,
-    offset: req.offset,
-    order: [["name", "ASC"]],
-    where: {
-      ...(req.query.name && {
-        name: { [Op.substring]: req.query.name as string },
-      }),
-    },
+  const { rows: performers, count } = await Performer.query({
+    ...req,
+    ...req.query,
   });
 
   const template =
