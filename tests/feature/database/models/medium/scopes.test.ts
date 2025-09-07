@@ -2,35 +2,22 @@ import Medium from "@/database/models/medium";
 import dayjs from "dayjs";
 import { createMedium, createPerformer } from "../../../setup/create-model";
 
-describe("The medium query method", () => {
-  it("can limit the number of rows", async () => {
-    await createMedium();
-    await createMedium();
-    await createMedium();
-
-    const { rows, count } = await Medium.query({ limit: 2 });
-
-    expect(rows).toHaveLength(2);
-    expect(count).toEqual(3);
-  });
-
+describe("The medium scopes", () => {
   it("can sort the outcome in different orders", async () => {
     await createMedium({ title: "a" });
     await createMedium({ title: "b" });
     await createMedium({ title: "c" });
 
-    const { rows: inAsc } = await Medium.query({
-      sort: "title",
-      sortBy: "asc",
-    });
+    const inAsc = await Medium.scope({
+      method: ["sort", "title", "asc"],
+    }).findAll();
 
     expect(inAsc.at(0)?.title).toEqual("a");
     expect(inAsc.at(2)?.title).toEqual("c");
 
-    const { rows: inDesc } = await Medium.query({
-      sort: "title",
-      sortBy: "desc",
-    });
+    const inDesc = await Medium.scope({
+      method: ["sort", "title", "desc"],
+    }).findAll();
 
     expect(inDesc.at(0)?.title).toEqual("c");
     expect(inDesc.at(2)?.title).toEqual("a");
@@ -45,30 +32,13 @@ describe("The medium query method", () => {
     });
     const medium3 = await createMedium();
 
-    const { rows } = await Medium.query({
-      sort: "not supported",
-      sortBy: "asc",
-    });
+    const rows = await Medium.scope({
+      method: ["sort", "not supported", "asc"],
+    }).findAll();
 
     expect(rows.at(0)?.id).toEqual(medium2.id);
     expect(rows.at(1)?.id).toEqual(medium3.id);
     expect(rows.at(2)?.id).toEqual(medium1.id);
-  });
-
-  it("can skip certain number of rows", async () => {
-    await createMedium({ title: "a" });
-    const medium = await createMedium({ title: "b" });
-    await createMedium({ title: "c" });
-
-    const { rows } = await Medium.query({
-      limit: 1,
-      offset: 1,
-      sort: "title",
-      sortBy: "asc",
-    });
-
-    expect(rows).toHaveLength(1);
-    expect(rows.at(0)?.id).toEqual(medium.id);
   });
 
   it("can filter the rows with title and description", async () => {
@@ -79,7 +49,10 @@ describe("The medium query method", () => {
       description: "as foo 3",
     });
 
-    const { rows, count } = await Medium.query({ search: "foo" });
+    const { rows, count } = await Medium.scope({
+      method: ["search", "foo"],
+    }).findAndCountAll();
+
     const ids = rows.map((medium) => medium.id);
 
     expect(count).toEqual(2);
@@ -89,7 +62,7 @@ describe("The medium query method", () => {
     expect(ids).not.toContain(medium2.id);
   });
 
-  it("comes with associated performers", async () => {
+  it("can retrieve rows with associated performers", async () => {
     const medium = await createMedium({ title: "1" });
     await createMedium({ title: "2" });
     const performer1 = await createPerformer();
@@ -97,8 +70,12 @@ describe("The medium query method", () => {
 
     await medium.$add("performer", [performer1, performer2]);
 
-    const { rows: withPerformers } = await Medium.query({ search: "1" });
-    const { rows: withoutPerformers } = await Medium.query({ search: "2" });
+    const withPerformers = await Medium.scope("withPerformers").findAll({
+      where: { title: "1" },
+    });
+    const withoutPerformers = await Medium.scope("withPerformers").findAll({
+      where: { title: "2" },
+    });
 
     expect(withPerformers).toHaveLength(1);
     expect(withPerformers.at(0)?.performers).toHaveLength(2);
@@ -120,7 +97,9 @@ describe("The medium query method", () => {
 
     await medium.$add("performer", [performer1, performer2]);
 
-    const { count } = await Medium.query();
+    const { count } = await Medium.scope("withPerformers").findAndCountAll({
+      distinct: true,
+    });
 
     expect(count).toEqual(1);
   });

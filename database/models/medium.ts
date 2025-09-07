@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { Op, Optional } from "sequelize";
+import { FindAndCountOptions, Op, Optional } from "sequelize";
 import {
   AllowNull,
   BeforeDestroy,
@@ -15,10 +15,12 @@ import {
   IsUUID,
   Model,
   PrimaryKey,
+  Scopes,
   Table,
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import { sortable } from "../scopes";
 import Chapter from "./chapter";
 import Label from "./label";
 import Labelable from "./labelable";
@@ -53,6 +55,22 @@ interface MediumAttributes extends OptionalMediumCreationAttributes {
 export interface MediumCreationAttributes
   extends Optional<MediumAttributes, keyof OptionalMediumCreationAttributes> {}
 
+@Scopes(() => ({
+  ...sortable(Medium.supportedSort),
+  search: (value) => ({
+    where: {
+      ...(value && {
+        [Op.or]: [
+          { title: { [Op.substring]: value } },
+          { description: { [Op.substring]: value } },
+        ],
+      }),
+    },
+  }),
+  withPerformers: () => ({
+    include: { model: Performer, order: [["name", "asc"]] },
+  }),
+}))
 @Table({ underscored: true })
 export default class Medium extends Model<
   MediumAttributes,
@@ -162,37 +180,13 @@ export default class Medium extends Model<
       where: { performableId: instance.id, performableType: "medium" },
     });
   }
-
-  static async query({
-    limit,
-    offset,
-    search,
-    sort = "createdAt",
-    sortBy = "desc",
-  }: {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sort?: string;
-    sortBy?: "asc" | "desc";
-  } = {}) {
-    if (!Medium.supportedSort.includes(sort)) sort = "createdAt";
-    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
-
-    return await Medium.findAndCountAll({
-      distinct: true,
-      limit,
-      include: [{ model: Performer, order: [["name", "ASC"]] }],
-      offset,
-      order: [[sort, sortBy]],
-      where: {
-        ...(search && {
-          [Op.or]: [
-            { title: { [Op.substring]: search } },
-            { description: { [Op.substring]: search } },
-          ],
-        }),
-      },
-    });
-  }
 }
+
+const originalMethod = Medium.findAndCountAll;
+
+Medium.findAndCountAll = function (options?: FindAndCountOptions) {
+  if (options && options.distinct && !options.col)
+    options.col = `${this.name}.${this.primaryKeyAttribute}`;
+
+  return originalMethod.call(this, options);
+};

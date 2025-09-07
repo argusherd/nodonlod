@@ -20,7 +20,14 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 });
 
 router.get("/add", async (req: PlaylistRequest, res) => {
-  const { rows: media, count } = await Medium.query({ ...req, ...req.query });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: media, count } = await Medium.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+    "withPerformers",
+  ]).findAndCountAll({ distinct: true, limit, offset });
 
   const template = "_list" in req.query ? "media/add/_list" : "media/add";
 

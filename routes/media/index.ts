@@ -31,7 +31,14 @@ router.param("medium", async (req: MediumRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: media, count } = await Medium.query({ ...req, ...req.query });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: media, count } = await Medium.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+    "withPerformers",
+  ]).findAndCountAll({ distinct: true, limit, offset });
 
   res.render("media/index", {
     media,
