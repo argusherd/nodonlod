@@ -33,10 +33,13 @@ router.param("playlist", async (req: PlaylistRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: playlists, count } = await Playlist.query({
-    ...req,
-    ...req.query,
-  });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: playlists, count } = await Playlist.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   res.render("playlists/index", {
     playlists,

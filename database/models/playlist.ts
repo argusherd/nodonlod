@@ -11,10 +11,12 @@ import {
   IsUUID,
   Model,
   PrimaryKey,
+  Scopes,
   Table,
   Unique,
   UpdatedAt,
 } from "sequelize-typescript";
+import { sortable } from "../scopes";
 import Label from "./label";
 import Labelable from "./labelable";
 import Medium from "./medium";
@@ -42,6 +44,19 @@ export interface PlaylistCreationAttributes
     keyof OptionalPlaylistCreationAttributes
   > {}
 
+@Scopes(() => ({
+  ...sortable(Playlist.supportedSort),
+  search: (value) => ({
+    where: {
+      ...(value && {
+        [Op.or]: [
+          { title: { [Op.substring]: value } },
+          { description: { [Op.substring]: value } },
+        ],
+      }),
+    },
+  }),
+}))
 @Table({ underscored: true })
 export default class Playlist extends Model<
   PlaylistAttributes,
@@ -100,37 +115,6 @@ export default class Playlist extends Model<
   static async removeBelongsToMany(instance: Playlist) {
     await Labelable.destroy({
       where: { labelableId: instance.id, labelableType: "playlist" },
-    });
-  }
-
-  static async query({
-    limit,
-    offset,
-    search,
-    sort = "createdAt",
-    sortBy = "desc",
-  }: {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sort?: string;
-    sortBy?: "asc" | "desc";
-  } = {}) {
-    if (!Playlist.supportedSort.includes(sort)) sort = "createdAt";
-    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
-
-    return await Playlist.findAndCountAll({
-      limit,
-      offset,
-      order: [[sort, sortBy]],
-      where: {
-        ...(search && {
-          [Op.or]: [
-            { title: { [Op.substring]: search } },
-            { description: { [Op.substring]: search } },
-          ],
-        }),
-      },
     });
   }
 
