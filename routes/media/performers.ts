@@ -66,10 +66,13 @@ router.get("/create", async (req: MediumRequest & HasPageRequest, res) => {
 });
 
 router.get("/add", async (req: MediumRequest & HasPageRequest, res) => {
-  const { rows: performers, count } = await Performer.query({
-    ...req,
-    ...req.query,
-  });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: performers, count } = await Performer.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   const template =
     "_list" in req.query ? "performers/add/_list" : "performers/add/index";

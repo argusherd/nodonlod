@@ -8,9 +8,11 @@ import {
   Default,
   Model,
   PrimaryKey,
+  Scopes,
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
+import { sortable } from "../scopes";
 import Label from "./label";
 import Labelable from "./labelable";
 import Medium from "./medium";
@@ -35,6 +37,19 @@ export interface PerformerCreationAttributes
     keyof OptionalPerformerCreationAttributes
   > {}
 
+@Scopes(() => ({
+  ...sortable(Performer.supportedSort),
+  search: (value) => ({
+    where: {
+      ...(value && {
+        [Op.or]: [
+          { name: { [Op.substring]: value } },
+          { description: { [Op.substring]: value } },
+        ],
+      }),
+    },
+  }),
+}))
 @Table({ underscored: true })
 export default class Performer extends Model<
   PerformerAttributes,
@@ -77,35 +92,4 @@ export default class Performer extends Model<
     foreignKey: "labelableId",
   })
   labels: Label[];
-
-  static async query({
-    limit,
-    offset,
-    search,
-    sort = "createdAt",
-    sortBy = "desc",
-  }: {
-    limit?: number;
-    offset?: number;
-    search?: string;
-    sort?: string;
-    sortBy?: "asc" | "desc";
-  } = {}) {
-    if (!Performer.supportedSort.includes(sort)) sort = "createdAt";
-    if (!["asc", "desc"].includes(sortBy.toLowerCase())) sortBy = "desc";
-
-    return await Performer.findAndCountAll({
-      limit,
-      offset,
-      order: [[sort, sortBy]],
-      where: {
-        ...(search && {
-          [Op.or]: [
-            { name: { [Op.substring]: search } },
-            { description: { [Op.substring]: search } },
-          ],
-        }),
-      },
-    });
-  }
 }

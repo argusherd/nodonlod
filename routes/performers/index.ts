@@ -25,10 +25,13 @@ router.param("performer", async (req: PerformerRequest, res, next) => {
 });
 
 router.get("/", async (req: HasPageRequest, res) => {
-  const { rows: performers, count } = await Performer.query({
-    ...req,
-    ...req.query,
-  });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: performers, count } = await Performer.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   res.render("performers/index", { count, performers });
 });

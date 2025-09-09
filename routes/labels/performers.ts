@@ -68,10 +68,13 @@ router.get("/create", async (req: LabelRequest, res) => {
 });
 
 router.get("/add", async (req: LabelRequest, res) => {
-  const { rows: performers, count } = await Performer.query({
-    ...req,
-    ...req.query,
-  });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: performers, count } = await Performer.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   const template =
     "_list" in req.query ? "performers/add/_list" : "performers/add/index";
