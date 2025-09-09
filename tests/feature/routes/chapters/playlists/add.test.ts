@@ -1,5 +1,6 @@
 import Playlistable from "@/database/models/playlistable";
 import express from "@/routes";
+import dayjs from "dayjs";
 import supertest from "supertest";
 import { createChapter, createPlaylist } from "../../../setup/create-model";
 
@@ -46,6 +47,31 @@ describe("The medium playlist add route", () => {
       .expect((res) => {
         expect(res.text).not.toContain(playlist1.id);
         expect(res.text).toContain(playlist2.id);
+      });
+  });
+
+  it("can sort the list based on other columns in ascending or descending order", async () => {
+    const chapter = await createChapter();
+    const earlier = await createPlaylist({
+      createdAt: dayjs().subtract(1, "hour").toDate(),
+      title: "foo",
+    });
+    const later = await createPlaylist({ title: "bar" });
+
+    await supertest(express)
+      .get(`/chapters/${chapter.id}/playlists/add?sort=title`)
+      .expect((res) => {
+        const inOreder = new RegExp(`${earlier.id}.*${later.id}`);
+
+        expect(inOreder.test(res.text)).toBeTruthy();
+      });
+
+    await supertest(express)
+      .get(`/chapters/${chapter.id}/playlists/add?sort=title&sortBy=asc`)
+      .expect((res) => {
+        const inOreder = new RegExp(`${later.id}.*${earlier.id}`);
+
+        expect(inOreder.test(res.text)).toBeTruthy();
       });
   });
 
