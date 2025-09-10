@@ -66,14 +66,13 @@ router.post(
 );
 
 router.get("/add", async (req: PerformerRequest, res) => {
-  const labels = await Label.scope({
-    method: ["search", req.query.search],
-  }).findAll({
-    order: [
-      ["category", "ASC"],
-      ["text", "ASC"],
-    ],
-  });
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: labels, count } = await Label.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   const template =
     "_list" in req.query ? "labels/add/_list" : "labels/add/index";
@@ -81,6 +80,7 @@ router.get("/add", async (req: PerformerRequest, res) => {
   res.set("HX-Trigger", "open-modal").render(template, {
     basePath: `/performers/${req.performer.id}`,
     labels,
+    count,
   });
 });
 

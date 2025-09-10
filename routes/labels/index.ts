@@ -1,10 +1,8 @@
 import { Router } from "express";
 import { body, validationResult } from "express-validator";
-import { Op } from "sequelize";
 import Label from "../../database/models/label";
 import { __ } from "../middlewares/i18n";
 import { HasPageRequest } from "../middlewares/pagination";
-import sortAndSortBy from "../middlewares/sort-and-sort-by";
 import mediumRouter from "./media";
 import performerRouter from "./performers";
 import playlistRouter from "./playlists";
@@ -26,21 +24,14 @@ router.param("label", async (req: LabelRequest, res, next) => {
   }
 });
 
-router.get("/", sortAndSortBy([]), async (req: HasPageRequest, res) => {
-  const { rows: labels, count } = await Label.findAndCountAll({
-    order: [
-      ["category", req.query.sortBy as string],
-      ["text", req.query.sortBy as string],
-    ],
-    where: {
-      ...(req.query.search && {
-        [Op.or]: [
-          { category: { [Op.substring]: req.query.search } },
-          { text: { [Op.substring]: req.query.search } },
-        ],
-      }),
-    },
-  });
+router.get("/", async (req: HasPageRequest, res) => {
+  const { limit, offset, query } = req;
+  const { sort, sortBy, search } = query;
+
+  const { rows: labels, count } = await Label.scope([
+    { method: ["sort", sort, sortBy] },
+    { method: ["search", search] },
+  ]).findAndCountAll({ limit, offset });
 
   res.render("labels/index", { labels, count });
 });

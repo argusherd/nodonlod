@@ -24,31 +24,47 @@ describe("The playlist label add route", () => {
       });
   });
 
-  it("can filter available labels by text", async () => {
+  it("can filter available labels by text or category", async () => {
+    const playlist = await createPlaylist();
+    const label1 = await createLabel({ category: "as foo 1", text: "foo" });
+    const label2 = await createLabel({ category: "as bar 2", text: "baz" });
+
+    await supertest(express)
+      .get(`/playlists/${playlist.id}/labels/add?search=foo`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).toContain(label1.id);
+        expect(res.text).not.toContain(label2.id);
+      });
+
+    await supertest(express)
+      .get(`/playlists/${playlist.id}/labels/add?search=baz`)
+      .expect(200)
+      .expect((res) => {
+        expect(res.text).not.toContain(label1.id);
+        expect(res.text).toContain(label2.id);
+      });
+  });
+
+  it("can sort the list based on other columns in ascending or descending order", async () => {
     const playlist = await createPlaylist();
     const label1 = await createLabel({ text: "foo" });
     const label2 = await createLabel({ text: "bar" });
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/labels/add?search=${label2.text}`)
-      .expect(200)
+      .get(`/playlists/${playlist.id}/labels/add?sort=text`)
       .expect((res) => {
-        expect(res.text).not.toContain(label1.text);
-        expect(res.text).toContain(label2.text);
-      });
-  });
+        const inOreder = new RegExp(`${label1.id}.*${label2.id}`);
 
-  it("can filter available labels by category", async () => {
-    const playlist = await createPlaylist();
-    const label1 = await createLabel({ category: "foo" });
-    const label2 = await createLabel({ category: "bar" });
+        expect(inOreder.test(res.text)).toBeTruthy();
+      });
 
     await supertest(express)
-      .get(`/playlists/${playlist.id}/labels/add?search=${label2.category}`)
-      .expect(200)
+      .get(`/playlists/${playlist.id}/labels/add?sort=text&sortBy=asc`)
       .expect((res) => {
-        expect(res.text).not.toContain(label1.category);
-        expect(res.text).toContain(label2.category);
+        const inOreder = new RegExp(`${label2.id}.*${label1.id}`);
+
+        expect(inOreder.test(res.text)).toBeTruthy();
       });
   });
 
