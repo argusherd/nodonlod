@@ -59,7 +59,9 @@ describe("The play queue playlist store route", () => {
       .expect(201);
 
     const playlist = await Playlist.findOne();
-    const playlistables = await playlist?.$get("playlistables");
+    const playlistables = await playlist?.$get("playlistables", {
+      order: ["order"],
+    });
 
     expect(playlistables).toHaveLength(2);
     expect(playlistables?.at(0)?.mediumId).toEqual(playQueue2.mediumId);
