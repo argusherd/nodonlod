@@ -38,21 +38,7 @@ block append body
       +button(type="submit")
         span.text-2xl(class="icon-[material-symbols--search]")
 
-    .flex.items-center.gap-2(x-data=`{ sortBy: "${query.sortBy || "asc"}" }`)
-      +input#sortBy.hidden(
-        name="sortBy",
-        x-init="$watch('sortBy', () => $dispatch('sort-changed'))",
-        x-model="sortBy"
-      )
-
-      +button.flex(
-        @click="sortBy = sortBy == 'desc' ? 'asc' : 'desc'",
-        title=__("Sort by"),
-        type="button"
-      )
-        span.text-2xl(
-          :class="sortBy == 'desc' ? 'icon-[octicon--sort-desc-24]' : 'icon-[octicon--sort-asc-24]'"
-        )
+    include _sort.pug
 
   - var noCategory = [];
   - var categories = {};
