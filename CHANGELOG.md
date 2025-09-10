@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.4.0](https://github.com/argusherd/nodonlod/compare/0.3.0...0.4.0) (2025-09-10)
+
+### Features
+
+* add sort and sort-by in the label add template ([72d79da](https://github.com/argusherd/nodonlod/commit/72d79da01c8c918672f8e23d795953fa81bf1b4a))
+* add sort and sort-by options in the media add template ([d73ff61](https://github.com/argusherd/nodonlod/commit/d73ff61834067d55fee567fa14d60bbc22363533))
+* add sort and sort-by options in the performer add template ([7ee1efe](https://github.com/argusherd/nodonlod/commit/7ee1efe65cad51e2c53800c8c84d6e6a8ed13750))
+* add sort and sort-by options in the playlist add template ([d56b630](https://github.com/argusherd/nodonlod/commit/d56b6303b928a5c6ceab67f37cc8cd453f72f63c))
+* add sort and sort-by queries formatter middleware ([7c5c155](https://github.com/argusherd/nodonlod/commit/7c5c1550586c204a49f230e314523c2f7e5a4fee))
+* add sortable scope to the label model ([ca19a91](https://github.com/argusherd/nodonlod/commit/ca19a911bf8b1fb4739fdc194e0dd10958542523))
+* add static query method in the medium model for list media in the index routes ([32db49f](https://github.com/argusherd/nodonlod/commit/32db49f5eb0852b332368f070456946c15121348))
+* add static query method in the performer model for list the performers in the index and add pages ([e0e902e](https://github.com/argusherd/nodonlod/commit/e0e902ed6a909d42b61fb0c20241dd6aca5d2299))
+* add static query method in the playlist model for list the playlists in the index pages ([209484a](https://github.com/argusherd/nodonlod/commit/209484a1571d65d3bd6e0d970d59ff6f82713c09))
+* autofocus every forms in the modal to improve the workflow ([fa05f35](https://github.com/argusherd/nodonlod/commit/fa05f35fee29f608132708fe1e56680da106cd05))
+
+### Refactorings
+
+* apply sort-and-sort-by middleware to index pages ([e1e4804](https://github.com/argusherd/nodonlod/commit/e1e480462d6b0353adaa979e93620ee1cf90f7a0))
+* check sort and sort-by are supported before query the media ([e1c8f87](https://github.com/argusherd/nodonlod/commit/e1c8f873e13a29f47ecb44ae82d8cbfcc4beb6f4))
+* make the navigation tabs sticky ([ad579b3](https://github.com/argusherd/nodonlod/commit/ad579b35b03739afbf4923c51417a151aa5d86c0))
+* remove redundant middleware from the playlist index page ([2414eea](https://github.com/argusherd/nodonlod/commit/2414eeae2049d6213f03286f172e20932543b253))
+* use encapsulated method for retrieve the media in index page ([fe28b44](https://github.com/argusherd/nodonlod/commit/fe28b4436967c9d210e9919ff8ab4f3005b3720d))
+* use encapsulated method for retrieve the performers in the index and add pages ([c3a5f51](https://github.com/argusherd/nodonlod/commit/c3a5f51181b4c0b928e2f22e9fafa7a9c1a898fe))
+* use encapsulated method for retrieve the playlists in the index and add pages ([817416a](https://github.com/argusherd/nodonlod/commit/817416ac7430f04c101dfca5984e98af13aa38c4))
+* utilize label scopes in the index and add pages ([629d1bf](https://github.com/argusherd/nodonlod/commit/629d1bfa64fdfce063cb5da237458a60e5866c68))
+* utilize scopes to reduce the complexity of the query method in the medium model ([c3daaf4](https://github.com/argusherd/nodonlod/commit/c3daaf4e33abc06ffdd71ebeff89bd010540bc0e))
+* utilize scopes to reduce the complexity of the query method in the performer model ([f51d50b](https://github.com/argusherd/nodonlod/commit/f51d50bca08ff19e0dd002721ca1ab6db82c2cfd))
+* utilize scopes to reduce the complexity of the query method in the playlist model ([92d6466](https://github.com/argusherd/nodonlod/commit/92d646697dce6cc6a6ed4de736d2dc037e42b3cf))
+
 ## [0.3.0](https://github.com/argusherd/nodonlod/compare/0.2.4...0.3.0) (2025-08-23)
 
 ### Features
