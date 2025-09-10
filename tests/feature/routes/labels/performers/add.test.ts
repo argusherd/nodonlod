@@ -27,8 +27,14 @@ describe("The label performer add route", () => {
 
   it("can search performers by name or description", async () => {
     const label = await createLabel();
-    const performer1 = await createPerformer({ name: "as foo 1" });
-    const performer2 = await createPerformer({ description: "as bar 2" });
+    const performer1 = await createPerformer({
+      name: "as foo 1",
+      description: "baz",
+    });
+    const performer2 = await createPerformer({
+      name: "baz",
+      description: "as bar 2",
+    });
 
     await supertest(express)
       .get(`/labels/${label.id}/performers/add`)
