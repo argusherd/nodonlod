@@ -1,11 +1,10 @@
-import Label from "@/database/models/label";
 import Labelable from "@/database/models/labelable";
 import {
   createLabel,
   createMedium,
   createPerformer,
   createPlaylist,
-} from "../../setup/create-model";
+} from "../../../setup/create-model";
 
 describe("The label model", () => {
   it("can belong to many media", async () => {
@@ -58,34 +57,5 @@ describe("The label model", () => {
     expect(performerIds).toContain(performer1.id);
     expect(performerIds).toContain(performer2.id);
     expect(labelable?.labelableType).toEqual("performer");
-  });
-
-  it("can search category or text at same time", async () => {
-    await createLabel({ category: "foo", text: "bar" });
-    const bar = await createLabel({ category: "foo", text: "baz" });
-
-    const isCategoryFoo = await Label.scope({
-      method: ["search", "foo"],
-    }).findAll();
-
-    expect(isCategoryFoo).toHaveLength(2);
-    expect(isCategoryFoo.at(0)?.text).toEqual("bar");
-    expect(isCategoryFoo.at(1)?.text).toEqual("baz");
-
-    const isTextBaz = await Label.scope({
-      method: ["search", "baz"],
-    }).findAll();
-
-    expect(isTextBaz).toHaveLength(1);
-    expect(isTextBaz.at(0)?.id).toEqual(bar.id);
-  });
-
-  it("can call the search scope with empty value", async () => {
-    await createLabel({ category: "foo", text: "bar" });
-    await createLabel({ category: "foo", text: "baz" });
-
-    const labels = await Label.scope({ method: ["search", ""] }).findAll();
-
-    expect(labels).toHaveLength(2);
   });
 });

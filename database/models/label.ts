@@ -12,6 +12,7 @@ import {
   Table,
   UpdatedAt,
 } from "sequelize-typescript";
+import { sortable } from "../scopes";
 import Labelable from "./labelable";
 import Medium from "./medium";
 import Performer from "./performer";
@@ -32,6 +33,7 @@ export interface LabelCreationAttributes
   extends Optional<LabelAttributes, keyof OptionalLabelCreationAttributes> {}
 
 @Scopes(() => ({
+  ...sortable(Label.supportedSort),
   search(value: string) {
     return value
       ? {
@@ -50,6 +52,8 @@ export default class Label extends Model<
   LabelAttributes,
   LabelCreationAttributes
 > {
+  static readonly supportedSort = ["category", "createdAt", "text"];
+
   @PrimaryKey
   @Default(DataType.UUIDV4)
   @Column
